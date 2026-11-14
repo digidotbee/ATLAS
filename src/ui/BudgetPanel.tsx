@@ -1,6 +1,6 @@
-import { summarize, type BudgetSummary } from '../domain/budget';
+import { chosenDate, summarize, type BudgetSummary } from '../domain/budget';
 import { CATEGORIES, type Trip } from '../domain/types';
-import { Money } from './common';
+import { formatDate, Money } from './common';
 
 /** Stacked bar: verified, estimated, contingency, remaining. */
 export function BudgetMeter({ summary: s, currency, compact }: { summary: BudgetSummary; currency: string; compact?: boolean }) {
@@ -35,6 +35,30 @@ export function BudgetMeter({ summary: s, currency, compact }: { summary: Budget
 }
 
 export function BudgetPanel({ trip }: { trip: Trip }) {
+  if (!chosenDate(trip)) {
+    const av = trip.availability;
+    return (
+      <aside className="budget-panel card" aria-label="Budget">
+        <p className="eyebrow">Budget</p>
+        <div className="budget-big">
+          <Money amount={trip.budgetTotal} currency={trip.currency} />
+          <span>total, everything included</span>
+        </div>
+        <p className="muted small">
+          {trip.travelers.adults + trip.travelers.children} travelers · {trip.contingencyPct}% cushion
+          {av && (
+            <>
+              <br />
+              Available {formatDate(av.earliestDeparture)} – {formatDate(av.latestReturn, { month: 'short', day: 'numeric', year: 'numeric' })}
+            </>
+          )}
+        </p>
+        <p className="small">
+          No trip dates yet, so nothing is projected. Find and lock a vacation window in <strong>When & how long</strong>.
+        </p>
+      </aside>
+    );
+  }
   const s = summarize(trip);
   const over = s.remaining < 0;
   return (

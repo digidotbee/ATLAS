@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { emptyData } from '../domain/factory';
-import { parseImportedCandidates, parseImportedDates } from '../domain/research';
+import { parseImportedAssumptions, parseImportedCandidates } from '../domain/research';
 import { decideSync, GIST_FILE, readAtlasGist, SyncError, writeAtlasGist } from './gist';
 import { loadLocal, saveLocal } from './local';
 
@@ -99,14 +99,20 @@ describe('v1.2 imports', () => {
     expect(r.errors).toEqual([]);
     expect(r.moves['airport>kanazawa']).toMatchObject({ mode: 'Hokuriku Shinkansen', ridePerPerson: 100, hours: 5 });
   });
-  it('imports date windows and the daily estimate', () => {
-    const r = parseImportedDates('```json\n{"dailyCostEstimate":420,"dateOptions":[{"label":"Late May","start":"2027-05-23","end":"2027-06-02","flightPerPerson":900,"flightStatus":"estimated","notes":"before rains"}]}\n```');
+  it('imports planning assumptions as estimates, never verified', () => {
+    const r = parseImportedAssumptions(
+      '```json\n{"currency":"USD","arrivalOffsetDays":1,"returnOffsetDays":0,"airfarePerPersonByMonth":{"2027-05":950},"lodgingPerNight":170,"foodPerPersonPerDay":30,"transportPerDay":40,"activitiesPerPersonPerDay":12,"feesPct":10,"climateByMonth":{"05":{"score":4,"summary":"mild"}},"sources":[{"url":"https://x","note":"avg fares","checkedAt":"2026-11-14"}],"priceStatus":"verified"}\n```',
+      'USD',
+    );
     expect(r.errors).toEqual([]);
-    expect(r.dailyEstimate).toBe(420);
-    expect(r.dateOptions[0]).toMatchObject({ label: 'Late May', flightPerPerson: 900 });
+    expect(r.assumptions).toMatchObject({ arrivalOffsetDays: 1, lodgingPerNight: 170, origin: 'assistant' });
+    expect(r.assumptions!.airfarePerPersonByMonth).toEqual({ '2027-05': 950 });
+    expect(JSON.stringify(r.assumptions)).not.toContain('verified');
   });
-  it('rejects backwards dates', () => {
-    const r = parseImportedDates('{"dateOptions":[{"start":"2027-06-02","end":"2027-05-23"}]}');
-    expect(r.errors[0]).toMatch(/end on or after start/);
+  it('rejects wrong currency and bad climate scores, and redirects option replies', () => {
+    expect(parseImportedAssumptions('{"currency":"EUR","lodgingPerNight":1}', 'USD').errors[0]).toMatch(/EUR/);
+    expect(parseImportedAssumptions('{"climateByMonth":{"05":{"score":9}}}', 'USD').errors[0]).toMatch(/0–5/);
+    expect(parseImportedAssumptions('{"candidates":[]}', 'USD').errors[0]).toMatch(/Explore/);
+    expect(parseImportedCandidates('{"dateOptions":[]}').errors[0]).toMatch(/When & how long/);
   });
 });

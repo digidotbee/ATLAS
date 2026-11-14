@@ -41,7 +41,7 @@ export function PlanTab({ trip, update }: TabProps) {
       </div>
       <div className="actions">
         <a className="btn btn-primary" href={href({ page: 'trip', id: trip.id, tab: 'dates' })}>
-          Next: compare dates →
+          Next: when & how long →
         </a>
       </div>
     </div>

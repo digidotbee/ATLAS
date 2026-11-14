@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { emptyData, nowIso } from '../domain/factory';
-import type { AtlasData, FamilyProfile, Trip } from '../domain/types';
+import type { AtlasData, ClimateMonth, FamilyProfile, Trip } from '../domain/types';
 import {
   createAtlasGist,
   decideSync,
@@ -36,6 +36,7 @@ interface Store {
   updateTrip(id: string, fn: (t: Trip) => Trip): void;
   deleteTrip(id: string): void;
   updateProfile(fn: (p: FamilyProfile) => FamilyProfile): void;
+  saveClimate(destination: string, climate: Record<string, ClimateMonth>): void;
   replaceAll(data: AtlasData): void;
   resetCorruptLocal(): void;
   connectSync(token: string): Promise<void>;
@@ -155,6 +156,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       })),
     deleteTrip: (id) => mutate((d) => ({ ...d, trips: d.trips.filter((t) => t.id !== id) })),
     updateProfile: (fn) => mutate((d) => ({ ...d, profile: fn(d.profile) })),
+    saveClimate: (destination, climate) =>
+      mutate((d) => {
+        const key = destination.trim().toLowerCase();
+        return { ...d, climateCache: { ...(d.climateCache ?? {}), [key]: { ...(d.climateCache?.[key] ?? {}), ...climate } } };
+      }),
     replaceAll: (next) => {
       skipPersist.current = false;
       setLoadError(null);

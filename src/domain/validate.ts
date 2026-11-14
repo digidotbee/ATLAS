@@ -1,3 +1,4 @@
+import { migrateData } from './migrate';
 import { SCHEMA_VERSION, type AtlasData } from './types';
 
 /**
@@ -30,5 +31,5 @@ export function parseAtlasData(raw: unknown, source: string): AtlasData {
     }
     if (typeof tr.travelers !== 'object' || tr.travelers === null) fail(`trip "${String(tr.name)}" has no travelers.`);
   });
-  return raw as AtlasData;
+  return migrateData(raw as AtlasData);
 }

@@ -10,7 +10,7 @@ import { SetupTab } from './SetupTab';
 
 const TABS: { id: TripTab; label: string; hint: string }[] = [
   { id: 'plan', label: '1 · Shape it', hint: 'Follow-up questions' },
-  { id: 'dates', label: '2 · Dates', hint: 'Compare windows' },
+  { id: 'dates', label: '2 · When & how long', hint: 'Find vacation windows' },
   { id: 'explore', label: '3 · Explore', hint: 'Options & choices' },
   { id: 'itinerary', label: '4 · Itinerary', hint: 'Day by day' },
 ];

@@ -1,4 +1,5 @@
-import { affordableNights, chosenDate, formatMoney, nightsBetween, travelerCount } from './budget';
+import { chosenDate, nightsBetween, travelerCount } from './budget';
+import { departureMonths } from './windows';
 import { AIRPORT, blankMove, moveKey } from './moves';
 import { blankCandidate } from './factory';
 import { FOLLOW_UP_QUESTIONS } from './questions';
@@ -7,11 +8,13 @@ import {
   PRICE_BASES,
   type Candidate,
   type Category,
-  type DateOption,
   type Move,
   type FamilyProfile,
   type PriceBasis,
   type PriceStatus,
+  type ClimateMonth,
+  type PlanningAssumptions,
+  type PriceSource,
   type Trip,
 } from './types';
 
@@ -21,14 +24,18 @@ import {
  */
 export function buildResearchPrompt(trip: Trip, profile: FamilyProfile, focus: Category | 'all'): string {
   const date = chosenDate(trip);
-  const datesText = trip.dateOptions.length
-    ? trip.dateOptions
+  const tripDates = trip.dateOptions.filter((d) => !d.legacyAvailability);
+  const av = trip.availability;
+  const datesText = tripDates.length
+    ? tripDates
         .map((d) => {
           const n = nightsBetween(d.start, d.end);
           return `- ${d.label || 'Option'}: ${d.start || '?'} to ${d.end || '?'}${n !== null ? ` (${n} nights)` : ''}${d.id === date?.id ? ' ← preferred' : ''}`;
         })
         .join('\n')
-    : '- Flexible, not yet set';
+    : av
+      ? `- Not fixed yet: available to leave from ${av.earliestDeparture} and back by ${av.latestReturn} (this is availability, not the trip length)`
+      : '- Flexible, not yet set';
 
   const answers = FOLLOW_UP_QUESTIONS.filter((q) => trip.answers[q.id]?.trim())
     .map((q) => `- ${q.question} ${trip.answers[q.id].trim()}`)
@@ -176,6 +183,13 @@ export function parseImportedCandidates(text: string): ImportResult {
     return { candidates: [], moves: {}, errors: [(e as Error).message] };
   }
   const list = Array.isArray(raw) ? raw : (raw as { candidates?: unknown })?.candidates;
+  if (!Array.isArray(raw) && raw && typeof raw === 'object' && ('dateOptions' in raw || 'airfarePerPersonByMonth' in raw)) {
+    return {
+      candidates: [],
+      moves: {},
+      errors: ['This looks like a dates / planning-assumptions reply. Paste it in step 2 (When & how long) → Planning assumptions instead.'],
+    };
+  }
   if (!Array.isArray(list)) {
     return { candidates: [], moves: {}, errors: ['Expected an object with a "candidates" array.'] };
   }
@@ -244,90 +258,151 @@ export function matchedInterests(c: Candidate, interests: string[]): string[] {
   });
 }
 
+
 /**
- * Brief asking an assistant to scan the open travel window for the best visit dates,
- * limited to the trip length the budget allows, with an airfare estimate for each window.
+ * Stage A research brief — ONE assistant request per optimization pass.
+ * Asks only for the estimates the deterministic engine needs; ATLAS does the date search itself.
  */
-export function buildDatesPrompt(trip: Trip, profile: FamilyProfile, windowStart: string, windowEnd: string): string {
-  const people = travelerCount(trip);
+export function buildAssumptionsPrompt(trip: Trip, profile: FamilyProfile): string {
+  const av = trip.availability;
+  const months = av ? departureMonths(av.earliestDeparture, av.latestReturn) : [];
+  const mm = [...new Set(months.map((m) => m.slice(5, 7)))];
   const answers = FOLLOW_UP_QUESTIONS.filter((q) => trip.answers[q.id]?.trim())
     .map((q) => `- ${q.question} ${trip.answers[q.id].trim()}`)
     .join('\n');
-  const afford = affordableNights(trip, null);
-  const lengthRule = afford
-    ? `Based on what we've chosen so far, each night costs our whole group about ${formatMoney(afford.perNight, trip.currency)} (excluding flights). Pick a trip length the total budget can cover once airfare is included: nights × ${afford.perNight} + airfare for ${people} + ${trip.contingencyPct}% cushion ≤ ${trip.budgetTotal}.`
-    : `Estimate a realistic whole-group daily cost (lodging, food, local transport, activities) for this family's style, and pick the longest trip the budget covers once airfare for ${people} and a ${trip.contingencyPct}% cushion are included.`;
-  return `I'm planning a family trip and need the best travel dates.
+  const airport = trip.constraints?.departureAirport || profile.homeAirport || '(home airport)';
+  return `I'm planning a family trip and need PLANNING ESTIMATES (not bookings) so I can work out the best dates and trip length myself.
 
 TRIP
 - Destination: ${trip.destination}${trip.region ? ` (${trip.region})` : ''}
+- Flying from: ${airport}
 - Travelers: ${trip.travelers.adults} adults, ${trip.travelers.children} children${trip.travelers.childAges ? ` (ages ${trip.travelers.childAges})` : ''}
 - Total budget: ${trip.budgetTotal} ${trip.currency}, everything included
-- Open window: we can arrive any time from ${windowStart || '?'} and must leave by ${windowEnd || '?'}
-${trip.flexibility ? `- Flexibility: ${trip.flexibility}\n` : ''}${profile.homeAirport ? `- Flying from: ${profile.homeAirport}\n` : ''}${answers ? `\nWHAT WE WANT\n${answers}\n` : ''}
-TASK
-1. Check the whole open window for the best time to visit: weather and rainy seasons, heat, typhoons, crowds and school holidays, festivals, and typical airfare levels.
-2. ${lengthRule}
-3. Suggest 3–5 date windows inside the open window, best first. "start" is the day we ARRIVE at the destination (overnight flights often land the next day) and "end" is the day we LEAVE.
-4. Give a round-trip economy airfare estimate per person for each window from our home airport, including a checked bag. Mark it "verified" only if you are quoting a current published fare.
+- Available to travel: leave home on or after ${av?.earliestDeparture ?? '?'}, back home by ${av?.latestReturn ?? '?'}. This is our availability, NOT the trip length.
+${answers ? `\nWHAT WE WANT\n${answers}\n` : ''}
+WHAT WE LIKE
+${profile.interests.map((i) => `- ${i}`).join('\n')}
 
-Reply with ONLY this JSON (no commentary), in ${trip.currency}:
+PLEASE ESTIMATE (in ${trip.currency})
+1. Typical round-trip economy airfare per person from ${airport}, with one checked bag, for departures in each month: ${months.join(', ')}. These are route-level averages for planning, not fares for specific dates.
+2. How many days after leaving home we arrive (1 if the flight lands the next calendar day), and how many days after leaving the destination we get home.
+3. Typical whole-trip costs for our style: lodging per night for the whole family (independent places with character, good value), food per person per day (mostly local and casual), local transport per day for the whole group, and activities per person per day.
+4. Taxes and fees on lodging as a percent.
+5. Historical climate for months ${mm.join(', ')}: a 0–5 suitability score for our interests and a one-line summary. These are seasonal averages, not forecasts.
+
+RULES
+- Do not invent live prices. Everything here is an estimate; do not call anything verified.
+- List the sources you relied on (URL, what it showed, date checked) so I can review them.
+
+Reply with ONLY this JSON (no commentary):
 {
-  "dailyCostEstimate": 0,
-  "dateOptions": [
-    {
-      "label": "short name, e.g. Late May before the rains",
-      "start": "YYYY-MM-DD",
-      "end": "YYYY-MM-DD",
-      "flightPerPerson": 0,
-      "flightStatus": "estimated | verified",
-      "notes": "why this window: weather, crowds, events, airfare, how many nights the budget allows"
-    }
-  ]
-}
-("dailyCostEstimate" = whole group per day, excluding flights.)`;
+  "currency": "${trip.currency}",
+  "arrivalOffsetDays": 0,
+  "returnOffsetDays": 0,
+  "airfarePerPersonByMonth": { ${months.map((m) => `"${m}": 0`).join(', ')} },
+  "baggageIncluded": true,
+  "lodgingPerNight": 0,
+  "foodPerPersonPerDay": 0,
+  "transportPerDay": 0,
+  "activitiesPerPersonPerDay": 0,
+  "feesPct": 0,
+  "climateByMonth": { ${mm.map((m) => `"${m}": { "score": 0, "summary": "" }`).join(', ')} },
+  "sources": [ { "url": "", "note": "", "checkedAt": "YYYY-MM-DD" } ]
+}`;
 }
 
-export interface DatesImport {
-  dateOptions: Omit<DateOption, 'id'>[];
-  dailyEstimate: number | null;
+export interface AssumptionsImport {
+  assumptions: Partial<PlanningAssumptions> | null;
   errors: string[];
 }
 
-export function parseImportedDates(text: string): DatesImport {
+/**
+ * Validates a Stage A reply. Everything imported is stored as an ESTIMATE regardless of what the
+ * reply claims: assistant figures are never verified prices.
+ */
+export function parseImportedAssumptions(text: string, currency: string): AssumptionsImport {
   let raw: unknown;
   try {
     raw = extractJson(text);
   } catch (e) {
-    return { dateOptions: [], dailyEstimate: null, errors: [(e as Error).message] };
+    return { assumptions: null, errors: [(e as Error).message] };
   }
-  const o = (raw ?? {}) as Record<string, unknown>;
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return { assumptions: null, errors: ['Expected a JSON object.'] };
+  const o = raw as Record<string, unknown>;
+  if ('candidates' in o) {
+    return { assumptions: null, errors: ['This looks like an options reply. Paste it in step 3 (Explore) → Research helper instead.'] };
+  }
   const errors: string[] = [];
-  if (!Array.isArray(o.dateOptions) || o.dateOptions.length === 0) {
-    return { dateOptions: [], dailyEstimate: null, errors: ['Expected a "dateOptions" list with at least one window.'] };
+  if (o.currency !== undefined && o.currency !== currency) {
+    errors.push(`The reply is in ${String(o.currency)} but this trip uses ${currency}. Ask for ${currency} figures.`);
   }
-  const daily = num(o.dailyCostEstimate);
-  if (daily !== null && (!Number.isFinite(daily) || daily < 0)) errors.push('"dailyCostEstimate" must be a non-negative number.');
-  const out: Omit<DateOption, 'id'>[] = [];
-  o.dateOptions.forEach((item, i) => {
-    const d = (typeof item === 'object' && item !== null ? item : {}) as Record<string, unknown>;
-    const where = `Window ${i + 1}`;
-    const start = typeof d.start === 'string' ? d.start : '';
-    const end = typeof d.end === 'string' ? d.end : '';
-    if (nightsBetween(start, end) === null) errors.push(`${where}: "start" and "end" must be YYYY-MM-DD dates with end on or after start.`);
-    const fare = num(d.flightPerPerson);
-    if (fare !== null && (!Number.isFinite(fare) || fare < 0)) errors.push(`${where}: "flightPerPerson" must be a non-negative number.`);
-    if (d.flightStatus !== undefined && d.flightStatus !== 'estimated' && d.flightStatus !== 'verified') {
-      errors.push(`${where}: "flightStatus" must be "estimated" or "verified".`);
-    }
-    out.push({
-      label: typeof d.label === 'string' && d.label.trim() ? d.label.trim() : `Window ${i + 1}`,
-      start,
-      end,
-      flightPerPerson: fare,
-      flightStatus: d.flightStatus === 'verified' ? 'verified' : 'estimated',
-      notes: typeof d.notes === 'string' ? d.notes : '',
-    });
-  });
-  return errors.length ? { dateOptions: [], dailyEstimate: null, errors } : { dateOptions: out, dailyEstimate: daily, errors: [] };
+  const out: Partial<PlanningAssumptions> = {};
+  const nonNeg = (k: keyof PlanningAssumptions, label: string, int = false) => {
+    if (o[k] === undefined || o[k] === null) return;
+    const v = num(o[k]);
+    if (v === null || !Number.isFinite(v) || v < 0 || (int && !Number.isInteger(v))) errors.push(`"${label}" must be a non-negative ${int ? 'whole ' : ''}number.`);
+    else (out as Record<string, unknown>)[k] = v;
+  };
+  nonNeg('arrivalOffsetDays', 'arrivalOffsetDays', true);
+  nonNeg('returnOffsetDays', 'returnOffsetDays', true);
+  nonNeg('lodgingPerNight', 'lodgingPerNight');
+  nonNeg('foodPerPersonPerDay', 'foodPerPersonPerDay');
+  nonNeg('transportPerDay', 'transportPerDay');
+  nonNeg('activitiesPerPersonPerDay', 'activitiesPerPersonPerDay');
+  nonNeg('feesPct', 'feesPct');
+  if (typeof o.baggageIncluded === 'boolean') out.baggageIncluded = o.baggageIncluded;
+
+  if (o.airfarePerPersonByMonth !== undefined) {
+    const fares: Record<string, number> = {};
+    if (typeof o.airfarePerPersonByMonth !== 'object' || o.airfarePerPersonByMonth === null) errors.push('"airfarePerPersonByMonth" must be an object.');
+    else
+      for (const [k, v] of Object.entries(o.airfarePerPersonByMonth)) {
+        const n = num(v);
+        if (!/^\d{4}-\d{2}$/.test(k)) errors.push(`Airfare month "${k}" must look like 2027-05.`);
+        else if (n === null || !Number.isFinite(n) || n <= 0) errors.push(`Airfare for ${k} must be a positive number.`);
+        else fares[k] = n;
+      }
+    out.airfarePerPersonByMonth = fares;
+  }
+  if (o.climateByMonth !== undefined) {
+    const climate: Record<string, ClimateMonth> = {};
+    if (typeof o.climateByMonth !== 'object' || o.climateByMonth === null) errors.push('"climateByMonth" must be an object.');
+    else
+      for (const [k, v] of Object.entries(o.climateByMonth)) {
+        const c = (v ?? {}) as Record<string, unknown>;
+        const score = num(c.score);
+        if (!/^\d{2}$/.test(k)) errors.push(`Climate month "${k}" must look like 05.`);
+        else if (score === null || !Number.isFinite(score) || score < 0 || score > 5) errors.push(`Climate score for ${k} must be 0–5.`);
+        else climate[k] = { score, summary: typeof c.summary === 'string' ? c.summary : '' };
+      }
+    out.climateByMonth = climate;
+  }
+  if (o.sources !== undefined) {
+    if (!Array.isArray(o.sources)) errors.push('"sources" must be a list.');
+    else
+      out.sources = o.sources
+        .map((x) => (x ?? {}) as Record<string, unknown>)
+        .map((x): PriceSource => ({
+          url: typeof x.url === 'string' ? x.url : '',
+          note: typeof x.note === 'string' ? x.note : '',
+          checkedAt: typeof x.checkedAt === 'string' ? x.checkedAt : '',
+        }))
+        .filter((x) => x.url || x.note);
+  }
+  if (errors.length) return { assumptions: null, errors };
+  if (Object.keys(out).length === 0) return { assumptions: null, errors: ['The reply contained none of the expected fields.'] };
+  return { assumptions: { ...out, origin: 'assistant', researchedAt: new Date().toISOString().slice(0, 10) }, errors: [] };
+}
+
+/** Targeted follow-up for one promising window: the fare for its exact dates. */
+export function buildWindowFarePrompt(
+  trip: Trip,
+  profile: FamilyProfile,
+  w: { departureDate: string; destinationDepartureDate: string; returnDate: string },
+): string {
+  const airport = trip.constraints?.departureAirport || profile.homeAirport || '(home airport)';
+  return `Please look up the current round-trip economy fare for ${travelerCount(trip)} travelers (${trip.travelers.adults} adults, ${trip.travelers.children} children), one checked bag each:
+- From ${airport} to ${trip.destination}
+- Leave home ${w.departureDate}; return flight leaves ${trip.destination} on ${w.destinationDepartureDate} (back home ${w.returnDate})
+Report the price per person in ${trip.currency}, the airline/itinerary, where you found it (URL) and when. If you cannot see a live fare for these exact dates, say so and give only a clearly labeled estimate.`;
 }

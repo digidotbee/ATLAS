@@ -65,6 +65,125 @@ export interface DateOption {
   flightPerPerson: number | null;
   flightStatus: PriceStatus;
   notes: string;
+  /**
+   * Set by the v1.3 migration: this range was really an availability window entered before
+   * ATLAS separated availability from trip dates. Kept for reference, never used for costs.
+   */
+  legacyAvailability?: boolean;
+  /** The candidate window this trip-date option was locked from. */
+  fromWindowId?: string;
+}
+
+export interface DateRange {
+  start: string; // YYYY-MM-DD
+  end: string; // YYYY-MM-DD
+}
+
+/** When the family COULD travel. Not the trip dates. */
+export interface Availability {
+  /** Earliest day you can leave home. */
+  earliestDeparture: string;
+  /** Latest day you must be back home. */
+  latestReturn: string;
+  preferredRanges: DateRange[];
+  excludedRanges: DateRange[];
+}
+
+export interface TripConstraints {
+  departureAirport: string;
+  minNights: number | null;
+  preferredNights: number | null;
+  maxNights: number | null;
+}
+
+export interface PriceSource {
+  url: string;
+  note: string;
+  /** When the figure was looked up (YYYY-MM-DD). */
+  checkedAt: string;
+}
+
+/** Historical climate for a month — an average, never a forecast. */
+export interface ClimateMonth {
+  /** 0 (poor) to 5 (ideal) for this family's plans. */
+  score: number;
+  summary: string;
+}
+
+/**
+ * Stage A planning estimates. In Planning Estimate Mode every figure here is an ESTIMATE:
+ * monthly airfares are route-level averages, not fares for specific dates.
+ */
+export interface PlanningAssumptions {
+  /** Round-trip economy airfare per person, keyed by departure month "YYYY-MM". */
+  airfarePerPersonByMonth: Record<string, number>;
+  baggageIncluded: boolean;
+  /** Days between leaving home and arriving (1 for overnight flights that land the next day). */
+  arrivalOffsetDays: number;
+  /** Days between leaving the destination and arriving home. */
+  returnOffsetDays: number;
+  lodgingPerNight: number | null;
+  foodPerPersonPerDay: number | null;
+  /** Whole group, per day: local trains, buses, taxis, car. */
+  transportPerDay: number | null;
+  activitiesPerPersonPerDay: number | null;
+  /** Taxes and fees as a percent of lodging. */
+  feesPct: number;
+  /** Keyed by month "MM". */
+  climateByMonth: Record<string, ClimateMonth>;
+  sources: PriceSource[];
+  researchedAt: string | null;
+  origin: 'manual' | 'assistant';
+}
+
+export type WindowStatus = 'proposed' | 'kept' | 'rejected' | 'locked';
+
+/** A possible vacation inside the availability window, fully costed. */
+export interface CandidateTravelWindow {
+  id: string;
+  /** Leave home. */
+  departureDate: string;
+  /** Arrive at destination. */
+  arrivalDate: string;
+  /** Leave destination. */
+  destinationDepartureDate: string;
+  /** Back home. */
+  returnDate: string;
+  destinationNights: number;
+  airfareTotal: number;
+  lodgingTotal: number;
+  groundTransportTotal: number;
+  foodTotal: number;
+  activitiesTotal: number;
+  feesTotal: number;
+  contingency: number;
+  projectedTotal: number;
+  remainingBudget: number;
+  weatherScore: number | null;
+  weatherAssessment: string;
+  confidence: 'low' | 'medium' | 'high';
+  score: number;
+  labels: string[];
+  reasons: string[];
+  priceSources: PriceSource[];
+  /** Always "estimated" unless the family verified every price themselves. */
+  priceStatus: PriceStatus;
+  status: WindowStatus;
+  feedback: string;
+  /** A fare looked up for these exact dates (per person). */
+  fareOverridePerPerson?: number | null;
+  /** True only when the family checked this exact fare themselves. */
+  fareOverrideVerified?: boolean;
+  fareOverrideSource?: string;
+}
+
+/** Transparent, user-adjustable weights for ranking windows. */
+export interface ScoringWeights {
+  cost: number;
+  value: number;
+  duration: number;
+  weather: number;
+  preferences: number;
 }
 
 /**
@@ -109,11 +228,17 @@ export interface Trip {
   flexibility: string;
   dateOptions: DateOption[];
   chosenDateId: string | null;
-  /** Open travel window: earliest arrival and latest departure (YYYY-MM-DD). Optional (added in v1.2). */
+  /** v1.2 fields, superseded by `availability`; read only by the migration. */
   windowStart?: string;
   windowEnd?: string;
-  /** Typical whole-group spend per day, excluding flights; used before lodging is chosen. */
+  /** Typical whole-group spend per day, excluding flights (v1.2; still used by affordability). */
   dailyEstimate?: number | null;
+  /** v1.3: when the family could travel (not the trip dates). */
+  availability?: Availability;
+  constraints?: TripConstraints;
+  assumptions?: PlanningAssumptions;
+  windows?: CandidateTravelWindow[];
+  weights?: ScoringWeights;
   /** Travel legs keyed by route, see moves.ts. Optional (added in v1.2). */
   moves?: Record<string, Move>;
   /** Follow-up question answers keyed by question id. */
@@ -140,4 +265,6 @@ export interface AtlasData {
   profile: FamilyProfile;
   trips: Trip[];
   updatedAt: string;
+  /** Historical climate reused across trips, keyed by normalized destination then month "MM". */
+  climateCache?: Record<string, Record<string, ClimateMonth>>;
 }

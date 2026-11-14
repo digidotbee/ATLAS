@@ -49,7 +49,9 @@ export function TripList() {
                       <dd>
                         {d
                           ? `${formatDate(d.start)} – ${formatDate(d.end, { month: 'short', day: 'numeric', year: 'numeric' })}`
-                          : `${t.dateOptions.length} date option${t.dateOptions.length === 1 ? '' : 's'}`}
+                          : t.availability
+                            ? `Available ${formatDate(t.availability.earliestDeparture)} – ${formatDate(t.availability.latestReturn)} · dates not set`
+                            : 'Dates not set'}
                         {n !== null && <span className="muted"> · {n} nights</span>}
                       </dd>
                     </div>

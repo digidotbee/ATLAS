@@ -1,7 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { nightsBetween } from '../domain/budget';
-import { blankDateOption, createTrip } from '../domain/factory';
-import type { DateOption } from '../domain/types';
+import { createTrip } from '../domain/factory';
 import { useStore } from '../state/store';
 import { Banner, Field, NumberInput } from './common';
 import { go } from './router';
@@ -18,11 +17,14 @@ export function NewTrip() {
   const [children, setChildren] = useState<number | null>(p.defaultChildren);
   const [childAges, setChildAges] = useState('');
   const [flexibility, setFlexibility] = useState('');
-  const [dates, setDates] = useState<DateOption[]>([blankDateOption()]);
+  const [earliest, setEarliest] = useState('');
+  const [latest, setLatest] = useState('');
+  const [minNights, setMinNights] = useState<number | null>(null);
+  const [prefNights, setPrefNights] = useState<number | null>(null);
+  const [maxNights, setMaxNights] = useState<number | null>(null);
+  const [airport, setAirport] = useState(p.homeAirport);
   const [errors, setErrors] = useState<string[]>([]);
-
-  const setDate = (id: string, patch: Partial<DateOption>) =>
-    setDates((ds) => ds.map((d) => (d.id === id ? { ...d, ...patch } : d)));
+  const span = nightsBetween(earliest, latest);
 
   function submit(e: FormEvent) {
     e.preventDefault();
@@ -31,10 +33,8 @@ export function NewTrip() {
     if (!budget || budget <= 0) errs.push('Set a total budget.');
     if (!adults || adults < 1) errs.push('At least one adult is needed.');
     if (!/^[A-Z]{3}$/.test(currency)) errs.push('Currency must be a 3-letter code such as USD or EUR.');
-    const filled = dates.filter((d) => d.start || d.end);
-    filled.forEach((d, i) => {
-      if (nightsBetween(d.start, d.end) === null) errs.push(`Date option ${i + 1}: end date must be on or after the start date.`);
-    });
+    if ((earliest || latest) && (span === null || span < 1)) errs.push('The latest return must be after the earliest departure.');
+    if (minNights && maxNights && minNights > maxNights) errs.push('Shortest trip can’t be longer than the longest trip.');
     setErrors(errs);
     if (errs.length) return;
     const trip = createTrip({
@@ -47,10 +47,15 @@ export function NewTrip() {
       children: children ?? 0,
       childAges,
       flexibility,
-      dateOptions: filled.map(({ id: _id, ...rest }, i) => ({ ...rest, label: rest.label || `Option ${String.fromCharCode(65 + i)}` })),
+      // Availability is never stored as trip dates; ATLAS finds the trip dates inside it.
+      dateOptions: [],
     });
+    if (earliest && latest) {
+      trip.availability = { earliestDeparture: earliest, latestReturn: latest, preferredRanges: [], excludedRanges: [] };
+    }
+    trip.constraints = { departureAirport: airport.trim().toUpperCase(), minNights, preferredNights: prefNights, maxNights };
     addTrip(trip);
-    go({ page: 'trip', id: trip.id, tab: 'plan' });
+    go({ page: 'trip', id: trip.id, tab: earliest && latest ? 'dates' : 'plan' });
   }
 
   return (
@@ -110,34 +115,35 @@ export function NewTrip() {
 
         <fieldset className="card">
           <legend>
-            <span className="step">4</span> Flexible dates
+            <span className="step">4</span> When could you travel?
           </legend>
           <p className="muted small">
-            Add one or more possible date ranges — the day you <strong>arrive</strong> at your destination and the day you <strong>leave</strong>.
-            Overnight flights often land the next day (Las Vegas → Japan arrives a day later), so you don't pay for a night spent in the air.
+            Your <strong>availability</strong>, not the trip dates. ATLAS will find the best dates and trip length inside it that fit your budget.
           </p>
-          {dates.map((d, i) => (
-            <div key={d.id} className="date-row">
-              <Field label={`Option ${String.fromCharCode(65 + i)} label`}>
-                <input value={d.label} onChange={(e) => setDate(d.id, { label: e.target.value })} placeholder="e.g. Spring break" />
-              </Field>
-              <Field label="Arrive">
-                <input type="date" value={d.start} onChange={(e) => setDate(d.id, { start: e.target.value })} />
-              </Field>
-              <Field label="Leave">
-                <input type="date" value={d.end} min={d.start} onChange={(e) => setDate(d.id, { end: e.target.value })} />
-              </Field>
-              {dates.length > 1 && (
-                <button type="button" className="btn btn-ghost" onClick={() => setDates((ds) => ds.filter((x) => x.id !== d.id))} aria-label="Remove date option">
-                  ✕
-                </button>
-              )}
-            </div>
-          ))}
-          <button type="button" className="btn btn-ghost" onClick={() => setDates((ds) => [...ds, blankDateOption()])}>
-            + Another date option
-          </button>
-          <Field label="How flexible are you?" hint="e.g. “any 8–10 nights in March”, “must include Easter week”.">
+          <div className="grid-2">
+            <Field label="Earliest day you can leave home">
+              <input type="date" value={earliest} onChange={(e) => setEarliest(e.target.value)} />
+            </Field>
+            <Field label="Latest day you must be back" hint={span !== null && span > 0 ? `${span} nights of availability` : undefined}>
+              <input type="date" value={latest} min={earliest} onChange={(e) => setLatest(e.target.value)} />
+            </Field>
+          </div>
+          <div className="grid-4">
+            <Field label="Shortest trip" hint="nights · optional">
+              <NumberInput value={minNights} min={1} onChange={setMinNights} aria-label="Minimum nights" />
+            </Field>
+            <Field label="Ideal trip" hint="nights · optional">
+              <NumberInput value={prefNights} min={1} onChange={setPrefNights} aria-label="Preferred nights" />
+            </Field>
+            <Field label="Longest trip" hint="nights · optional">
+              <NumberInput value={maxNights} min={1} onChange={setMaxNights} aria-label="Maximum nights" />
+            </Field>
+            <Field label="Departure airport">
+              <input value={airport} onChange={(e) => setAirport(e.target.value.toUpperCase())} placeholder="LAS" />
+            </Field>
+          </div>
+          <p className="small muted">Leave trip length blank and ATLAS will suggest realistic lengths for your budget.</p>
+          <Field label="Anything else about timing?" hint="e.g. “must include Easter week”, “avoid school exams”.">
             <input value={flexibility} onChange={(e) => setFlexibility(e.target.value)} />
           </Field>
         </fieldset>
