@@ -4,7 +4,7 @@ A personal, reusable vacation planner. Start with **where**, **total budget**, *
 ATLAS then helps you shape the trip, compare date windows, collect and choose options, build a day-by-day itinerary,
 and print a one-page plan — with the budget updating as you go.
 
-Live: https://digidotbee.github.io/atlas/
+Live: https://digidotbee.github.io/ATLAS/
 
 ## How it works
 - **Shape it** – follow-up questions (pace, bases, lodging style, must-dos…).
@@ -25,7 +25,7 @@ Live: https://digidotbee.github.io/atlas/
 ## Development
 ```
 npm install
-npm run dev      # http://localhost:5173/atlas/
+npm run dev      # http://localhost:5173/
 npm test
 npm run build
 ```
