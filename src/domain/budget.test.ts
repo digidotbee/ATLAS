@@ -1,0 +1,108 @@
+import { describe, expect, it } from 'vitest';
+import { addDays, candidateCost, nightsBetween, summarize, tripShape } from './budget';
+import { blankCandidate, createTrip } from './factory';
+import { matchedInterests } from './research';
+import type { Candidate, Trip } from './types';
+
+function trip(overrides: Partial<Trip> = {}): Trip {
+  const t = createTrip({
+    name: 'Costa Rica',
+    destination: 'Guanacaste, Costa Rica',
+    region: 'Central America',
+    currency: 'USD',
+    budgetTotal: 9000,
+    adults: 2,
+    children: 2,
+    childAges: '',
+    flexibility: '',
+    dateOptions: [
+      {
+        label: 'Spring break',
+        start: '2027-03-13',
+        end: '2027-03-21',
+        flightPerPerson: 500,
+        flightStatus: 'estimated',
+        notes: '',
+      },
+    ],
+  });
+  return { ...t, ...overrides };
+}
+
+function cand(p: Partial<Candidate>): Candidate {
+  return { ...blankCandidate(p.category ?? 'other'), ...p };
+}
+
+describe('dates', () => {
+  it('counts nights', () => {
+    expect(nightsBetween('2027-03-13', '2027-03-21')).toBe(8);
+    expect(nightsBetween('2027-03-21', '2027-03-13')).toBeNull();
+    expect(nightsBetween('', '2027-03-13')).toBeNull();
+  });
+  it('adds days across months', () => {
+    expect(addDays('2027-02-27', 3)).toBe('2027-03-02');
+  });
+});
+
+describe('budget', () => {
+  it('matches the Costa Rica example: $9,000 less $2,000 airfare', () => {
+    const t = trip({ contingencyPct: 0 });
+    const s = summarize(t);
+    expect(s.shape).toEqual({ people: 4, nights: 8, days: 9 });
+    expect(s.byCategory.flights).toBe(2000);
+    expect(s.remaining).toBe(7000);
+    expect(s.estimated).toBe(2000);
+  });
+
+  it('scales by basis and honours unit overrides', () => {
+    const shape = tripShape(trip());
+    expect(candidateCost(cand({ price: 200, basis: 'perNight' }), shape)).toBe(1600);
+    expect(candidateCost(cand({ price: 200, basis: 'perNight', units: 3 }), shape)).toBe(600);
+    expect(candidateCost(cand({ price: 15, basis: 'perPersonPerDay' }), shape)).toBe(540);
+    expect(candidateCost(cand({ price: 15, basis: 'perPersonPerDay', units: 2 }), shape)).toBe(120);
+    expect(candidateCost(cand({ price: 80, basis: 'perPerson' }), shape)).toBe(320);
+    expect(candidateCost(cand({ price: 700, basis: 'total' }), shape)).toBe(700);
+  });
+
+  it('only counts selected items, separates estimated vs verified, holds contingency', () => {
+    const t = trip({
+      contingencyPct: 10,
+      candidates: [
+        cand({ category: 'lodging', price: 250, basis: 'perNight', status: 'selected', priceStatus: 'verified' }),
+        cand({ category: 'activities', price: 60, basis: 'perPerson', status: 'considering' }),
+        cand({ category: 'activities', price: 999, basis: 'total', status: 'rejected' }),
+      ],
+    });
+    const s = summarize(t);
+    expect(s.verified).toBe(2000);
+    expect(s.estimated).toBe(2000); // date-option airfare
+    expect(s.committed).toBe(4000);
+    expect(s.contingency).toBe(900);
+    expect(s.remaining).toBe(4100);
+    expect(s.consideringTotal).toBe(240);
+  });
+
+  it('a selected flight candidate replaces the date-option airfare estimate', () => {
+    const t = trip({
+      candidates: [cand({ category: 'flights', price: 560, basis: 'perPerson', status: 'selected', priceStatus: 'verified' })],
+    });
+    const s = summarize(t);
+    expect(s.byCategory.flights).toBe(2240);
+    expect(s.lines.filter((l) => l.category === 'flights')).toHaveLength(1);
+  });
+
+  it('warns when no dates are chosen', () => {
+    const t = trip({ chosenDateId: null });
+    const s = summarize(t);
+    expect(s.shape.nights).toBe(0);
+    expect(s.warnings[0]).toMatch(/Choose travel dates/);
+  });
+});
+
+describe('interest matching', () => {
+  it('matches tags and names, not loose words in notes', () => {
+    const c = cand({ name: 'Groceries + sodas', notes: 'Eat at local sodas', tags: ['Authentic food'] });
+    expect(matchedInterests(c, ['Authentic food', 'Quiet / local life', 'Local markets'])).toEqual(['Authentic food']);
+    expect(matchedInterests(cand({ name: 'Surf school', tags: ['Surfing'] }), ['Surfing', 'Beaches'])).toEqual(['Surfing']);
+  });
+});
