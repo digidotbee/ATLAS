@@ -38,7 +38,7 @@ export function buildResearchPrompt(trip: Trip, profile: FamilyProfile, focus: C
 
   const existing = trip.candidates
     .filter((c) => c.status !== 'rejected')
-    .map((c) => `- [${c.category}] ${c.name}`)
+    .map((c) => `- [${c.category}] ${c.name}${c.base ? ` (base: ${c.base})` : ''}`)
     .join('\n');
   const rejected = trip.candidates
     .filter((c) => c.status === 'rejected')
@@ -60,6 +60,12 @@ ${profile.notes ? `\n${profile.notes}\n` : ''}${answers ? `\nTHIS TRIP\n${answer
 TASK
 Suggest 6–12 options for ${focusText}. Prefer places with genuine local life over commercialized tourist districts, and independent places with character. Be honest about prices: only mark a price "verified" if you are quoting a current published rate; otherwise "estimated".
 
+RULES
+- Organize the plan around bases (the towns/areas where we sleep). Set "base" on every option to the base it is done from, using the same base names throughout. Day trips belong to the base you would travel from.
+- Give each lodging option "units" = the number of nights you suggest staying there, so the nights add up to the trip length.
+- If we have more than one base, include the transport between bases and to/from the airport as options.
+- Use plain names only (no "alternative to…" in the name) — put comparisons and caveats in "notes".
+
 Reply with ONLY this JSON (no commentary), in ${trip.currency}:
 {
   "candidates": [
@@ -71,11 +77,14 @@ Reply with ONLY this JSON (no commentary), in ${trip.currency}:
       "price": 0,
       "basis": "total | perPerson | perNight | perDay | perPersonPerDay",
       "priceStatus": "estimated | verified",
+      "base": "town/area this belongs to",
+      "units": null,
       "tags": ["e.g. UNESCO", "Surfing", "Walkable"],
       "notes": "why it fits our family, best time, booking tips, caveats"
     }
   ]
-}`;
+}
+("units": nights for lodging; otherwise null, or a count that overrides the automatic one, e.g. 2 people for a lesson only the kids take.)`;
 }
 
 export interface ImportResult {
@@ -138,6 +147,11 @@ export function parseImportedCandidates(text: string): ImportResult {
     if (typeof o.basis !== 'string' || !BASIS_IDS.has(o.basis)) {
       errors.push(`${label}: "basis" must be one of ${[...BASIS_IDS].join(', ')}.`);
     }
+    const units = o.units === undefined || o.units === null || o.units === '' ? null : Number(o.units);
+    if (units !== null && (!Number.isFinite(units) || units < 0)) {
+      errors.push(`${label}: "units" must be a non-negative number or null.`);
+    }
+    if (o.base !== undefined && typeof o.base !== 'string') errors.push(`${label}: "base" must be text.`);
     if (o.priceStatus !== 'estimated' && o.priceStatus !== 'verified') {
       errors.push(`${label}: "priceStatus" must be "estimated" or "verified".`);
     }
@@ -152,6 +166,8 @@ export function parseImportedCandidates(text: string): ImportResult {
       price,
       basis: o.basis as PriceBasis,
       priceStatus: o.priceStatus as PriceStatus,
+      units,
+      base: typeof o.base === 'string' ? o.base.trim() : '',
       tags: Array.isArray(o.tags) ? o.tags.filter((t): t is string => typeof t === 'string') : [],
     });
   });

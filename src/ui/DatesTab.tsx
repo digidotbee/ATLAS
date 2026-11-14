@@ -22,7 +22,8 @@ export function DatesTab({ trip, update }: TabProps) {
       <div className="intro">
         <h2>Compare dates</h2>
         <p className="muted">
-          Add each possible window with an airfare estimate. ATLAS recalculates nightly and daily costs for every option using what you've
+          Add each possible window — the day you arrive at your destination to the day you leave (overnight flights often land the next
+          day) — with an airfare estimate. ATLAS recalculates nightly and daily costs for every option using what you've
           chosen so far. {trip.flexibility && <em>Flexibility: {trip.flexibility}</em>}
         </p>
       </div>
@@ -84,10 +85,10 @@ export function DatesTab({ trip, update }: TabProps) {
               <Field label="Label">
                 <input value={d.label} onChange={(e) => setDate(d.id, { label: e.target.value })} />
               </Field>
-              <Field label="From">
+              <Field label="Arrive">
                 <input type="date" value={d.start} onChange={(e) => setDate(d.id, { start: e.target.value })} />
               </Field>
-              <Field label="To" hint={n === null ? (d.start || d.end ? 'End must be on or after start' : undefined) : `${n} nights`}>
+              <Field label="Leave" hint={n === null ? (d.start || d.end ? 'End must be on or after start' : undefined) : `${n} nights`}>
                 <input type="date" value={d.end} min={d.start} onChange={(e) => setDate(d.id, { end: e.target.value })} />
               </Field>
             </div>

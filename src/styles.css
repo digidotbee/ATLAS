@@ -1154,3 +1154,19 @@ button.badge {
     gap: 0;
   }
 }
+
+.chips-label {
+  align-self: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+  margin-right: 0.2rem;
+}
+.chip-base.on {
+  background: var(--terra);
+  border-color: var(--terra);
+}
+.base-label {
+  color: var(--terra);
+  font-weight: 600;
+}

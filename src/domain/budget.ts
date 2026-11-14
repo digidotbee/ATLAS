@@ -129,6 +129,14 @@ export function summarize(trip: Trip, date: DateOption | null = chosenDate(trip)
   if (!date) warnings.push('Choose travel dates so nightly and daily costs can be calculated.');
   else if (shape.nights === 0) warnings.push('The chosen dates have no nights — check start and end.');
   if (shape.people === 0) warnings.push('Add at least one traveler.');
+  if (selected.length > 0 && !selected.some((c) => c.category === 'transport')) {
+    const bases = new Set(selected.filter((c) => c.category === 'lodging').map((c) => c.id));
+    warnings.push(
+      bases.size > 1
+        ? 'No transport chosen: travel between your places to stay and to/from the airport is not in the budget yet.'
+        : 'No transport chosen: airport transfers and getting around are not in the budget yet.',
+    );
+  }
 
   const byCategory = emptyByCategory();
   let estimated = 0;

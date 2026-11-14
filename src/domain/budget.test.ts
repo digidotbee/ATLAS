@@ -91,6 +91,13 @@ describe('budget', () => {
     expect(s.lines.filter((l) => l.category === 'flights')).toHaveLength(1);
   });
 
+  it('warns when choices exist but no transport is chosen', () => {
+    const t = trip({ candidates: [cand({ category: 'lodging', price: 100, basis: 'perNight', status: 'selected' })] });
+    expect(summarize(t).warnings.some((w) => /No transport chosen/.test(w))).toBe(true);
+    const t2 = trip({ candidates: [...t.candidates, cand({ category: 'transport', price: 50, status: 'selected' })] });
+    expect(summarize(t2).warnings.some((w) => /No transport chosen/.test(w))).toBe(false);
+  });
+
   it('warns when no dates are chosen', () => {
     const t = trip({ chosenDateId: null });
     const s = summarize(t);

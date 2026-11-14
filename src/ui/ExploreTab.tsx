@@ -16,6 +16,8 @@ export function ExploreTab({ trip, update }: TabProps) {
   const [view, setView] = useState<View>('active');
   const [editing, setEditing] = useState<Candidate | null>(null);
   const [showResearch, setShowResearch] = useState(false);
+  const [base, setBase] = useState<string>('all');
+  const bases = [...new Set(trip.candidates.map((c) => c.base?.trim() ?? '').filter(Boolean))].sort();
   const shape = tripShape(trip);
 
   const save = (c: Candidate) =>
@@ -27,7 +29,9 @@ export function ExploreTab({ trip, update }: TabProps) {
     update((t) => ({ ...t, candidates: t.candidates.map((x) => (x.id === id ? { ...x, ...p } : x)) }));
   const remove = (id: string) => update((t) => ({ ...t, candidates: t.candidates.filter((x) => x.id !== id) }));
 
-  const inCat = trip.candidates.filter((c) => cat === 'all' || c.category === cat);
+  const inCat = trip.candidates.filter(
+    (c) => (cat === 'all' || c.category === cat) && (base === 'all' || (c.base?.trim() ?? '') === base),
+  );
   const shown = inCat
     .filter((c) => (view === 'active' ? c.status !== 'rejected' : c.status === view))
     .sort((a, b) => statusRank(a.status) - statusRank(b.status) || a.category.localeCompare(b.category) || candidateCost(a, shape) - candidateCost(b, shape));
@@ -52,6 +56,17 @@ export function ExploreTab({ trip, update }: TabProps) {
           </button>
         ))}
       </div>
+
+      {bases.length > 0 && (
+        <div className="chips" role="group" aria-label="Base">
+          <span className="chips-label">Base:</span>
+          {['all', ...bases].map((b) => (
+            <button type="button" key={b} className={`chip chip-base ${base === b ? 'on' : ''}`} onClick={() => setBase(b)}>
+              {b === 'all' ? 'All bases' : `⌖ ${b}`}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="toolbar">
         <div className="segmented" role="group" aria-label="Show">
@@ -87,6 +102,7 @@ export function ExploreTab({ trip, update }: TabProps) {
           key={editing.id}
           candidate={editing}
           currency={trip.currency}
+          knownBases={bases}
           onCancel={() => setEditing(null)}
           onSave={(c) => {
             save(c);
@@ -169,7 +185,13 @@ function CandidateCard(props: {
               c.name
             )}
           </h3>
-          {c.location && <p className="muted small">{c.location}</p>}
+          {(c.location || c.base) && (
+            <p className="muted small">
+              {c.base && <span className="base-label">⌖ {c.base}</span>}
+              {c.base && c.location && ' · '}
+              {c.location}
+            </p>
+          )}
         </div>
         <div className="cand-price">
           <Money amount={cost} currency={currency} />
@@ -219,7 +241,19 @@ function CandidateCard(props: {
   );
 }
 
-function CandidateEditor({ candidate, currency, onSave, onCancel }: { candidate: Candidate; currency: string; onSave: (c: Candidate) => void; onCancel: () => void }) {
+function CandidateEditor({
+  candidate,
+  currency,
+  knownBases,
+  onSave,
+  onCancel,
+}: {
+  candidate: Candidate;
+  currency: string;
+  knownBases: string[];
+  onSave: (c: Candidate) => void;
+  onCancel: () => void;
+}) {
   const [c, setC] = useState(candidate);
   const [tags, setTags] = useState(candidate.tags.join(', '));
   const [error, setError] = useState('');
@@ -231,7 +265,7 @@ function CandidateEditor({ candidate, currency, onSave, onCancel }: { candidate:
         e.preventDefault();
         if (!c.name.trim()) return setError('Give it a name.');
         if (!(c.price >= 0)) return setError('Price must be zero or more.');
-        onSave({ ...c, name: c.name.trim(), tags: tags.split(',').map((t) => t.trim()).filter(Boolean) });
+        onSave({ ...c, name: c.name.trim(), base: (c.base ?? '').trim(), tags: tags.split(',').map((t) => t.trim()).filter(Boolean) });
       }}
     >
       <h3>{candidate.name ? 'Edit option' : 'Add an option'}</h3>
@@ -249,9 +283,17 @@ function CandidateEditor({ candidate, currency, onSave, onCancel }: { candidate:
           </select>
         </Field>
       </div>
-      <div className="grid-2">
+      <datalist id="atlas-bases">
+        {knownBases.map((b) => (
+          <option key={b} value={b} />
+        ))}
+      </datalist>
+      <div className="grid-3">
         <Field label="Where">
           <input value={c.location} onChange={(e) => set({ location: e.target.value })} placeholder="Neighborhood / town" />
+        </Field>
+        <Field label="Base" hint="The town you stay in for this — keeps day trips with the right place to stay">
+          <input value={c.base ?? ''} onChange={(e) => set({ base: e.target.value })} placeholder="e.g. Kyoto" list="atlas-bases" />
         </Field>
         <Field label="Link">
           <input type="url" value={c.url} onChange={(e) => set({ url: e.target.value })} placeholder="https://" />
@@ -270,7 +312,10 @@ function CandidateEditor({ candidate, currency, onSave, onCancel }: { candidate:
             ))}
           </select>
         </Field>
-        <Field label="How many" hint={c.basis === 'total' ? 'Not needed for a total price' : 'Blank = whole trip / everyone'}>
+        <Field
+          label={c.category === 'lodging' ? 'Nights here' : 'How many'}
+          hint={c.basis === 'total' ? 'Not needed for a total price' : c.category === 'lodging' ? 'Blank = the whole trip' : 'Blank = whole trip / everyone'}
+        >
           <NumberInput value={c.units} onChange={(v) => set({ units: v })} placeholder="auto" aria-label="Units" />
         </Field>
         <Field label="Price is">

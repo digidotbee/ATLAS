@@ -112,16 +112,19 @@ export function NewTrip() {
           <legend>
             <span className="step">4</span> Flexible dates
           </legend>
-          <p className="muted small">Add one or more possible date ranges. You'll compare their costs later.</p>
+          <p className="muted small">
+            Add one or more possible date ranges — the day you <strong>arrive</strong> at your destination and the day you <strong>leave</strong>.
+            Overnight flights often land the next day (Las Vegas → Japan arrives a day later), so you don't pay for a night spent in the air.
+          </p>
           {dates.map((d, i) => (
             <div key={d.id} className="date-row">
               <Field label={`Option ${String.fromCharCode(65 + i)} label`}>
                 <input value={d.label} onChange={(e) => setDate(d.id, { label: e.target.value })} placeholder="e.g. Spring break" />
               </Field>
-              <Field label="From">
+              <Field label="Arrive">
                 <input type="date" value={d.start} onChange={(e) => setDate(d.id, { start: e.target.value })} />
               </Field>
-              <Field label="To">
+              <Field label="Leave">
                 <input type="date" value={d.end} min={d.start} onChange={(e) => setDate(d.id, { end: e.target.value })} />
               </Field>
               {dates.length > 1 && (

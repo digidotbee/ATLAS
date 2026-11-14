@@ -41,3 +41,19 @@ describe('itinerary', () => {
     expect(buildItinerary({ ...base, chosenDateId: null })).toBeNull();
   });
 });
+
+describe('bases', () => {
+  it('flags a day trip planned from a different base than where you sleep', () => {
+    const it = buildItinerary({
+      ...base,
+      candidates: [
+        c({ category: 'lodging', name: 'Kanazawa machiya', base: 'Kanazawa', day: 0, units: 2 }),
+        c({ category: 'lodging', name: 'Kamakura house', base: 'Kamakura', day: 2, units: 2 }),
+        c({ name: 'Nara day trip', base: 'Kyoto', day: 1 }),
+        c({ name: 'Surf lesson', base: 'kamakura', day: 3 }),
+        c({ name: 'Old item with no base', day: 0 }),
+      ],
+    })!;
+    expect(it.baseMismatches.map((m) => [m.day, m.item.name, m.stayBase])).toEqual([[1, 'Nara day trip', 'Kanazawa']]);
+  });
+});

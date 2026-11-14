@@ -46,6 +46,11 @@ export interface Candidate {
   priceStatus: PriceStatus;
   status: CandidateStatus;
   tags: string[];
+  /**
+   * Which base (town / area you stay in) this belongs to, e.g. "Kyoto".
+   * Optional: data saved before v1.1 has no base.
+   */
+  base?: string;
   /** 0-based itinerary day. For lodging this is the check-in day. */
   day: number | null;
   createdAt: string;

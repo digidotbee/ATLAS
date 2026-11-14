@@ -80,3 +80,15 @@ describe('research import', () => {
     expect(r.errors).toHaveLength(4);
   });
 });
+
+describe('research import v1.1', () => {
+  it('reads base and nights (units)', () => {
+    const r = parseImportedCandidates('{"candidates":[{"category":"lodging","name":"Machiya","base":" Kyoto ","units":5,"price":190,"basis":"perNight","priceStatus":"estimated"},{"category":"activities","name":"Surf","base":"Kamakura","units":null,"price":55,"basis":"perPerson","priceStatus":"estimated"}]}');
+    expect(r.errors).toEqual([]);
+    expect(r.candidates.map((x) => [x.base, x.units])).toEqual([['Kyoto', 5], ['Kamakura', null]]);
+  });
+  it('rejects bad units', () => {
+    const r = parseImportedCandidates('{"candidates":[{"category":"lodging","name":"X","units":"lots","price":1,"basis":"perNight","priceStatus":"estimated"}]}');
+    expect(r.errors[0]).toMatch(/units/);
+  });
+});

@@ -51,6 +51,12 @@ export function ItineraryTab({ trip, update }: TabProps) {
           {selectedLodging.length > 1 && ' Set each lodging’s check-in day and number of nights (Edit → “How many”).'}
         </Banner>
       )}
+      {it.baseMismatches.map((m) => (
+        <Banner key={`${m.day}-${m.item.id}`} tone="warn">
+          Day {m.day + 1}: “{m.item.name}” is planned from {m.itemBase}, but you're staying in {m.stayBase} that night. Move it to a day
+          when you're in {m.itemBase}, or set it aside.
+        </Banner>
+      ))}
       {it.doubleBooked.length > 0 && <Banner tone="warn">Two places are booked for night {it.doubleBooked.map((n) => n + 1).join(', ')}.</Banner>}
 
       {selectedLodging.length > 1 && (
@@ -59,7 +65,9 @@ export function ItineraryTab({ trip, update }: TabProps) {
           {selectedLodging.map((c) => (
             <div key={c.id} className="row">
               <span>
-                ⌂ {c.name} <span className="muted small">· {c.units ?? shape.nights} nights</span>
+                ⌂ {c.name}
+                {c.base && <span className="base-label"> · ⌖ {c.base}</span>}
+                <span className="muted small"> · {c.units ?? shape.nights} nights</span>
               </span>
               {dayPicker(c)}
             </div>

@@ -18,7 +18,11 @@ export interface Itinerary {
   nightsWithoutLodging: number[];
   /** Night indexes covered by more than one lodging. */
   doubleBooked: number[];
+  /** Items planned on a day when you are staying at a different base. */
+  baseMismatches: { day: number; item: Candidate; itemBase: string; stayBase: string }[];
 }
+
+const norm = (s: string | undefined) => (s ?? '').trim().toLowerCase();
 
 /** Nights a lodging candidate covers, starting at its check-in day. */
 export function lodgingNights(c: Candidate, tripNights: number): number {
@@ -58,5 +62,17 @@ export function buildItinerary(trip: Trip): Itinerary | null {
     ...placedLodging.filter((c) => c.day === null),
     ...selected.filter((c) => c.category !== 'lodging' && c.category !== 'flights' && (c.day === null || c.day >= shape.days)),
   ];
-  return { days, unscheduled, nightsWithoutLodging, doubleBooked };
+  const baseMismatches: Itinerary['baseMismatches'] = [];
+  for (const d of days) {
+    // On departure day you set out from where you slept the night before.
+    const stay = d.lodging ?? (d.index > 0 ? days[d.index - 1].lodging : null);
+    const stayBase = stay?.base?.trim() ?? '';
+    for (const item of d.items) {
+      const itemBase = item.base?.trim() ?? '';
+      if (stayBase && itemBase && norm(stayBase) !== norm(itemBase)) {
+        baseMismatches.push({ day: d.index, item, itemBase, stayBase });
+      }
+    }
+  }
+  return { days, unscheduled, nightsWithoutLodging, doubleBooked, baseMismatches };
 }
