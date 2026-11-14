@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { emptyData } from '../domain/factory';
-import { parseImportedCandidates } from '../domain/research';
+import { parseImportedCandidates, parseImportedDates } from '../domain/research';
 import { decideSync, GIST_FILE, readAtlasGist, SyncError, writeAtlasGist } from './gist';
 import { loadLocal, saveLocal } from './local';
 
@@ -90,5 +90,23 @@ describe('research import v1.1', () => {
   it('rejects bad units', () => {
     const r = parseImportedCandidates('{"candidates":[{"category":"lodging","name":"X","units":"lots","price":1,"basis":"perNight","priceStatus":"estimated"}]}');
     expect(r.errors[0]).toMatch(/units/);
+  });
+});
+
+describe('v1.2 imports', () => {
+  it('imports travel legs alongside candidates', () => {
+    const r = parseImportedCandidates('{"candidates":[],"moves":[{"from":"Airport","to":"Kanazawa","mode":"Hokuriku Shinkansen","ridePerPerson":100,"localPerPerson":10,"mealPerPerson":12,"hours":5,"priceStatus":"estimated","notes":""}]}');
+    expect(r.errors).toEqual([]);
+    expect(r.moves['airport>kanazawa']).toMatchObject({ mode: 'Hokuriku Shinkansen', ridePerPerson: 100, hours: 5 });
+  });
+  it('imports date windows and the daily estimate', () => {
+    const r = parseImportedDates('```json\n{"dailyCostEstimate":420,"dateOptions":[{"label":"Late May","start":"2027-05-23","end":"2027-06-02","flightPerPerson":900,"flightStatus":"estimated","notes":"before rains"}]}\n```');
+    expect(r.errors).toEqual([]);
+    expect(r.dailyEstimate).toBe(420);
+    expect(r.dateOptions[0]).toMatchObject({ label: 'Late May', flightPerPerson: 900 });
+  });
+  it('rejects backwards dates', () => {
+    const r = parseImportedDates('{"dateOptions":[{"start":"2027-06-02","end":"2027-05-23"}]}');
+    expect(r.errors[0]).toMatch(/end on or after start/);
   });
 });

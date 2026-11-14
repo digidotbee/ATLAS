@@ -121,7 +121,7 @@ export function PrintView({ id }: { id: string }) {
             <h2>Getting there & around</h2>
             <ul className="sheet-list">
               {s.lines
-                .filter((l) => l.category === 'flights' && l.candidateId === null)
+                .filter((l) => l.candidateId === null && (l.category === 'flights' || l.key.startsWith('move-')))
                 .map((l) => (
                   <li key={l.key}>
                     <span>{l.label}</span>
@@ -160,6 +160,14 @@ export function PrintView({ id }: { id: string }) {
                       <b>{formatDate(day.date, { weekday: 'short', month: 'short', day: 'numeric' })}</b>
                       {day.lodging && <span> · {day.lodging.name}</span>}
                     </div>
+                    {day.legs.map((l) => (
+                      <div key={l.key} className="sheet-day-item sheet-leg">
+                        {l.kind === 'arrive' ? `Arrive → ${l.to}` : l.kind === 'depart' ? `${l.from} → airport` : `Move ${l.from} → ${l.to}`}
+                        {l.move.mode && ` by ${l.move.mode}`}
+                        {l.move.hours !== null && ` (~${l.move.hours} h)`}
+                        {l.kind === 'move' && ` · out by ${l.move.checkout}`}
+                      </div>
+                    ))}
                     {day.items.map((c) => (
                       <div key={c.id} className="sheet-day-item">
                         {c.name}
@@ -167,7 +175,7 @@ export function PrintView({ id }: { id: string }) {
                       </div>
                     ))}
                     {day.note && <div className="sheet-day-note">{day.note}</div>}
-                    {day.items.length === 0 && !day.note && (
+                    {day.items.length === 0 && day.legs.length === 0 && !day.note && (
                       <div className="sheet-day-note">{day.index === s.shape.nights ? 'Travel home' : 'Free to explore'}</div>
                     )}
                   </li>

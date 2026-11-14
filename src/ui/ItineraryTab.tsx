@@ -1,7 +1,8 @@
 import { candidateCost, tripShape } from '../domain/budget';
 import { buildItinerary } from '../domain/itinerary';
-import { CATEGORIES, type Candidate } from '../domain/types';
-import { Banner, formatDate, Money } from './common';
+import { legLabel, legTimeline, type TravelLeg } from '../domain/moves';
+import { CATEGORIES, type Candidate, type Move } from '../domain/types';
+import { Banner, Field, formatDate, Money, NumberInput, PriceBadge } from './common';
 import { href } from './router';
 import type { TabProps } from './TripView';
 
@@ -20,6 +21,8 @@ export function ItineraryTab({ trip, update }: TabProps) {
   const shape = tripShape(trip);
   const setDay = (id: string, day: number | null) =>
     update((t) => ({ ...t, candidates: t.candidates.map((c) => (c.id === id ? { ...c, day } : c)) }));
+  const setMove = (l: TravelLeg, patch: Partial<Move>) =>
+    update((t) => ({ ...t, moves: { ...(t.moves ?? {}), [l.key]: { ...l.move, ...patch } } }));
   const setNote = (i: number, v: string) => update((t) => ({ ...t, dayNotes: { ...t.dayNotes, [String(i)]: v } }));
   const dayOptions = it.days.map((d) => ({ value: d.index, label: `Day ${d.index + 1} · ${formatDate(d.date, { weekday: 'short', month: 'short', day: 'numeric' })}` }));
 
@@ -100,6 +103,9 @@ export function ItineraryTab({ trip, update }: TabProps) {
               <span className="day-date">{formatDate(d.date, { weekday: 'long', month: 'long', day: 'numeric' })}</span>
               {d.lodging ? <span className="tag">⌂ {d.lodging.name}</span> : d.index === shape.nights ? <span className="tag">Travel home</span> : null}
             </div>
+            {d.legs.map((l) => (
+              <LegPanel key={l.key} leg={l} currency={trip.currency} people={shape.people} onChange={(p) => setMove(l, p)} />
+            ))}
             {d.items.length > 0 && (
               <ul className="day-items">
                 {d.items.map((c) => (
@@ -125,6 +131,62 @@ export function ItineraryTab({ trip, update }: TabProps) {
           See the one-sheet →
         </a>
       </div>
+    </div>
+  );
+}
+
+function LegPanel({ leg, currency, people, onChange }: { leg: TravelLeg; currency: string; people: number; onChange: (p: Partial<Move>) => void }) {
+  const m = leg.move;
+  return (
+    <div className="leg">
+      <div className="leg-head">
+        <strong>⇄ {legLabel(leg)}</strong>
+        <span className="leg-cost">
+          {leg.cost === null ? <span className="warn-text small">costs not entered</span> : <Money amount={leg.cost} currency={currency} />}
+          <PriceBadge status={m.priceStatus} onToggle={() => onChange({ priceStatus: m.priceStatus === 'verified' ? 'estimated' : 'verified' })} />
+        </span>
+      </div>
+      <ol className="leg-steps">
+        {legTimeline(leg).map((step) => (
+          <li key={step}>{step}</li>
+        ))}
+      </ol>
+      <details>
+        <summary>Edit travel time & costs (per person × {people})</summary>
+        <div className="grid-4">
+          <Field label="Ride">
+            <input value={m.mode} onChange={(e) => onChange({ mode: e.target.value })} placeholder="e.g. Shinkansen" />
+          </Field>
+          <Field label="Ride fare">
+            <NumberInput value={m.ridePerPerson} onChange={(v) => onChange({ ridePerPerson: v })} aria-label="Ride fare per person" />
+          </Field>
+          <Field label="Taxi / bus / subway">
+            <NumberInput value={m.localPerPerson} onChange={(v) => onChange({ localPerPerson: v })} aria-label="Local transfer per person" />
+          </Field>
+          <Field label="Food on the way">
+            <NumberInput value={m.mealPerPerson} onChange={(v) => onChange({ mealPerPerson: v })} aria-label="Meal per person" />
+          </Field>
+        </div>
+        <div className="grid-4">
+          <Field label="Door to door (hours)" hint="Packing, station, ride, transfer">
+            <NumberInput value={m.hours} step={0.5} onChange={(v) => onChange({ hours: v })} aria-label="Hours door to door" />
+          </Field>
+          {leg.kind !== 'arrive' && (
+            <Field label="Check out by">
+              <input type="time" value={m.checkout} onChange={(e) => onChange({ checkout: e.target.value })} />
+            </Field>
+          )}
+          {leg.kind !== 'depart' && (
+            <Field label="Check in from">
+              <input type="time" value={m.checkin} onChange={(e) => onChange({ checkin: e.target.value })} />
+            </Field>
+          )}
+          <Field label="Notes">
+            <input value={m.notes} onChange={(e) => onChange({ notes: e.target.value })} placeholder="Seat reservations, luggage…" />
+          </Field>
+        </div>
+      </details>
+      {m.notes && <p className="small muted">{m.notes}</p>}
     </div>
   );
 }

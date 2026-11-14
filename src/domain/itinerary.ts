@@ -1,4 +1,7 @@
 import { addDays, chosenDate, tripShape } from './budget';
+import { lodgingNights, placedLodging as placeStays, travelLegs, type TravelLeg } from './moves';
+
+export { lodgingNights };
 import type { Candidate, Trip } from './types';
 
 export interface ItineraryDay {
@@ -7,6 +10,8 @@ export interface ItineraryDay {
   /** Where you sleep that night (null on departure day or if unplanned). */
   lodging: Candidate | null;
   items: Candidate[];
+  /** Arrival, move between places, or departure happening this day. */
+  legs: TravelLeg[];
   note: string;
 }
 
@@ -20,15 +25,11 @@ export interface Itinerary {
   doubleBooked: number[];
   /** Items planned on a day when you are staying at a different base. */
   baseMismatches: { day: number; item: Candidate; itemBase: string; stayBase: string }[];
+  legs: TravelLeg[];
 }
 
 const norm = (s: string | undefined) => (s ?? '').trim().toLowerCase();
 
-/** Nights a lodging candidate covers, starting at its check-in day. */
-export function lodgingNights(c: Candidate, tripNights: number): number {
-  if (c.units !== null) return c.units;
-  return tripNights;
-}
 
 export function buildItinerary(trip: Trip): Itinerary | null {
   const date = chosenDate(trip);
@@ -36,8 +37,8 @@ export function buildItinerary(trip: Trip): Itinerary | null {
   if (!date || shape.days === 0) return null;
 
   const selected = trip.candidates.filter((c) => c.status === 'selected');
-  const lodging = selected.filter((c) => c.category === 'lodging');
-  const placedLodging = lodging.map((c) => (c.day === null && lodging.length === 1 ? { ...c, day: 0 } : c));
+  const placedLodging = placeStays(trip);
+  const legs = travelLegs(trip, shape.nights, shape.people);
 
   const days: ItineraryDay[] = [];
   const nightsWithoutLodging: number[] = [];
@@ -54,6 +55,7 @@ export function buildItinerary(trip: Trip): Itinerary | null {
       date: addDays(date.start, i),
       lodging: tonight[0] ?? null,
       items: selected.filter((c) => c.category !== 'lodging' && c.day === i),
+      legs: legs.filter((l) => l.day === i),
       note: trip.dayNotes[String(i)] ?? '',
     });
   }
@@ -74,5 +76,5 @@ export function buildItinerary(trip: Trip): Itinerary | null {
       }
     }
   }
-  return { days, unscheduled, nightsWithoutLodging, doubleBooked, baseMismatches };
+  return { days, unscheduled, nightsWithoutLodging, doubleBooked, baseMismatches, legs };
 }

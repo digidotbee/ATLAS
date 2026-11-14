@@ -67,6 +67,28 @@ export interface DateOption {
   notes: string;
 }
 
+/**
+ * Cost and timing of a travel leg: arriving from the airport, moving between bases, or leaving.
+ * Stored per route (e.g. "kanazawa>kamakura"); all money is per person.
+ */
+export interface Move {
+  /** Main ride, e.g. Shinkansen or airport express. */
+  mode: string;
+  ridePerPerson: number | null;
+  /** Getting to/from stations: taxi, bus, subway. */
+  localPerPerson: number | null;
+  /** Food on a travel day (e.g. a station bento). */
+  mealPerPerson: number | null;
+  /** Door to door, including packing up, station time and the ride. */
+  hours: number | null;
+  /** Check-out time at the old place (HH:MM). */
+  checkout: string;
+  /** Earliest check-in at the new place (HH:MM). */
+  checkin: string;
+  priceStatus: PriceStatus;
+  notes: string;
+}
+
 export interface Travelers {
   adults: number;
   children: number;
@@ -87,6 +109,13 @@ export interface Trip {
   flexibility: string;
   dateOptions: DateOption[];
   chosenDateId: string | null;
+  /** Open travel window: earliest arrival and latest departure (YYYY-MM-DD). Optional (added in v1.2). */
+  windowStart?: string;
+  windowEnd?: string;
+  /** Typical whole-group spend per day, excluding flights; used before lodging is chosen. */
+  dailyEstimate?: number | null;
+  /** Travel legs keyed by route, see moves.ts. Optional (added in v1.2). */
+  moves?: Record<string, Move>;
   /** Follow-up question answers keyed by question id. */
   answers: Record<string, string>;
   candidates: Candidate[];

@@ -1,3 +1,4 @@
+import { legLabel, travelLegs } from './moves';
 import type { Candidate, Category, DateOption, PriceStatus, Trip } from './types';
 
 const DAY_MS = 86_400_000;
@@ -126,10 +127,20 @@ export function summarize(trip: Trip, date: DateOption | null = chosenDate(trip)
     });
   }
 
+  const legs = travelLegs(trip, shape.nights, shape.people);
+  for (const l of legs) {
+    if (l.cost === null) continue;
+    lines.push({ key: `move-${l.key}`, category: 'transport', label: legLabel(l), amount: l.cost, status: l.move.priceStatus, candidateId: null });
+  }
+  const unpriced = legs.filter((l) => l.cost === null);
+  if (unpriced.length > 0) {
+    warnings.push(`Travel-day costs not entered yet: ${unpriced.map(legLabel).join('; ')}. Add them on the Itinerary.`);
+  }
+
   if (!date) warnings.push('Choose travel dates so nightly and daily costs can be calculated.');
   else if (shape.nights === 0) warnings.push('The chosen dates have no nights — check start and end.');
   if (shape.people === 0) warnings.push('Add at least one traveler.');
-  if (selected.length > 0 && !selected.some((c) => c.category === 'transport')) {
+  if (legs.length === 0 && selected.length > 0 && !selected.some((c) => c.category === 'transport')) {
     const bases = new Set(selected.filter((c) => c.category === 'lodging').map((c) => c.id));
     warnings.push(
       bases.size > 1
@@ -186,4 +197,57 @@ export function formatMoney(amount: number, currency: string): string {
     // Unknown currency code typed by the user: show the code explicitly rather than guessing a symbol.
     return `${currency} ${Math.round(amount).toLocaleString()}`;
   }
+}
+
+export interface Affordability {
+  /** Longest stay the budget covers, in nights (0 when even flights don't fit). */
+  nights: number;
+  /** Whole-group cost of one extra night (lodging + daily spending). */
+  perNight: number;
+  /** Costs that don't grow with trip length: airfare, one-off items, travel days. */
+  fixed: number;
+  source: 'choices' | 'estimate';
+}
+
+/**
+ * How many nights the budget allows, given an airfare per person.
+ * Uses chosen items when a place to stay has been chosen; otherwise the trip's daily estimate.
+ * Returns null when there is nothing to base a daily cost on yet.
+ */
+export function affordableNights(trip: Trip, flightPerPerson: number | null): Affordability | null {
+  const people = travelerCount(trip);
+  const selected = trip.candidates.filter((c) => c.status === 'selected');
+  const flightItems = selected.filter((c) => c.category === 'flights');
+  const airfare = flightItems.length
+    ? flightItems.reduce((s, c) => s + candidateCost(c, { people, nights: 0, days: 0 }), 0)
+    : (flightPerPerson ?? 0) * people;
+  const available = trip.budgetTotal * (1 - trip.contingencyPct / 100);
+
+  const lodging = selected.filter((c) => c.category === 'lodging' && c.basis === 'perNight');
+  let perNight: number;
+  let fixed = airfare;
+  let source: Affordability['source'];
+  if (lodging.length > 0) {
+    source = 'choices';
+    // You sleep in one place at a time: use the average nightly rate of the chosen places.
+    const lodgingRate = lodging.reduce((s, c) => s + c.price, 0) / lodging.length;
+    let daily = 0;
+    for (const c of selected) {
+      if (c.category === 'flights' || lodging.includes(c)) continue;
+      const scalesWithLength = c.units === null && (c.basis === 'perNight' || c.basis === 'perDay' || c.basis === 'perPersonPerDay');
+      if (scalesWithLength) daily += candidateCost(c, { people, nights: 1, days: 1 });
+      else fixed += candidateCost(c, { people, nights: 1, days: 1 });
+    }
+    perNight = lodgingRate + daily;
+    fixed += daily; // one more day than nights
+    const legs = travelLegs(trip, Math.max(1, tripShape(trip).nights), people);
+    fixed += legs.reduce((s, l) => s + (l.cost ?? 0), 0);
+  } else if (trip.dailyEstimate && trip.dailyEstimate > 0) {
+    source = 'estimate';
+    perNight = trip.dailyEstimate;
+  } else {
+    return null;
+  }
+  const nights = perNight > 0 ? Math.max(0, Math.floor((available - fixed) / perNight)) : 0;
+  return { nights, perNight: round2(perNight), fixed: round2(fixed), source };
 }

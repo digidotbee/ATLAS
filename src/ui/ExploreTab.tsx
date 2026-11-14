@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { candidateCost, multiplier, tripShape } from '../domain/budget';
 import { blankCandidate } from '../domain/factory';
 import { buildResearchPrompt, matchedInterests, parseImportedCandidates } from '../domain/research';
-import { CATEGORIES, PRICE_BASES, type Candidate, type CandidateStatus, type Category } from '../domain/types';
+import { CATEGORIES, PRICE_BASES, type Candidate, type CandidateStatus, type Category, type Move } from '../domain/types';
 import { useStore } from '../state/store';
 import { Banner, Field, Money, NumberInput, PriceBadge } from './common';
 import { href } from './router';
@@ -90,8 +90,8 @@ export function ExploreTab({ trip, update }: TabProps) {
         <ResearchHelper
           prompt={(focus) => buildResearchPrompt(trip, data.profile, focus)}
           initialFocus={cat}
-          onImport={(cs) => {
-            update((t) => ({ ...t, candidates: [...cs, ...t.candidates] }));
+          onImport={(cs, moves) => {
+            update((t) => ({ ...t, candidates: [...cs, ...t.candidates], moves: { ...(t.moves ?? {}), ...moves } }));
             setView('active');
           }}
         />
@@ -344,7 +344,7 @@ function CandidateEditor({
   );
 }
 
-function ResearchHelper({ prompt, initialFocus, onImport }: { prompt: (f: Category | 'all') => string; initialFocus: Category | 'all'; onImport: (cs: Candidate[]) => void }) {
+function ResearchHelper({ prompt, initialFocus, onImport }: { prompt: (f: Category | 'all') => string; initialFocus: Category | 'all'; onImport: (cs: Candidate[], moves: Record<string, Move>) => void }) {
   const [focus, setFocus] = useState<Category | 'all'>(initialFocus);
   const [pasted, setPasted] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
@@ -396,9 +396,12 @@ function ResearchHelper({ prompt, initialFocus, onImport }: { prompt: (f: Catego
             onClick={() => {
               const r = parseImportedCandidates(pasted);
               setErrors(r.errors);
-              if (r.candidates.length) {
-                onImport(r.candidates);
-                setDone(`Imported ${r.candidates.length} options into your shortlist.`);
+              const moveCount = Object.keys(r.moves).length;
+              if (r.errors.length === 0) {
+                onImport(r.candidates, r.moves);
+                setDone(
+                  `Imported ${r.candidates.length} options into your shortlist${moveCount ? ` and ${moveCount} travel legs (see Itinerary)` : ''}.`,
+                );
                 setPasted('');
               } else setDone('');
             }}
