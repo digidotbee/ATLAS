@@ -737,70 +737,38 @@ details > summary,
   }
 }
 
-/* ---------- Home: hero (from the mobile mockup) ---------- */
+/* ---------- Home: hero ---------- */
 .home {
-  max-width: 1280px; /* align with header and footer */
+  max-width: 1280px;
 }
 .hero-card {
-  position: relative;
-  overflow: hidden;
   border-radius: var(--radius-md);
-  min-height: 143px; /* slim band */
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  padding: clamp(28px, 5vw, 48px) clamp(24px, 4vw, 40px);
   display: flex;
-  align-items: flex-end;
-  isolation: isolate;
-  box-shadow: none;
-}
-.scene {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-}
-.hero-copy {
-  width: 100%;
-  padding: 20px clamp(24px, 4vw, 40px);
-  display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: var(--space-6);
 }
-/* display-xl 56/60 · 600 — over photography, so fixed light ink */
 .hero-title {
-  font: 600 40px/44px var(--serif);
-  color: var(--ink-light);
+  font: 600 clamp(28px, 4vw, 40px) / 1.1 var(--serif);
+  color: var(--ink);
   margin: 0;
-  max-width: 11ch;
-  text-shadow: 0 -1px 1px rgba(13, 16, 21, 0.65), 0 2px 18px rgba(0, 0, 0, 0.55);
 }
 .hero-title .accent {
-  display: block;
+  display: inline;
   color: var(--sunlit);
-  text-shadow: 0 -1px 1px rgba(13, 16, 21, 0.65), 0.5px 0.5px 0 var(--flare), 1px 1px 0 var(--thistle), 0 2px 18px rgba(0, 0, 0, 0.55);
 }
 .hero-card .btn-primary {
+  flex-shrink: 0;
   background: var(--sunlit);
   color: #272c35;
 }
-
-/* Hero photograph (family's own sunset, chartreuse-graded) */
-.hero-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 60%;
-  display: block;
-}
-.hero-shade {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(90deg, rgb(22 26 38 / 38%) 0%, rgb(22 26 38 / 8%) 36%, transparent 55%);
-}
-@media (max-width: 640px) {
-  .hero-photo img {
-    object-position: 50% 55%;
+@media (max-width: 480px) {
+  .hero-card {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
@@ -1053,13 +1021,10 @@ details > summary,
     font-size: 36px;
   }
   .hero-card {
-    min-height: 158px; /* slim band */
-  }
-  .hero-copy {
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
-    padding: 16px 18px;
+    padding: 24px 18px;
+    gap: 16px;
   }
   .hero-title {
     font-size: 26px;
@@ -1726,88 +1691,3 @@ ol.how > li > * + * {
   margin-top: 4px;
 }
 
-/* ---------- Hero: split panel (solid Storm text side + photo side) ----------
-   Text always sits on solid dark slate, so it stays crisp in both modes;
-   the photo shows the sunburst and fades into the panel. */
-.hero-card {
-  background: #1d222f; /* Storm surface-100 in both modes */
-  box-shadow: none;
-  border: 0;
-}
-.hero-photo {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: auto;
-  width: 64%;
-  height: 100%;
-  z-index: -1;
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 32%);
-  mask-image: linear-gradient(to right, transparent 0%, #000 32%);
-}
-.hero-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 62%;
-}
-.hero-shade {
-  display: none;
-}
-.hero-copy {
-  align-items: center;
-}
-.hero-title {
-  font: 600 34px/40px var(--serif);
-  color: #f7faee;
-  text-shadow: none;
-  max-width: none;
-}
-.hero-title .accent {
-  display: inline;
-  color: #e0f500;
-  text-shadow: none;
-}
-.hero-card .btn-primary {
-  background: #e0f500;
-  color: #272c35;
-  border: 0;
-  box-shadow: none;
-}
-.hero-card .btn-primary:hover {
-  background: #ecff4d;
-}
-@media (max-width: 640px) {
-  .hero-photo {
-    width: 58%;
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 40%);
-    mask-image: linear-gradient(to right, transparent 0%, #000 40%);
-  }
-  .hero-photo img {
-    object-position: 50% 50%;
-  }
-  .hero-copy {
-    align-items: flex-start;
-    justify-content: center;
-  }
-  .hero-title {
-    font-size: 24px;
-    line-height: 28px;
-  }
-  .hero-title .accent {
-    display: block;
-  }
-}
-.hero-card {
-  background: #161a26; /* Storm surface-200: always distinct from the page */
-}
-@media (min-width: 641px) {
-  .hero-copy {
-    justify-content: flex-start;
-    gap: 28px;
-  }
-  .hero-photo {
-    width: 58%;
-  }
-}

@@ -151,23 +151,9 @@ export function TripList() {
   const { data } = useStore();
   const { upcoming, planning } = split(data.trips);
   const [next, ...laterTrips] = upcoming;
-  const base = import.meta.env.BASE_URL;
   return (
     <div className="page home">
       <section className="hero-card">
-        <picture className="scene hero-photo">
-          <source media="(max-width: 640px)" type="image/webp" srcSet={`${base}hero/hero-tall.webp`} />
-          <source media="(max-width: 640px)" srcSet={`${base}hero/hero-tall.jpg`} />
-          <source type="image/webp" srcSet={`${base}hero/hero-wide.webp`} />
-          <img
-            src={`${base}hero/hero-wide.jpg`}
-            alt="Desert sunset with chartreuse light breaking through storm clouds over the mountains"
-            width={1600}
-            height={480}
-            fetchPriority="high"
-            decoding="async"
-          />
-        </picture>
         <div className="hero-copy">
           <h1 className="hero-title">
             The world <span className="accent">awaits.</span>
