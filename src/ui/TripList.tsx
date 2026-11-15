@@ -39,8 +39,11 @@ function TripCard({ t, detailed }: { t: Trip; detailed?: boolean }) {
         {t.region && <span className="trip-card-region">{t.region}</span>}
         <h3>{t.name}</h3>
         <p className="scene-when">
-          <CalendarIcon /> {whenText(t)}
-          {n !== null && <span> · {n} nights</span>}
+          <CalendarIcon />
+          <span className="scene-when-text">
+            {whenText(t)}
+            {n !== null && ` · ${n} nights`}
+          </span>
         </p>
         {detailed && (
           <>
@@ -120,7 +123,7 @@ export function TripList() {
         </div>
       ) : (
         <div className="trip-rail">
-          {trips.slice(0, 6).map((t) => (
+          {trips.map((t) => (
             <TripCard key={t.id} t={t} />
           ))}
         </div>

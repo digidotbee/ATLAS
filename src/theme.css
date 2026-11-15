@@ -732,7 +732,7 @@ details > summary,
   position: relative;
   overflow: hidden;
   border-radius: var(--radius-md);
-  min-height: 190px; /* half-height band */
+  min-height: 143px; /* slim band */
   display: flex;
   align-items: flex-end;
   isolation: isolate;
@@ -747,7 +747,7 @@ details > summary,
 }
 .hero-copy {
   width: 100%;
-  padding: 28px clamp(24px, 4vw, 40px);
+  padding: 20px clamp(24px, 4vw, 40px);
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -815,9 +815,20 @@ details > summary,
 
 /* ---------- Photo-style trip cards ---------- */
 .trip-rail {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 460px; /* about four cards, then scroll */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-snap-type: y proximity;
+  padding: 2px 8px 8px 2px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+.trip-rail > * {
+  flex: none;
+  scroll-snap-align: start;
 }
 .trip-card {
   background: var(--surface-200);
@@ -832,9 +843,9 @@ details > summary,
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  min-height: 210px;
+  min-height: 105px; /* half height */
   padding: 0;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 0;
   color: var(--ink-light);
 }
@@ -846,13 +857,13 @@ details > summary,
     linear-gradient(0deg, rgb(22 26 38 / 70%), transparent 55%);
 }
 .scene-card-body {
-  padding: 22px 24px;
+  padding: 14px 64px 14px 20px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 2px;
 }
 .scene-card h3 {
-  font: 600 30px/1.1 var(--serif);
+  font: 600 22px/1.2 var(--serif);
   color: var(--ink-light);
   text-shadow: 0 -1px 1px rgba(13, 16, 21, 0.65), 0 1px 1px rgba(255, 255, 255, 0.25);
   margin: 0;
@@ -867,6 +878,18 @@ details > summary,
   gap: 8px;
   margin: 0;
   color: var(--ink-light);
+  white-space: nowrap;
+  min-width: 0;
+}
+.scene-when svg {
+  flex: none;
+}
+.scene-when-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.scene-card-body {
+  min-width: 0;
 }
 .scene-card .trip-card-remaining,
 .scene-card .money {
@@ -874,10 +897,11 @@ details > summary,
 }
 .more-btn {
   position: absolute;
-  top: 14px;
+  top: 50%;
   right: 14px;
-  width: 40px;
-  height: 40px;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
   border-radius: var(--radius-pill);
   display: grid;
   place-items: center;
@@ -910,32 +934,24 @@ details > summary,
     font-size: 36px;
   }
   .hero-card {
-    min-height: 210px; /* half-height band */
+    min-height: 158px; /* slim band */
   }
   .hero-copy {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
-    padding: 20px;
+    gap: 10px;
+    padding: 16px 18px;
   }
   .hero-title {
-    font-size: 32px;
-    line-height: 36px;
+    font-size: 26px;
+    line-height: 30px;
   }
   .hero-card .btn-lg {
-    padding: 11px 18px;
-    font-size: 15px;
+    padding: 9px 16px;
+    font-size: 14px;
   }
   .trip-rail {
-    grid-auto-flow: column;
-    grid-template-columns: none;
-    grid-auto-columns: 88%;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding-bottom: 8px;
-  }
-  .trip-rail > * {
-    scroll-snap-align: start;
+    max-height: 360px;
   }
   .page {
     padding-bottom: 110px;

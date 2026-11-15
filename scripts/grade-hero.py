@@ -57,7 +57,7 @@ def save(img, name, w, q):
     r.save(f"{outdir}/{name}.webp", 'WEBP', quality=q, method=6)
     r.save(f"{outdir}/{name}.jpg", 'JPEG', quality=q - 4, optimize=True, progressive=True)
 
-# Short, wide band through the sunburst and mountains (hero is half-height).
-save(out.crop((0, int(H * 0.53), W, int(H * 0.83))), 'hero-wide', 1600, 74)  # 2000x450 -> 1600x360
+# Slim band through the sunburst and mountains (hero is a thin strip).
+save(out.crop((0, int(H * 0.60), W, int(H * 0.80))), 'hero-wide', 1600, 74)  # 2000x300 -> 1600x240
 cx = int(sx)
-save(out.crop((cx - 640, int(H * 0.45), cx + 560, int(H * 0.45) + 700)), 'hero-tall', 800, 72)  # 1200x700 -> 800x467
+save(out.crop((cx - 640, int(H * 0.54), cx + 560, int(H * 0.54) + 530)), 'hero-tall', 800, 72)  # 1200x530 -> 800x353
