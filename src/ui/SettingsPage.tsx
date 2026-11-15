@@ -3,6 +3,7 @@ import { parseAtlasData } from '../domain/validate';
 import { useStore } from '../state/store';
 import { downloadJson } from '../storage/local';
 import { Banner, Field } from './common';
+import { useThemePref, type ThemePref } from './theme';
 
 export function SettingsPage() {
   const store = useStore();
@@ -10,11 +11,24 @@ export function SettingsPage() {
   const [token, setToken] = useState('');
   const [importMsg, setImportMsg] = useState<{ tone: 'error' | 'info'; text: string } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [themePref, setThemePref] = useThemePref();
 
   return (
     <div className="page narrow stack">
       <p className="eyebrow">Settings</p>
       <h1>Saving & sync</h1>
+
+      <section className="card stack-sm">
+        <h2>Appearance</h2>
+        <p className="muted small">Storm is the dark mode, Daylight the light one. Auto follows this device's setting. Saved on this device only.</p>
+        <div className="segmented" role="group" aria-label="Theme">
+          {(['auto', 'storm', 'daylight'] as ThemePref[]).map((t) => (
+            <button type="button" key={t} className={themePref === t ? 'on' : ''} aria-pressed={themePref === t} onClick={() => setThemePref(t)}>
+              {t === 'auto' ? 'Auto' : t === 'storm' ? 'Storm' : 'Daylight'}
+            </button>
+          ))}
+        </div>
+      </section>
 
       <section className="card stack-sm">
         <h2>Sync across devices</h2>

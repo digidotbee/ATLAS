@@ -8,6 +8,7 @@ import { href, useRoute } from './ui/router';
 import { SettingsPage } from './ui/SettingsPage';
 import { AllTrips, TripList } from './ui/TripList';
 import { TripView } from './ui/TripView';
+import { useThemePref } from './ui/theme';
 
 function SyncBadge() {
   const { sync } = useStore();
@@ -31,6 +32,7 @@ export function App() {
   const store = useStore();
   const { sync } = store;
   const isPrint = route.page === 'print';
+  const [, setTheme, effectiveTheme] = useThemePref();
   // "Planner" opens the most recently edited trip, or starts a new one.
   const latest = [...store.data.trips].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0];
   const plannerHref = latest ? href({ page: 'trip', id: latest.id, tab: 'dates' }) : href({ page: 'new' });
@@ -56,6 +58,25 @@ export function App() {
               Planner
             </a>
           </nav>
+          <button
+            type="button"
+            className="icon-btn"
+            onClick={() => setTheme(effectiveTheme === 'storm' ? 'daylight' : 'storm')}
+            aria-label={effectiveTheme === 'storm' ? 'Switch to Daylight' : 'Switch to Storm'}
+            title={effectiveTheme === 'storm' ? 'Daylight' : 'Storm'}
+          >
+            {effectiveTheme === 'storm' ? (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+                <circle cx="12" cy="12" r="4.2" />
+                <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" />
+              </svg>
+            ) : (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+                <path d="M7 18h10a4 4 0 0 0 .5-7.97A5.5 5.5 0 0 0 6.6 9.1 4.5 4.5 0 0 0 7 18z" />
+                <path d="m11.5 13-1.5 3h3l-1.5 3" />
+              </svg>
+            )}
+          </button>
           <a className="icon-btn" href={href({ page: 'profile' })} aria-label="Family profile" title="Family profile">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
               <circle cx="9" cy="8" r="3.2" />
@@ -134,6 +155,17 @@ export function App() {
           <h1>Page not found</h1>
           <a href={href({ page: 'trips' })}>Back to trips</a>
         </div>
+      )}
+      {!isPrint && (
+        <footer className="app-footer no-print">
+          <div>
+            <div>
+              <p className="footer-name">ATLAS · Family travel planner</p>
+              <p className="footer-sub">Wild by nature. Engineered with intention.</p>
+            </div>
+            <span className="tag tag-lock">{effectiveTheme === 'storm' ? 'Storm' : 'Daylight'}</span>
+          </div>
+        </footer>
       )}
       {!isPrint && (
         <nav className="bottom-nav no-print" aria-label="Main">
