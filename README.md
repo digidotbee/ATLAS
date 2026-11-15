@@ -1,4 +1,4 @@
-# ATLAS — family travel planner
+# ATLAS — adventure planner
 
 A personal, reusable vacation planner. Start with **where**, **total budget**, **who's coming** and **flexible dates**;
 ATLAS then helps you shape the trip, compare date windows, collect and choose options, build a day-by-day itinerary,

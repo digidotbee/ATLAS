@@ -170,7 +170,7 @@ export function TripList() {
         </picture>
         <div className="hero-copy">
           <h1 className="hero-title">
-            The world is <span className="accent">waiting.</span>
+            The world <span className="accent">awaits.</span>
           </h1>
           <a className="btn btn-primary btn-lg" href={href({ page: 'new' })}>
             Plan a trip <span aria-hidden="true">→</span>

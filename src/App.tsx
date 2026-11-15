@@ -45,7 +45,7 @@ export function App() {
             <span className="logo-word">
               ATLAS<span className="logo-dot">.</span>
             </span>
-            <span className="logo-sub">Family travel planner</span>
+            <span className="logo-sub">Adventure planner</span>
           </a>
           <nav className="app-nav">
             <a href={href({ page: 'trips' })} className={route.page === 'trips' ? 'active' : ''}>
