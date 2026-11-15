@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { chosenDate, nightsBetween, travelerCount } from '../domain/budget';
+import { chosenDate, formatMoney, nightsBetween, travelerCount } from '../domain/budget';
 import { blankDateOption } from '../domain/factory';
 import { buildAssumptionsPrompt, buildWindowFarePrompt, parseImportedAssumptions } from '../domain/research';
 import type { Availability, CandidateTravelWindow, DateRange, PlanningAssumptions, ScoringWeights, TripConstraints } from '../domain/types';
@@ -69,42 +69,9 @@ export function DatesTab({ trip, update }: TabProps) {
         </div>
       )}
 
-      {/* 1. Availability */}
-      <section className="card stack-sm">
-        <h3>1 · Your availability</h3>
-        <div className="grid-2">
-          <Field label="Earliest day you can leave home">
-            <input type="date" value={av.earliestDeparture} onChange={(e) => setAv({ earliestDeparture: e.target.value })} />
-          </Field>
-          <Field label="Latest day you must be back home">
-            <input type="date" value={av.latestReturn} min={av.earliestDeparture} onChange={(e) => setAv({ latestReturn: e.target.value })} />
-          </Field>
-        </div>
-        {span !== null && (
-          <p className="availability-pill">
-            Available for {span} nights — ATLAS looks for the best trip <em>inside</em> this range, not a {span}-night trip.
-          </p>
-        )}
-        <div className="grid-4">
-          <Field label="Shortest trip" hint="nights, optional">
-            <NumberInput value={cons.minNights} min={1} onChange={(v) => setCons({ minNights: v })} aria-label="Minimum nights" />
-          </Field>
-          <Field label="Ideal trip" hint="nights, optional">
-            <NumberInput value={cons.preferredNights} min={1} onChange={(v) => setCons({ preferredNights: v })} aria-label="Preferred nights" />
-          </Field>
-          <Field label="Longest trip" hint="nights, optional">
-            <NumberInput value={cons.maxNights} min={1} onChange={(v) => setCons({ maxNights: v })} aria-label="Maximum nights" />
-          </Field>
-          <Field label="Departure airport">
-            <input value={cons.departureAirport} onChange={(e) => setCons({ departureAirport: e.target.value.toUpperCase() })} placeholder="LAS" />
-          </Field>
-        </div>
-        <RangeList label="Preferred dates (optional)" ranges={av.preferredRanges} onChange={(r) => setAv({ preferredRanges: r })} />
-        <RangeList label="Dates you can't travel (optional)" ranges={av.excludedRanges} onChange={(r) => setAv({ excludedRanges: r })} />
-      </section>
+      <AvailabilityCard trip={trip} update={update} av={av} cons={cons} setAv={setAv} setCons={setCons} span={span} />
 
-      {/* 2. Assumptions */}
-      <AssumptionsCard trip={trip} update={update} />
+      <EstimatesCard trip={trip} update={update} />
 
       {/* 3. Windows */}
       <WindowsCard trip={trip} update={update} />
@@ -138,7 +105,142 @@ function RangeList({ label, ranges, onChange }: { label: string; ranges: DateRan
   );
 }
 
-function AssumptionsCard({ trip, update }: TabProps) {
+function StageHead({ n, title, done, children }: { n: number; title: string; done: boolean; children?: React.ReactNode }) {
+  return (
+    <div className="stage-head">
+      <span className={`stage-num ${done ? 'done' : ''}`} aria-hidden="true">
+        {done ? '✓' : n}
+      </span>
+      <h3>{title}</h3>
+      <span className="stage-actions">{children}</span>
+    </div>
+  );
+}
+
+function AvailabilityCard({
+  av,
+  cons,
+  setAv,
+  setCons,
+  span,
+}: TabProps & {
+  av: Availability;
+  cons: TripConstraints;
+  setAv: (p: Partial<Availability>) => void;
+  setCons: (p: Partial<TripConstraints>) => void;
+  span: number | null;
+}) {
+  const done = span !== null && span > 0;
+  const [editing, setEditing] = useState(!done);
+  const lengthText =
+    cons.minNights || cons.maxNights || cons.preferredNights
+      ? [
+          cons.minNights || cons.maxNights ? `${cons.minNights ?? 1}–${cons.maxNights ?? 'any'} nights` : '',
+          cons.preferredNights ? `ideally ${cons.preferredNights}` : '',
+        ]
+          .filter(Boolean)
+          .join(', ')
+      : 'any length — ATLAS suggests';
+  return (
+    <section className="card stage">
+      <StageHead n={1} title="When you could travel" done={done && !editing}>
+        {done && !editing && (
+          <button type="button" className="btn btn-small btn-ghost" onClick={() => setEditing(true)}>
+            Edit
+          </button>
+        )}
+      </StageHead>
+      {done && !editing ? (
+        <dl className="summary">
+          <div>
+            <dt>Leave on or after</dt>
+            <dd>{fmt(av.earliestDeparture)}</dd>
+          </div>
+          <div>
+            <dt>Back by</dt>
+            <dd>{fmt(av.latestReturn)}</dd>
+          </div>
+          <div>
+            <dt>Trip length</dt>
+            <dd>{lengthText}</dd>
+          </div>
+          <div>
+            <dt>Flying from</dt>
+            <dd>{cons.departureAirport || '—'}</dd>
+          </div>
+          <p className="summary-note">
+            {span} nights to choose from — ATLAS looks for the best trip <em>inside</em> this range.
+          </p>
+        </dl>
+      ) : (
+        <div className="stack-sm">
+          <div className="grid-2">
+            <Field label="Earliest day you can leave home">
+              <input type="date" value={av.earliestDeparture} onChange={(e) => setAv({ earliestDeparture: e.target.value })} />
+            </Field>
+            <Field label="Latest day you must be back home">
+              <input type="date" value={av.latestReturn} min={av.earliestDeparture} onChange={(e) => setAv({ latestReturn: e.target.value })} />
+            </Field>
+          </div>
+          {span !== null && span > 0 && (
+            <p className="availability-pill">
+              {span} nights to choose from — ATLAS looks for the best trip <em>inside</em> this range, not a {span}-night trip.
+            </p>
+          )}
+          <Field label="Flying from">
+            <input value={cons.departureAirport} onChange={(e) => setCons({ departureAirport: e.target.value.toUpperCase() })} placeholder="LAS" />
+          </Field>
+          <details className="more" open={Boolean(cons.minNights || cons.maxNights || cons.preferredNights)}>
+            <summary>Trip length (optional)</summary>
+            <div className="grid-3">
+              <Field label="Shortest" hint="nights">
+                <NumberInput value={cons.minNights} min={1} onChange={(v) => setCons({ minNights: v })} aria-label="Minimum nights" />
+              </Field>
+              <Field label="Ideal" hint="nights">
+                <NumberInput value={cons.preferredNights} min={1} onChange={(v) => setCons({ preferredNights: v })} aria-label="Preferred nights" />
+              </Field>
+              <Field label="Longest" hint="nights">
+                <NumberInput value={cons.maxNights} min={1} onChange={(v) => setCons({ maxNights: v })} aria-label="Maximum nights" />
+              </Field>
+            </div>
+          </details>
+          <details className="more" open={av.preferredRanges.length + av.excludedRanges.length > 0}>
+            <summary>Preferred or blocked dates (optional)</summary>
+            <div className="stack-sm">
+              <RangeList label="Preferred dates" ranges={av.preferredRanges} onChange={(r) => setAv({ preferredRanges: r })} />
+              <RangeList label="Dates you can't travel" ranges={av.excludedRanges} onChange={(r) => setAv({ excludedRanges: r })} />
+            </div>
+          </details>
+          {done && (
+            <div className="actions">
+              <button type="button" className="btn btn-primary btn-small" onClick={() => setEditing(false)}>
+                Done
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </section>
+  );
+}
+
+/** Same day / next day choice for flight timing. */
+function DayOffset({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
+  return (
+    <div className="field">
+      <span className="field-label">{label}</span>
+      <div className="segmented" role="group" aria-label={label}>
+        {[0, 1].map((v) => (
+          <button type="button" key={v} className={value === v ? 'on' : ''} aria-pressed={value === v} onClick={() => onChange(v)}>
+            {v === 0 ? 'Same day' : 'Next day'}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function EstimatesCard({ trip, update }: TabProps) {
   const { data, saveClimate } = useStore();
   const a = trip.assumptions ?? blankAssumptions();
   const setA = (p: Partial<PlanningAssumptions>) => update((t) => ({ ...t, assumptions: { ...(t.assumptions ?? blankAssumptions()), ...p, origin: p.origin ?? 'manual' } }));
@@ -146,176 +248,243 @@ function AssumptionsCard({ trip, update }: TabProps) {
   const months = av ? departureMonths(av.earliestDeparture, av.latestReturn) : [];
   const climateMonths = [...new Set(months.map((m) => m.slice(5, 7)))];
   const cached = data.climateCache?.[trip.destination.trim().toLowerCase()];
-  const [open, setOpen] = useState(false);
+  const missing = missingInputs(trip).filter((m) => !m.startsWith('Earliest departure'));
+  const ready = Boolean(av) && missing.length === 0;
+  const [mode, setMode] = useState<'view' | 'assistant' | 'edit'>(ready ? 'view' : 'assistant');
   const [pasted, setPasted] = useState('');
   const [msg, setMsg] = useState<{ tone: 'info' | 'error'; text: string; list?: string[] } | null>(null);
   const [copyMsg, setCopyMsg] = useState('');
   const prompt = buildAssumptionsPrompt(trip, data.profile);
   const cur = trip.currency;
+  const money = (n: number | null) => (n === null ? '—' : formatMoney(n, cur));
+  const fares = months.map((m) => a.airfarePerPersonByMonth[m]).filter((v): v is number => v > 0);
+
+  if (!av) {
+    return (
+      <section className="card stage disabled">
+        <StageHead n={2} title="Typical costs & weather" done={false} />
+        <p className="muted small">Add when you could travel first.</p>
+      </section>
+    );
+  }
 
   return (
-    <section className="card stack-sm">
-      <div className="row">
-        <h3>2 · Budget & planning assumptions</h3>
-        <span className="mode-pill">Planning Estimate Mode</span>
-      </div>
-      <p className="muted small">
-        Budget <strong><Money amount={trip.budgetTotal} currency={cur} /></strong> for {travelerCount(trip)} travelers · {trip.contingencyPct}% cushion held back.
-        These typical costs drive the date search. All are <strong>estimates</strong>: monthly airfares are route averages, not fares for specific dates.
-      </p>
-
-      <div className="assume-grid">
-        <Field label={`Lodging / night (${cur})`} hint="whole family">
-          <NumberInput value={a.lodgingPerNight} onChange={(v) => setA({ lodgingPerNight: v })} step={10} aria-label="Lodging per night" />
-        </Field>
-        <Field label="Food / person / day">
-          <NumberInput value={a.foodPerPersonPerDay} onChange={(v) => setA({ foodPerPersonPerDay: v })} aria-label="Food per person per day" />
-        </Field>
-        <Field label="Getting around / day" hint="whole group">
-          <NumberInput value={a.transportPerDay} onChange={(v) => setA({ transportPerDay: v })} aria-label="Transport per day" />
-        </Field>
-        <Field label="Activities / person / day">
-          <NumberInput value={a.activitiesPerPersonPerDay} onChange={(v) => setA({ activitiesPerPersonPerDay: v })} aria-label="Activities per person per day" />
-        </Field>
-        <Field label="Taxes & fees (% of lodging)">
-          <NumberInput value={a.feesPct} onChange={(v) => setA({ feesPct: v ?? 0 })} aria-label="Fees percent" />
-        </Field>
-        <Field label="Days to arrive" hint="1 if the flight lands the next day">
-          <NumberInput value={a.arrivalOffsetDays} onChange={(v) => setA({ arrivalOffsetDays: Math.round(v ?? 0) })} aria-label="Arrival offset days" />
-        </Field>
-        <Field label="Days to get home">
-          <NumberInput value={a.returnOffsetDays} onChange={(v) => setA({ returnOffsetDays: Math.round(v ?? 0) })} aria-label="Return offset days" />
-        </Field>
-      </div>
-
-      {months.length > 0 && (
-        <div className="month-table">
-          <div className="month-row month-head">
-            <span>Departure month</span>
-            <span>Airfare / person ≈</span>
-            <span>Climate (0–5, seasonal average)</span>
-          </div>
-          {months.map((m) => {
-            const mm = m.slice(5, 7);
-            const c = a.climateByMonth[mm];
-            return (
-              <div key={m} className="month-row">
-                <span>{formatDate(m + '-15', { month: 'long', year: 'numeric' })}</span>
-                <NumberInput
-                  value={a.airfarePerPersonByMonth[m] ?? null}
-                  onChange={(v) => {
-                    const next = { ...a.airfarePerPersonByMonth };
-                    if (v && v > 0) next[m] = v;
-                    else delete next[m];
-                    setA({ airfarePerPersonByMonth: next });
-                  }}
-                  step={10}
-                  aria-label={`Airfare ${m}`}
-                />
-                {climateMonths.includes(mm) && (
-                  <span className="climate-cell">
-                    <NumberInput
-                      value={c?.score ?? null}
-                      step={0.5}
-                      onChange={(v) => {
-                        const next = { ...a.climateByMonth };
-                        if (v === null) delete next[mm];
-                        else next[mm] = { score: Math.min(5, Math.max(0, v)), summary: c?.summary ?? '' };
-                        setA({ climateByMonth: next });
-                      }}
-                      aria-label={`Climate score ${mm}`}
-                    />
-                    <span className="muted small">{c?.summary}</span>
-                  </span>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-      {cached && Object.keys(a.climateByMonth).length === 0 && (
-        <button type="button" className="btn btn-small" onClick={() => setA({ climateByMonth: cached })}>
-          Reuse saved climate for {trip.destination}
-        </button>
-      )}
-      <p className="small muted">
-        {a.origin === 'assistant' ? `From an assistant on ${a.researchedAt}` : 'Entered by hand'} · bags {a.baggageIncluded ? 'included' : 'not included'} ·{' '}
-        <PriceBadge status="estimated" />
-        {a.sources.length > 0 && (
+    <section className="card stage">
+      <StageHead n={2} title="Typical costs & weather" done={ready && mode === 'view'}>
+        {mode === 'view' && (
           <>
-            {' '}· Sources:{' '}
-            {a.sources.map((s, i) => (
-              <span key={i}>
-                {s.url ? (
-                  <a href={s.url} target="_blank" rel="noreferrer noopener">
-                    {s.note || s.url}
-                  </a>
-                ) : (
-                  s.note
-                )}
-                {s.checkedAt && ` (${s.checkedAt})`}
-                {i < a.sources.length - 1 && '; '}
-              </span>
-            ))}
+            <button type="button" className="btn btn-small btn-ghost" onClick={() => setMode('edit')}>
+              Edit
+            </button>
+            <button type="button" className="btn btn-small btn-ghost" onClick={() => setMode('assistant')}>
+              Refresh
+            </button>
           </>
         )}
-      </p>
+      </StageHead>
 
-      <button type="button" className="btn" onClick={() => setOpen((o) => !o)} aria-expanded={open} disabled={!av}>
-        ✦ Fill these in with one assistant request
-      </button>
-      {open && (
-        <div className="grid-2">
-          <div className="stack-sm">
-            <textarea className="mono" rows={10} readOnly value={prompt} aria-label="Planning brief" />
-            <button
-              type="button"
-              className="btn"
-              onClick={() =>
-                navigator.clipboard.writeText(prompt).then(
-                  () => setCopyMsg('Copied. This is the one research request for this pass.'),
-                  (e: Error) => setCopyMsg(`Copy failed (${e.message}). Select the text and copy it manually.`),
-                )
-              }
-            >
-              Copy brief
+      {mode === 'assistant' && (
+        <div className="stack-sm">
+          <p className="muted small">
+            One request fills in typical airfare by month, lodging, food, getting around, activities and seasonal weather. Everything stays marked
+            as an estimate.
+          </p>
+          <ol className="how">
+            <li>
+              <div className="actions">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() =>
+                    navigator.clipboard.writeText(prompt).then(
+                      () => setCopyMsg('Copied — paste it into Claude or another assistant.'),
+                      (e: Error) => setCopyMsg(`Copy failed (${e.message}). Open “See the request” and copy it by hand.`),
+                    )
+                  }
+                >
+                  Copy the request
+                </button>
+                {copyMsg && <span className="small muted">{copyMsg}</span>}
+              </div>
+              <details className="more">
+                <summary>See the request</summary>
+                <textarea className="mono" rows={8} readOnly value={prompt} aria-label="Planning brief" />
+              </details>
+            </li>
+            <li>
+              <Field label="Paste the reply here">
+                <textarea className="mono" rows={5} value={pasted} onChange={(e) => setPasted(e.target.value)} placeholder='{ "airfarePerPersonByMonth": … }' />
+              </Field>
+              <button
+                type="button"
+                className="btn btn-primary"
+                disabled={!pasted.trim()}
+                onClick={() => {
+                  const r = parseImportedAssumptions(pasted, trip.currency);
+                  if (r.errors.length) return setMsg({ tone: 'error', text: 'Nothing was imported. Fix these and try again:', list: r.errors });
+                  const imp = r.assumptions!;
+                  update((t) => {
+                    const base = t.assumptions ?? blankAssumptions();
+                    return {
+                      ...t,
+                      assumptions: {
+                        ...base,
+                        ...imp,
+                        airfarePerPersonByMonth: { ...base.airfarePerPersonByMonth, ...(imp.airfarePerPersonByMonth ?? {}) },
+                        climateByMonth: { ...base.climateByMonth, ...(imp.climateByMonth ?? {}) },
+                      },
+                    };
+                  });
+                  if (imp.climateByMonth && Object.keys(imp.climateByMonth).length) saveClimate(trip.destination, imp.climateByMonth);
+                  setPasted('');
+                  setMsg(null);
+                  setMode('view');
+                }}
+              >
+                Use these estimates
+              </button>
+            </li>
+          </ol>
+          <div className="actions">
+            <button type="button" className="btn btn-small btn-ghost" onClick={() => setMode('edit')}>
+              Or enter them by hand
             </button>
-            {copyMsg && <span className="small muted">{copyMsg}</span>}
-          </div>
-          <div className="stack-sm">
-            <Field label="Paste the reply">
-              <textarea className="mono" rows={10} value={pasted} onChange={(e) => setPasted(e.target.value)} placeholder='{ "airfarePerPersonByMonth": { … } }' />
-            </Field>
-            <button
-              type="button"
-              className="btn btn-primary"
-              disabled={!pasted.trim()}
-              onClick={() => {
-                const r = parseImportedAssumptions(pasted, trip.currency);
-                if (r.errors.length) return setMsg({ tone: 'error', text: 'Nothing was imported. Fix these and try again:', list: r.errors });
-                const imp = r.assumptions!;
-                update((t) => {
-                  const base = t.assumptions ?? blankAssumptions();
-                  return {
-                    ...t,
-                    assumptions: {
-                      ...base,
-                      ...imp,
-                      airfarePerPersonByMonth: { ...base.airfarePerPersonByMonth, ...(imp.airfarePerPersonByMonth ?? {}) },
-                      climateByMonth: { ...base.climateByMonth, ...(imp.climateByMonth ?? {}) },
-                    },
-                  };
-                });
-                if (imp.climateByMonth && Object.keys(imp.climateByMonth).length) saveClimate(trip.destination, imp.climateByMonth);
-                setPasted('');
-                setMsg({ tone: 'info', text: 'Planning estimates updated. Now find vacation windows below.' });
-              }}
-            >
-              Import estimates
-            </button>
+            {ready && (
+              <button type="button" className="btn btn-small btn-ghost" onClick={() => setMode('view')}>
+                Cancel
+              </button>
+            )}
           </div>
         </div>
       )}
+
+      {mode === 'view' && (
+        <div className="stack-sm">
+          <dl className="summary">
+            <div>
+              <dt>Flights / person</dt>
+              <dd>{fares.length ? (Math.min(...fares) === Math.max(...fares) ? money(fares[0]) : `${money(Math.min(...fares))}–${money(Math.max(...fares))}`) : '—'}</dd>
+            </div>
+            <div>
+              <dt>Lodging / night</dt>
+              <dd>{money(a.lodgingPerNight)}</dd>
+            </div>
+            <div>
+              <dt>Food / person / day</dt>
+              <dd>{money(a.foodPerPersonPerDay)}</dd>
+            </div>
+            <div>
+              <dt>Getting around / day</dt>
+              <dd>{money(a.transportPerDay)}</dd>
+            </div>
+            <div>
+              <dt>Activities / person / day</dt>
+              <dd>{money(a.activitiesPerPersonPerDay)}</dd>
+            </div>
+            <div>
+              <dt>Flight lands</dt>
+              <dd>{a.arrivalOffsetDays === 1 ? 'Next day' : a.arrivalOffsetDays === 0 ? 'Same day' : `${a.arrivalOffsetDays} days later`}</dd>
+            </div>
+          </dl>
+          {climateMonths.some((mm) => a.climateByMonth[mm]) && (
+            <ul className="weather-list">
+              {climateMonths.map((mm) => {
+                const c = a.climateByMonth[mm];
+                return c ? (
+                  <li key={mm}>
+                    <strong>{formatDate(`2027-${mm}-15`, { month: 'long' })}</strong> <span className="score">{c.score}/5</span> {c.summary}
+                  </li>
+                ) : null;
+              })}
+            </ul>
+          )}
+          <p className="small muted">
+            <PriceBadge status="estimated" /> {a.origin === 'assistant' ? `From an assistant, ${a.researchedAt}` : 'Entered by hand'}
+            {a.sources.length > 0 && ` · ${a.sources.length} source${a.sources.length === 1 ? '' : 's'}`}. Seasonal weather is an average, not a forecast.
+          </p>
+        </div>
+      )}
+
+      {mode === 'edit' && (
+        <div className="stack-sm">
+          <div className="grid-2">
+            <Field label={`Lodging per night (${cur})`} hint="whole family">
+              <NumberInput value={a.lodgingPerNight} onChange={(v) => setA({ lodgingPerNight: v })} step={10} aria-label="Lodging per night" />
+            </Field>
+            <Field label="Food per person per day">
+              <NumberInput value={a.foodPerPersonPerDay} onChange={(v) => setA({ foodPerPersonPerDay: v })} aria-label="Food per person per day" />
+            </Field>
+            <Field label="Getting around per day" hint="whole group">
+              <NumberInput value={a.transportPerDay} onChange={(v) => setA({ transportPerDay: v })} aria-label="Transport per day" />
+            </Field>
+            <Field label="Activities per person per day">
+              <NumberInput value={a.activitiesPerPersonPerDay} onChange={(v) => setA({ activitiesPerPersonPerDay: v })} aria-label="Activities per person per day" />
+            </Field>
+            <Field label="Taxes & fees" hint="% of lodging">
+              <NumberInput value={a.feesPct} onChange={(v) => setA({ feesPct: v ?? 0 })} aria-label="Fees percent" />
+            </Field>
+          </div>
+          <div className="grid-2">
+            <DayOffset label="Outbound flight lands" value={a.arrivalOffsetDays} onChange={(v) => setA({ arrivalOffsetDays: v })} />
+            <DayOffset label="Flight home lands" value={a.returnOffsetDays} onChange={(v) => setA({ returnOffsetDays: v })} />
+          </div>
+          <h4 className="sub-head">By departure month</h4>
+          <div className="month-list">
+            {months.map((m) => {
+              const mm = m.slice(5, 7);
+              const c = a.climateByMonth[mm];
+              return (
+                <div key={m} className="month-item">
+                  <strong>{formatDate(m + '-15', { month: 'long', year: 'numeric' })}</strong>
+                  <div className="grid-2">
+                    <Field label="Airfare per person">
+                      <NumberInput
+                        value={a.airfarePerPersonByMonth[m] ?? null}
+                        onChange={(v) => {
+                          const next = { ...a.airfarePerPersonByMonth };
+                          if (v && v > 0) next[m] = v;
+                          else delete next[m];
+                          setA({ airfarePerPersonByMonth: next });
+                        }}
+                        step={10}
+                        aria-label={`Airfare ${m}`}
+                      />
+                    </Field>
+                    <Field label="Weather (0–5)" hint={c?.summary}>
+                      <NumberInput
+                        value={c?.score ?? null}
+                        step={0.5}
+                        onChange={(v) => {
+                          const next = { ...a.climateByMonth };
+                          if (v === null) delete next[mm];
+                          else next[mm] = { score: Math.min(5, Math.max(0, v)), summary: c?.summary ?? '' };
+                          setA({ climateByMonth: next });
+                        }}
+                        aria-label={`Climate score ${mm}`}
+                      />
+                    </Field>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          {cached && Object.keys(a.climateByMonth).length === 0 && (
+            <button type="button" className="btn btn-small" onClick={() => setA({ climateByMonth: cached })}>
+              Reuse saved weather for {trip.destination}
+            </button>
+          )}
+          <div className="actions">
+            <button type="button" className="btn btn-primary btn-small" onClick={() => setMode(missingInputs(trip).length ? 'edit' : 'view')}>
+              Done
+            </button>
+            <button type="button" className="btn btn-small btn-ghost" onClick={() => setMode('assistant')}>
+              Use an assistant instead
+            </button>
+          </div>
+          {missing.length > 0 && <p className="small warn-text">Still needed: {missing.join(' · ')}</p>}
+        </div>
+      )}
+
       {msg && (
         <Banner tone={msg.tone}>
           {msg.text}
@@ -358,9 +527,27 @@ function WindowsCard({ trip, update }: TabProps) {
   };
 
   return (
-    <section className="card stack-sm">
-      <h3>3 · Vacation windows</h3>
-      <details>
+    <section className={`card stage stack-sm ${missing.length ? 'disabled' : ''}`}>
+      <StageHead n={3} title="Find your vacation windows" done={windows.some((w) => w.status === 'locked')} />
+
+      {missing.length > 0 ? (
+        <p className="muted small">Finish the steps above, then ATLAS compares dates and trip lengths for you.</p>
+      ) : (
+        <>
+          <div className="actions">
+            <button type="button" className="btn btn-primary" onClick={run}>
+              {active.length ? 'Search again' : 'Find vacation windows'}
+            </button>
+          </div>
+          <p className="small muted">
+            Runs on this device in seconds using the estimates above — no web requests, no AI calls. Live fare search isn’t set up yet (it needs a secure
+            server and a flight-data provider).
+          </p>
+        </>
+      )}
+      {missing.length === 0 && (
+        <>
+      <details className="more">
         <summary className="small">Ranking weights (how windows are scored)</summary>
         <div className="grid-4 weights">
           {WEIGHT_LABELS.map(({ k, label, hint }) => (
@@ -376,28 +563,7 @@ function WindowsCard({ trip, update }: TabProps) {
           </button>
         </p>
       </details>
-
-      <div className="actions">
-        <button type="button" className="btn btn-primary" onClick={run} disabled={missing.length > 0}>
-          Find vacation windows
-        </button>
-        <button type="button" className="btn" disabled title="Needs a secure backend with a flight-data provider and a weather provider">
-          Live price search (not set up)
-        </button>
-      </div>
-      <p className="small muted">
-        Runs on this device in seconds: weekly departure dates × several trip lengths, then a closer look around the best. No web requests; no
-        AI calls. Live price search needs a secure backend with an authorized flight-data provider and weather provider — not configured yet.
-      </p>
-      {missing.length > 0 && (
-        <Banner tone="warn">
-          Needed before searching:
-          <ul>
-            {missing.map((m) => (
-              <li key={m}>{m}</li>
-            ))}
-          </ul>
-        </Banner>
+        </>
       )}
       {result && result.missing.length > 0 && missing.length === 0 && <Banner tone="warn">{result.missing.join(' ')}</Banner>}
       {result?.shortfall && (

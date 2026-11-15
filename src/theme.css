@@ -1592,3 +1592,136 @@ details.more > summary {
   line-height: 20px;
   color: var(--ink-soft);
 }
+
+/* ---------- When & how long: three stages ---------- */
+.stage {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.stage.disabled {
+  opacity: 0.65;
+}
+.stage-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.stage-head h3 {
+  margin: 0;
+  flex: 1;
+}
+.stage-actions {
+  display: flex;
+  gap: 4px;
+}
+.stage-num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--ink-muted);
+  color: var(--ink-soft);
+  font: 700 13px/1 var(--sans);
+}
+.stage-num.done {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+.summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px 20px;
+  margin: 0;
+}
+.summary dt {
+  font: 700 12px/16px var(--sans);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.summary dd {
+  margin: 2px 0 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.summary-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+ol.how {
+  margin: 0;
+  padding-left: 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+ol.how > li {
+  padding-left: 4px;
+}
+ol.how > li::marker {
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+ol.how > li > * + * {
+  margin-top: 10px;
+}
+.weather-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  line-height: 20px;
+}
+.weather-list .score {
+  display: inline-block;
+  min-width: 2.6em;
+  font-weight: 700;
+  color: var(--accent);
+}
+.sub-head {
+  margin: 6px 0 0;
+  font: 700 13px/16px var(--sans);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.month-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.month-item {
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+.month-item > strong {
+  display: block;
+  margin-bottom: 6px;
+}
+@media (max-width: 640px) {
+  /* 16px inputs stop phones zooming in when a field is tapped */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+  .month-item .grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+  .summary {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.summary + .weather-list {
+  margin-top: 4px;
+}
