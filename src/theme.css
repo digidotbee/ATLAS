@@ -7,7 +7,7 @@
 :root {
   /* Palette — Storm (slate) meets chartreuse */
   --storm-950: #14181c;
-  --storm-900: #1b2026; /* page */
+  --storm-900: #1d222f; /* page — Figma Storm surface-100 */
   --storm-800: #222830; /* surfaces */
   --storm-750: #29303a; /* card-bg */
   --storm-700: #333b46; /* raised / hover */
@@ -162,7 +162,7 @@ a {
 
 /* ---------- Header ---------- */
 .app-header {
-  background: rgb(27 32 38 / 88%);
+  background: rgb(29 34 47 / 88%);
   border-bottom: 1px solid var(--storm-700);
 }
 .logo {
