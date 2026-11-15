@@ -770,6 +770,27 @@ details > summary,
   color: #272c35;
 }
 
+/* Hero photograph (family's own sunset, chartreuse-graded) */
+.hero-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 52% 72%;
+  display: block;
+}
+.hero-shade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, rgb(22 26 38 / 48%) 0%, rgb(22 26 38 / 16%) 40%, transparent 62%),
+    linear-gradient(0deg, rgb(22 26 38 / 58%) 0%, rgb(22 26 38 / 10%) 34%, transparent 52%);
+}
+@media (max-width: 640px) {
+  .hero-photo img {
+    object-position: 50% 66%;
+  }
+}
+
 /* ---------- Section head ---------- */
 .section-head {
   display: flex;

@@ -4,7 +4,7 @@ import { useStore } from '../state/store';
 import { BudgetMeter } from './BudgetPanel';
 import { formatDate, Money } from './common';
 import { href } from './router';
-import { StormScene, TripScene } from './Scenes';
+import { TripScene } from './Scenes';
 
 function CalendarIcon() {
   return (
@@ -81,7 +81,20 @@ export function TripList() {
   return (
     <div className="page home">
       <section className="hero-card">
-        <StormScene />
+        <picture className="scene hero-photo">
+          <source media="(max-width: 640px)" type="image/webp" srcSet={`${import.meta.env.BASE_URL}hero/hero-tall.webp`} />
+          <source media="(max-width: 640px)" srcSet={`${import.meta.env.BASE_URL}hero/hero-tall.jpg`} />
+          <source type="image/webp" srcSet={`${import.meta.env.BASE_URL}hero/hero-wide.webp`} />
+          <img
+            src={`${import.meta.env.BASE_URL}hero/hero-wide.jpg`}
+            alt="Desert sunset with chartreuse light breaking through storm clouds over the mountains"
+            width={1600}
+            height={960}
+            fetchPriority="high"
+            decoding="async"
+          />
+        </picture>
+        <span className="hero-shade" aria-hidden="true" />
         <div className="hero-copy">
           <h1 className="hero-title">
             The world is <span className="accent">waiting.</span>
