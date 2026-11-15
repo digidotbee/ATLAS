@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { blankCandidate, createTrip } from './factory';
+import { blankCandidate, createTrip, duplicateTrip } from './factory';
 import { buildItinerary } from './itinerary';
 import type { Candidate } from './types';
 
@@ -55,5 +55,18 @@ describe('bases', () => {
       ],
     })!;
     expect(it.baseMismatches.map((m) => [m.day, m.item.name, m.stayBase])).toEqual([[1, 'Nara day trip', 'Kanazawa']]);
+  });
+});
+
+describe('duplicateTrip', () => {
+  it('copies everything with new ids and keeps the chosen date', () => {
+    const t = { ...base, candidates: [c({ name: 'Surf' })] };
+    const d = duplicateTrip(t);
+    expect(d.id).not.toBe(t.id);
+    expect(d.name).toBe(`${t.name} (copy)`);
+    expect(d.candidates[0].id).not.toBe(t.candidates[0].id);
+    expect(d.candidates[0].name).toBe('Surf');
+    expect(d.chosenDateId).toBe(d.dateOptions[0].id);
+    expect(d.chosenDateId).not.toBe(t.chosenDateId);
   });
 });

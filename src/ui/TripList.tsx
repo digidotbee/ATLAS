@@ -1,98 +1,169 @@
+import { useEffect, useRef, useState } from 'react';
 import { chosenDate, nightsBetween, summarize } from '../domain/budget';
+import { duplicateTrip } from '../domain/factory';
 import type { Trip } from '../domain/types';
 import { useStore } from '../state/store';
 import { BudgetMeter } from './BudgetPanel';
 import { formatDate, Money } from './common';
-import { href } from './router';
-import { TripScene } from './Scenes';
+import { go, href } from './router';
+
+type Status = { key: 'booked' | 'dates' | 'planning' | 'draft'; label: string };
+
+/** Booked = dates locked and every chosen price verified; Dates set; In planning; Draft. */
+export function tripStatus(t: Trip): Status {
+  const d = chosenDate(t);
+  if (d) {
+    const selected = t.candidates.filter((c) => c.status === 'selected');
+    const flightOk = selected.some((c) => c.category === 'flights') || d.flightStatus === 'verified';
+    if (selected.length > 0 && flightOk && selected.every((c) => c.priceStatus === 'verified')) return { key: 'booked', label: 'Booked' };
+    return { key: 'dates', label: 'Dates set' };
+  }
+  if (t.availability || (t.windows ?? []).length > 0) return { key: 'planning', label: 'In planning' };
+  return { key: 'draft', label: 'Draft' };
+}
 
 function CalendarIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
       <rect x="3" y="5" width="18" height="16" rx="2" />
       <path d="M3 10h18M8 3v4M16 3v4" />
-      <path d="M7.5 14h.01M12 14h.01M16.5 14h.01M7.5 17.5h.01M12 17.5h.01" strokeWidth="2.4" strokeLinecap="round" />
     </svg>
   );
 }
 
 function whenText(t: Trip): string {
   const d = chosenDate(t);
-  if (d) return `${formatDate(d.start)} – ${formatDate(d.end, { month: 'short', day: 'numeric', year: 'numeric' })}`;
-  if (t.availability) return `Available ${formatDate(t.availability.earliestDeparture)} – ${formatDate(t.availability.latestReturn)} · dates not set`;
+  if (d) {
+    const n = nightsBetween(d.start, d.end);
+    return `${formatDate(d.start)} – ${formatDate(d.end, { month: 'short', day: 'numeric', year: 'numeric' })}${n !== null ? ` · ${n} nights` : ''}`;
+  }
+  if (t.availability) return `Available ${formatDate(t.availability.earliestDeparture)} – ${formatDate(t.availability.latestReturn)}`;
   return 'Dates not set';
 }
 
-/** Photo-style trip card: landscape, name, dates, prism edge. */
-function TripCard({ t, detailed }: { t: Trip; detailed?: boolean }) {
-  const s = summarize(t);
-  const d = chosenDate(t);
-  const n = d ? nightsBetween(d.start, d.end) : null;
+function TripMenu({ t }: { t: Trip }) {
+  const { addTrip, deleteTrip } = useStore();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => !ref.current?.contains(e.target as Node) && setOpen(false);
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
   return (
-    <a className="trip-card scene-card" href={href({ page: 'trip', id: t.id, tab: 'plan' })}>
-      <TripScene id={t.id} />
-      <span className="scene-shade" aria-hidden="true" />
-      <span className="more-btn" aria-hidden="true">
-        •••
-      </span>
-      <div className="scene-card-body">
-        {t.region && <span className="trip-card-region">{t.region}</span>}
-        <h3>{t.name}</h3>
-        <p className="scene-when">
-          <CalendarIcon />
-          <span className="scene-when-text">
-            {whenText(t)}
-            {n !== null && ` · ${n} nights`}
-          </span>
-        </p>
-        {detailed && (
-          <>
-            <BudgetMeter summary={s} currency={t.currency} compact />
-            <p className="trip-card-remaining">
-              {d ? (
-                <>
-                  <Money amount={s.remaining} currency={t.currency} /> left of <Money amount={t.budgetTotal} currency={t.currency} />
-                </>
-              ) : (
-                <>
-                  Budget <Money amount={t.budgetTotal} currency={t.currency} /> · {t.travelers.adults + t.travelers.children} travelers
-                </>
-              )}
-            </p>
-          </>
-        )}
-      </div>
-    </a>
+    <div className="trip-menu" ref={ref}>
+      <button type="button" className="more-btn" aria-haspopup="menu" aria-expanded={open} aria-label={`Actions for ${t.name}`} onClick={() => setOpen((o) => !o)}>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <circle cx="5" cy="12" r="1.8" />
+          <circle cx="12" cy="12" r="1.8" />
+          <circle cx="19" cy="12" r="1.8" />
+        </svg>
+      </button>
+      {open && (
+        <div className="trip-menu-list" role="menu">
+          <a role="menuitem" href={href({ page: 'trip', id: t.id, tab: 'plan' })}>
+            Open
+          </a>
+          <a role="menuitem" href={href({ page: 'print', id: t.id })}>
+            Print one-sheet
+          </a>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              const copy = duplicateTrip(t);
+              addTrip(copy);
+              setOpen(false);
+              go({ page: 'trip', id: copy.id, tab: 'plan' });
+            }}
+          >
+            Duplicate
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            className="danger"
+            onClick={() => {
+              setOpen(false);
+              if (confirm(`Delete “${t.name}” and all its research? This can't be undone.`)) deleteTrip(t.id);
+            }}
+          >
+            Delete
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 
-function sortTrips(trips: Trip[]): Trip[] {
-  // Trips with locked dates first (soonest first), then the rest by most recently edited.
-  return [...trips].sort((a, b) => {
-    const da = chosenDate(a)?.start;
-    const db = chosenDate(b)?.start;
-    if (da && db) return da.localeCompare(db);
-    if (da) return -1;
-    if (db) return 1;
-    return b.updatedAt.localeCompare(a.updatedAt);
-  });
+/** Cold-side data card: flat, hairline, radius-xs. `featured` adds shadow-prism. */
+function TripCard({ t, featured }: { t: Trip; featured?: boolean }) {
+  const status = tripStatus(t);
+  const d = chosenDate(t);
+  const s = summarize(t);
+  return (
+    <article className={`trip-row${featured ? ' featured' : ''}`}>
+      <div className="trip-row-main">
+        {featured ? <span className="eyebrow">Next trip</span> : t.region && <span className="trip-row-region">{t.region}</span>}
+        <h3>
+          <a className="stretched" href={href({ page: 'trip', id: t.id, tab: 'plan' })}>
+            {t.name}
+          </a>
+        </h3>
+        <p className="trip-row-when">
+          <CalendarIcon />
+          <span>{whenText(t)}</span>
+        </p>
+      </div>
+      <div className="trip-row-side">
+        <span className={`chip chip-${status.key}`}>{status.label}</span>
+        {d ? (
+          <div className="trip-row-budget">
+            <BudgetMeter summary={s} currency={t.currency} compact />
+            <span className={s.remaining < 0 ? 'over' : ''}>
+              <Money amount={s.remaining} currency={t.currency} /> left of <Money amount={t.budgetTotal} currency={t.currency} />
+            </span>
+          </div>
+        ) : (
+          <span className="trip-row-budget muted">
+            <Money amount={t.budgetTotal} currency={t.currency} /> · {t.travelers.adults + t.travelers.children} travelers
+          </span>
+        )}
+      </div>
+      <TripMenu t={t} />
+    </article>
+  );
+}
+
+function split(trips: Trip[]) {
+  const upcoming = trips.filter((t) => chosenDate(t)).sort((a, b) => chosenDate(a)!.start.localeCompare(chosenDate(b)!.start));
+  const planning = trips.filter((t) => !chosenDate(t)).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  return { upcoming, planning };
 }
 
 export function TripList() {
   const { data } = useStore();
-  const trips = sortTrips(data.trips);
+  const { upcoming, planning } = split(data.trips);
+  const [next, ...laterTrips] = upcoming;
+  const base = import.meta.env.BASE_URL;
   return (
     <div className="page home">
       <section className="hero-card">
         <picture className="scene hero-photo">
-          <source media="(max-width: 640px)" type="image/webp" srcSet={`${import.meta.env.BASE_URL}hero/hero-tall.webp`} />
-          <source media="(max-width: 640px)" srcSet={`${import.meta.env.BASE_URL}hero/hero-tall.jpg`} />
-          <source type="image/webp" srcSet={`${import.meta.env.BASE_URL}hero/hero-wide.webp`} />
+          <source media="(max-width: 640px)" type="image/webp" srcSet={`${base}hero/hero-tall.webp`} />
+          <source media="(max-width: 640px)" srcSet={`${base}hero/hero-tall.jpg`} />
+          <source type="image/webp" srcSet={`${base}hero/hero-wide.webp`} />
           <img
-            src={`${import.meta.env.BASE_URL}hero/hero-wide.jpg`}
+            src={`${base}hero/hero-wide.jpg`}
             alt="Desert sunset with chartreuse light breaking through storm clouds over the mountains"
             width={1600}
-            height={960}
+            height={240}
             fetchPriority="high"
             decoding="async"
           />
@@ -108,25 +179,48 @@ export function TripList() {
         </div>
       </section>
 
-      <div className="section-head">
-        <h2 className="label-wide">Upcoming trips</h2>
-        {trips.length > 0 && (
-          <a className="view-all" href={href({ page: 'all' })}>
-            View all <span aria-hidden="true">→</span>
-          </a>
-        )}
-      </div>
-
-      {trips.length === 0 ? (
-        <div className="empty">
+      {data.trips.length === 0 ? (
+        <div className="empty home-empty">
           <p>No trips yet. Your trips appear here and are saved automatically.</p>
         </div>
       ) : (
-        <div className="trip-rail">
-          {trips.map((t) => (
-            <TripCard key={t.id} t={t} />
-          ))}
-        </div>
+        <>
+          {upcoming.length > 0 && (
+            <section className="trip-section">
+              <div className="section-head">
+                <h2 className="section-label">Upcoming · {upcoming.length}</h2>
+                <a className="view-all" href={href({ page: 'all' })}>
+                  View all <span aria-hidden="true">→</span>
+                </a>
+              </div>
+              <TripCard t={next} featured />
+              {laterTrips.length > 0 && (
+                <div className="trip-stack">
+                  {laterTrips.map((t) => (
+                    <TripCard key={t.id} t={t} />
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
+          {planning.length > 0 && (
+            <section className="trip-section">
+              <div className="section-head">
+                <h2 className="section-label">In planning · {planning.length}</h2>
+                {upcoming.length === 0 && (
+                  <a className="view-all" href={href({ page: 'all' })}>
+                    View all <span aria-hidden="true">→</span>
+                  </a>
+                )}
+              </div>
+              <div className="trip-stack">
+                {planning.map((t) => (
+                  <TripCard key={t.id} t={t} />
+                ))}
+              </div>
+            </section>
+          )}
+        </>
       )}
     </div>
   );
@@ -134,23 +228,23 @@ export function TripList() {
 
 export function AllTrips() {
   const { data } = useStore();
-  const trips = sortTrips(data.trips);
+  const { upcoming, planning } = split(data.trips);
   return (
-    <div className="page">
+    <div className="page home">
       <div className="section-head">
         <h1>All trips</h1>
         <a className="btn btn-primary" href={href({ page: 'new' })}>
           Plan a trip <span aria-hidden="true">→</span>
         </a>
       </div>
-      {trips.length === 0 ? (
+      {data.trips.length === 0 ? (
         <div className="empty">
           <p>No trips yet.</p>
         </div>
       ) : (
-        <div className="trip-grid">
-          {trips.map((t) => (
-            <TripCard key={t.id} t={t} detailed />
+        <div className="trip-list">
+          {[...upcoming, ...planning].map((t) => (
+            <TripCard key={t.id} t={t} />
           ))}
         </div>
       )}

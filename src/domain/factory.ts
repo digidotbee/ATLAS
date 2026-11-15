@@ -131,3 +131,26 @@ export function blankCandidate(category: Candidate['category']): Candidate {
     createdAt: nowIso(),
   };
 }
+
+/** A full copy of a trip with fresh ids; window → date links are preserved. */
+export function duplicateTrip(t: Trip): Trip {
+  const ts = nowIso();
+  const winIds = new Map((t.windows ?? []).map((w) => [w.id, newId()]));
+  const dateIds = new Map(t.dateOptions.map((d) => [d.id, newId()]));
+  const candIds = new Map(t.candidates.map((c) => [c.id, newId()]));
+  return {
+    ...structuredClone(t),
+    id: newId(),
+    name: `${t.name} (copy)`,
+    createdAt: ts,
+    updatedAt: ts,
+    candidates: t.candidates.map((c) => ({ ...structuredClone(c), id: candIds.get(c.id)! })),
+    dateOptions: t.dateOptions.map((d) => ({
+      ...d,
+      id: dateIds.get(d.id)!,
+      ...(d.fromWindowId ? { fromWindowId: winIds.get(d.fromWindowId) ?? d.fromWindowId } : {}),
+    })),
+    chosenDateId: t.chosenDateId ? (dateIds.get(t.chosenDateId) ?? null) : null,
+    windows: t.windows?.map((w) => ({ ...structuredClone(w), id: winIds.get(w.id)! })),
+  };
+}
