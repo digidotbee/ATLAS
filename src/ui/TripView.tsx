@@ -8,11 +8,11 @@ import { PlanTab } from './PlanTab';
 import { href, type TripTab } from './router';
 import { SetupTab } from './SetupTab';
 
-const TABS: { id: TripTab; label: string; hint: string }[] = [
-  { id: 'plan', label: '1 · Shape it', hint: 'Follow-up questions' },
-  { id: 'dates', label: '2 · When & how long', hint: 'Find vacation windows' },
-  { id: 'explore', label: '3 · Explore', hint: 'Options & choices' },
-  { id: 'itinerary', label: '4 · Itinerary', hint: 'Day by day' },
+const TABS: { id: TripTab; label: string; short: string; hint: string }[] = [
+  { id: 'plan', label: '1 · Shape it', short: 'Shape', hint: 'Follow-up questions' },
+  { id: 'dates', label: '2 · When & how long', short: 'When', hint: 'Find vacation windows' },
+  { id: 'explore', label: '3 · Explore', short: 'Explore', hint: 'Options & choices' },
+  { id: 'itinerary', label: '4 · Itinerary', short: 'Itinerary', hint: 'Day by day' },
 ];
 
 export interface TabProps {
@@ -62,7 +62,10 @@ export function TripView({ id, tab }: { id: string; tab: TripTab }) {
       <nav className="tabs" aria-label="Trip planning steps">
         {TABS.map((t) => (
           <a key={t.id} href={href({ page: 'trip', id: trip.id, tab: t.id })} className={`tab ${tab === t.id ? 'active' : ''}`} aria-current={tab === t.id ? 'page' : undefined}>
-            <span>{t.label}</span>
+            <span className="tab-long">{t.label}</span>
+            <span className="tab-short">
+              <b>{t.label.slice(0, 1)}</b> {t.short}
+            </span>
             <small>{t.hint}</small>
           </a>
         ))}
