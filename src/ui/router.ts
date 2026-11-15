@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 export type Route =
   | { page: 'trips' }
   | { page: 'new' }
+  | { page: 'all' }
   | { page: 'profile' }
   | { page: 'settings' }
   | { page: 'trip'; id: string; tab: TripTab }
@@ -17,6 +18,7 @@ export function parseHash(hash: string): Route {
   if (parts.length === 0) return { page: 'trips' };
   const [a, b, c] = parts;
   if (a === 'new' && !b) return { page: 'new' };
+  if (a === 'all' && !b) return { page: 'all' };
   if (a === 'profile' && !b) return { page: 'profile' };
   if (a === 'settings' && !b) return { page: 'settings' };
   if (a === 'trip' && b) {
