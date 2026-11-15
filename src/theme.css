@@ -1725,3 +1725,89 @@ ol.how > li > * + * {
 .summary + .weather-list {
   margin-top: 4px;
 }
+
+/* ---------- Hero: split panel (solid Storm text side + photo side) ----------
+   Text always sits on solid dark slate, so it stays crisp in both modes;
+   the photo shows the sunburst and fades into the panel. */
+.hero-card {
+  background: #1d222f; /* Storm surface-100 in both modes */
+  box-shadow: none;
+  border: 0;
+}
+.hero-photo {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: auto;
+  width: 64%;
+  height: 100%;
+  z-index: -1;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 32%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 32%);
+}
+.hero-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 62%;
+}
+.hero-shade {
+  display: none;
+}
+.hero-copy {
+  align-items: center;
+}
+.hero-title {
+  font: 600 34px/40px var(--serif);
+  color: #f7faee;
+  text-shadow: none;
+  max-width: none;
+}
+.hero-title .accent {
+  display: inline;
+  color: #e0f500;
+  text-shadow: none;
+}
+.hero-card .btn-primary {
+  background: #e0f500;
+  color: #272c35;
+  border: 0;
+  box-shadow: none;
+}
+.hero-card .btn-primary:hover {
+  background: #ecff4d;
+}
+@media (max-width: 640px) {
+  .hero-photo {
+    width: 58%;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 40%);
+    mask-image: linear-gradient(to right, transparent 0%, #000 40%);
+  }
+  .hero-photo img {
+    object-position: 50% 50%;
+  }
+  .hero-copy {
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .hero-title {
+    font-size: 24px;
+    line-height: 28px;
+  }
+  .hero-title .accent {
+    display: block;
+  }
+}
+.hero-card {
+  background: #161a26; /* Storm surface-200: always distinct from the page */
+}
+@media (min-width: 641px) {
+  .hero-copy {
+    justify-content: flex-start;
+    gap: 28px;
+  }
+  .hero-photo {
+    width: 58%;
+  }
+}

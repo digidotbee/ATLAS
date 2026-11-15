@@ -163,12 +163,11 @@ export function TripList() {
             src={`${base}hero/hero-wide.jpg`}
             alt="Desert sunset with chartreuse light breaking through storm clouds over the mountains"
             width={1600}
-            height={240}
+            height={480}
             fetchPriority="high"
             decoding="async"
           />
         </picture>
-        <span className="hero-shade" aria-hidden="true" />
         <div className="hero-copy">
           <h1 className="hero-title">
             The world is <span className="accent">waiting.</span>
