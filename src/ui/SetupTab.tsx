@@ -51,7 +51,7 @@ export function SetupTab({ trip, update }: TabProps) {
         </Field>
       </div>
       <div className="card danger-zone">
-        <h3>Delete venture</h3>
+        <h3>Exit Venture</h3>
         <p className="muted small">Removes this venture and all its research from every synced device.</p>
         <button
           type="button"
@@ -63,7 +63,7 @@ export function SetupTab({ trip, update }: TabProps) {
             }
           }}
         >
-          Delete venture
+          Exit Venture
         </button>
       </div>
     </div>
