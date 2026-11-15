@@ -62,7 +62,7 @@ export function ProfilePage() {
         </form>
       </div>
       <div className="card">
-        <Field label=”Anything else ORIVOIR should know” hint=”e.g. “We like quiet coastal neighborhoods where we can bike to the beach and surf.””>
+        <Field label="Anything else ORIVOIR should know" hint="e.g. “We like quiet coastal neighborhoods where we can bike to the beach and surf.”">
           <textarea rows={4} value={p.notes} onChange={(e) => updateProfile((x) => ({ ...x, notes: e.target.value }))} />
         </Field>
       </div>
