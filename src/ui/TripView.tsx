@@ -1,3 +1,4 @@
+import { chosenDate } from '../domain/budget';
 import type { Trip } from '../domain/types';
 import { useStore } from '../state/store';
 import { BudgetPanel } from './BudgetPanel';
@@ -45,16 +46,17 @@ export function TripView({ id, tab }: { id: string; tab: TripTab }) {
             ← All trips
           </a>
           <h1>{trip.name}</h1>
-          <p className="muted">
-            {trip.destination}
-            {trip.region && ` · ${trip.region}`}
-          </p>
+          {/* Subtitle only when it adds something beyond the trip name */}
+          {(() => {
+            const parts = [trip.destination.trim() !== trip.name.trim() ? trip.destination : '', trip.region].filter(Boolean);
+            return parts.length > 0 ? <p className="muted">{parts.join(' · ')}</p> : null;
+          })()}
         </div>
         <div className="trip-header-actions">
           <a className={`btn btn-ghost ${tab === 'setup' ? 'active' : ''}`} href={href({ page: 'trip', id: trip.id, tab: 'setup' })}>
             ⚙ Trip settings
           </a>
-          <a className="btn btn-primary" href={href({ page: 'print', id: trip.id })}>
+          <a className={`btn ${chosenDate(trip) ? 'btn-primary' : ''}`} href={href({ page: 'print', id: trip.id })}>
             Print one-sheet
           </a>
         </div>
