@@ -43,7 +43,7 @@ export function TripView({ id, tab }: { id: string; tab: TripTab }) {
       <header className="trip-header">
         <div>
           <a className="crumb" href={href({ page: 'trips' })}>
-            ← All trips
+            ← All ventures
           </a>
           <h1>{trip.name}</h1>
           {/* Subtitle only when it adds something beyond the trip name */}

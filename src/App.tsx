@@ -52,7 +52,7 @@ export function App() {
               Home
             </a>
             <a href={href({ page: 'all' })} className={route.page === 'all' ? 'active' : ''}>
-              Trips
+              Ventures
             </a>
             <a href={plannerHref} className={route.page === 'trip' || route.page === 'new' ? 'active' : ''}>
               Planner
@@ -153,7 +153,7 @@ export function App() {
       {route.page === 'notFound' && (
         <div className="page narrow">
           <h1>Page not found</h1>
-          <a href={href({ page: 'trips' })}>Back to trips</a>
+          <a href={href({ page: 'trips' })}>Back to ventures</a>
         </div>
       )}
       {!isPrint && (
@@ -187,7 +187,7 @@ export function App() {
               <rect x="3" y="7" width="18" height="13" rx="2.5" />
               <path d="M8.5 7V5.5A1.5 1.5 0 0 1 10 4h4a1.5 1.5 0 0 1 1.5 1.5V7M8.5 7v13M15.5 7v13" />
             </svg>
-            Trips
+            Ventures
           </a>
           <a href={plannerHref} className={route.page === 'trip' || route.page === 'new' ? 'active' : ''}>
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">

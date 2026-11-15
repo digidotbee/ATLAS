@@ -110,7 +110,7 @@ function TripCard({ t, featured }: { t: Trip; featured?: boolean }) {
   return (
     <article className={`trip-row${featured ? ' featured' : ''}`}>
       <div className="trip-row-main">
-        {featured ? <span className="eyebrow">Next trip</span> : t.region && <span className="trip-row-region">{t.region}</span>}
+        {featured ? <span className="eyebrow">Next venture</span> : t.region && <span className="trip-row-region">{t.region}</span>}
         <h3>
           <a className="stretched" href={href({ page: 'trip', id: t.id, tab: 'plan' })}>
             {t.name}
@@ -173,14 +173,14 @@ export function TripList() {
             The world <span className="accent">awaits.</span>
           </h1>
           <a className="btn btn-primary btn-lg" href={href({ page: 'new' })}>
-            Plan a trip <span aria-hidden="true">→</span>
+            Make A Plan <span aria-hidden="true">→</span>
           </a>
         </div>
       </section>
 
       {data.trips.length === 0 ? (
         <div className="empty home-empty">
-          <p>No trips yet. Your trips appear here and are saved automatically.</p>
+          <p>No ventures yet. Your ventures appear here and are saved automatically.</p>
         </div>
       ) : (
         <>
@@ -231,14 +231,14 @@ export function AllTrips() {
   return (
     <div className="page home">
       <div className="section-head">
-        <h1>All trips</h1>
+        <h1>All ventures</h1>
         <a className="btn btn-primary" href={href({ page: 'new' })}>
-          Plan a trip <span aria-hidden="true">→</span>
+          Make A Plan <span aria-hidden="true">→</span>
         </a>
       </div>
       {data.trips.length === 0 ? (
         <div className="empty">
-          <p>No trips yet.</p>
+          <p>No ventures yet.</p>
         </div>
       ) : (
         <div className="trip-list">
