@@ -126,7 +126,7 @@ function TripCard({ t, featured }: { t: Trip; featured?: boolean }) {
         {d ? (
           <div className="trip-row-budget">
             <BudgetMeter summary={s} currency={t.currency} compact />
-            <span className={s.remaining < 0 ? 'over' : ''}>
+            <span className={s.remaining < 0 ? 'over' : s.remaining < t.budgetTotal * 0.1 ? 'low' : ''}>
               <Money amount={s.remaining} currency={t.currency} /> left of <Money amount={t.budgetTotal} currency={t.currency} />
             </span>
           </div>

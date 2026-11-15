@@ -158,12 +158,17 @@ export function App() {
       )}
       {!isPrint && (
         <footer className="app-footer no-print">
-          <div>
-            <div>
-              <p className="footer-name">ATLAS · Family travel planner</p>
-              <p className="footer-sub">Wild by nature. Engineered with intention.</p>
-            </div>
-            <span className="tag tag-lock">{effectiveTheme === 'storm' ? 'Storm' : 'Daylight'}</span>
+          <div className="footer-inner">
+            <p className="footer-brand">
+              <span className="footer-word">
+                ATLAS<span className="logo-dot">.</span>
+              </span>
+              <span className="footer-tag">Wild by nature. Engineered with intention.</span>
+            </p>
+            <nav className="footer-links" aria-label="Footer">
+              <a href={href({ page: 'profile' })}>Family</a>
+              <a href={href({ page: 'settings' })}>Settings</a>
+            </nav>
           </div>
         </footer>
       )}

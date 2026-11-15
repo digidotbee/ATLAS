@@ -52,9 +52,8 @@
   --on-accent: #f0f9c6;
   --shadow-sunlit: inset 0 1px 0 rgba(255, 255, 255, 0.45), -2px -2px 6px rgba(255, 255, 255, 0.7), 3px 4px 8px rgba(38, 43, 51, 0.18),
     0 4px 16px rgba(107, 100, 24, 0.22);
-  --shadow-prism: inset 0 1px 0 rgba(255, 255, 255, 0.6), -6px -6px 14px rgba(255, 255, 255, 0.8), 1px 1px 0.5px #ce4c38a5,
-    3px 3px 3px 1px rgba(221, 118, 58, 0.24), 4px 5px 5px rgba(38, 43, 51, 0.14), 13px 21px 28px #68a09026, 16px 26px 36px #4e5bbc17,
-    1px 1px 0 1px rgba(0, 0, 0, 0.16);
+  --shadow-prism: inset 0 1px 0 rgba(255, 255, 255, 0.6), -6px -6px 14px rgba(255, 255, 255, 0.8), 4px 5px 8px rgba(38, 43, 51, 0.1),
+    13px 21px 28px #68a09026, 16px 26px 36px #4e5bbc17; /* Daylight: red edge removed (read as a stray border on cream) */
   --shadow-glint: 0 -1px 1px rgba(38, 43, 51, 0.18), 0 1px 0 rgba(255, 255, 255, 0.6);
   --shadow-etch: 0 -1px 1px rgba(38, 43, 51, 0.25), 0 1px 0 rgba(255, 255, 255, 0.9), 0.5px 0.5px 0 var(--flare), 1px 1px 0 var(--thistle);
   --ink-muted: color-mix(in srgb, var(--ink-soft) 80%, transparent);
@@ -75,9 +74,8 @@
     --on-accent: #f0f9c6;
     --shadow-sunlit: inset 0 1px 0 rgba(255, 255, 255, 0.45), -2px -2px 6px rgba(255, 255, 255, 0.7), 3px 4px 8px rgba(38, 43, 51, 0.18),
       0 4px 16px rgba(107, 100, 24, 0.22);
-    --shadow-prism: inset 0 1px 0 rgba(255, 255, 255, 0.6), -6px -6px 14px rgba(255, 255, 255, 0.8), 1px 1px 0.5px #ce4c38a5,
-      3px 3px 3px 1px rgba(221, 118, 58, 0.24), 4px 5px 5px rgba(38, 43, 51, 0.14), 13px 21px 28px #68a09026, 16px 26px 36px #4e5bbc17,
-      1px 1px 0 1px rgba(0, 0, 0, 0.16);
+    --shadow-prism: inset 0 1px 0 rgba(255, 255, 255, 0.6), -6px -6px 14px rgba(255, 255, 255, 0.8), 4px 5px 8px rgba(38, 43, 51, 0.1),
+    13px 21px 28px #68a09026, 16px 26px 36px #4e5bbc17; /* Daylight: red edge removed (read as a stray border on cream) */
     --shadow-glint: 0 -1px 1px rgba(38, 43, 51, 0.18), 0 1px 0 rgba(255, 255, 255, 0.6);
     --shadow-etch: 0 -1px 1px rgba(38, 43, 51, 0.25), 0 1px 0 rgba(255, 255, 255, 0.9), 0.5px 0.5px 0 var(--flare), 1px 1px 0 var(--thistle);
     --ink-muted: color-mix(in srgb, var(--ink-soft) 80%, transparent);
@@ -652,34 +650,49 @@ details > summary,
   color: var(--ink);
 }
 
-/* ---------- Footer band (thicket) ---------- */
+/* ---------- Footer: quiet, one line ---------- */
 .app-footer {
   max-width: 1280px;
-  margin: 0 auto 32px;
-  padding: 0 clamp(1rem, 4vw, 2.5rem);
+  margin: 48px auto 0;
+  padding: 0 clamp(1rem, 4vw, 2.5rem) 24px;
 }
-.app-footer > div {
-  background: var(--thicket);
-  border-radius: var(--radius-xs);
-  padding: 18px 24px;
+.footer-inner {
+  border-top: 1px solid var(--hairline);
+  padding-top: 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
 }
-.app-footer p {
+.footer-brand {
   margin: 0;
-  color: var(--ink-light);
-  font-size: 11px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
 }
-.app-footer .footer-name {
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+.footer-word {
+  font: 600 18px/1 var(--wordmark);
+  color: var(--ink);
 }
-.app-footer .footer-sub {
-  opacity: 0.75;
+.footer-tag {
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--ink-muted);
+}
+.footer-links {
+  display: flex;
+  gap: 20px;
+}
+.footer-links a {
+  font: 700 13px/16px var(--sans);
+  text-decoration: none;
+  color: var(--ink-soft);
+  text-shadow: none;
+}
+.footer-links a:hover {
+  color: var(--accent);
 }
 
 /* ---------- Printed one-sheet stays paper-white ---------- */
@@ -1084,11 +1097,9 @@ details > summary,
     margin-right: 0;
     padding-right: 0;
   }
-  .page {
-    padding-bottom: 110px;
-  }
   .app-footer {
-    margin-bottom: 96px;
+    margin-top: 32px;
+    padding-bottom: 104px; /* clears the bottom navigation bar */
   }
   .bottom-nav {
     display: grid;
@@ -1247,4 +1258,90 @@ fieldset.card > legend + * {
 span.trip-row-budget {
   display: block;
   white-space: nowrap;
+}
+
+
+/* ==========================================================================
+   Consistency pass
+   ========================================================================== */
+
+/* Solid header: nothing scrolls through it. */
+.app-header {
+  background: var(--surface-100);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Budget bars in Wildstrom colours: verified = accent, estimated = thicket, cushion = thistle. */
+.seg-verified {
+  background: var(--accent);
+}
+.seg-estimated {
+  background: var(--thicket);
+}
+.seg-contingency {
+  background: var(--thistle);
+}
+.low,
+.low .money {
+  color: var(--estimate) !important;
+  font-weight: 700;
+}
+
+/* One radius rule: containers 10px · controls 6px · chips pill. */
+.card,
+fieldset.card,
+.hero-card,
+.trip-row,
+.trip-row.featured,
+.budget-panel,
+.table-wrap,
+.empty,
+.window,
+.cand,
+.locked-card,
+.day,
+.leg,
+.unscheduled,
+.compare,
+.month-table,
+.print-page .sheet {
+  border-radius: var(--radius-md);
+}
+.btn,
+.btn-primary,
+.btn-choose,
+.btn-sunlit,
+.btn-ghost,
+input,
+select,
+textarea,
+.banner,
+.trip-menu-list,
+.availability-pill,
+.afford,
+.cand-cat {
+  border-radius: var(--radius-sm);
+}
+.trip-menu-list a,
+.trip-menu-list button {
+  border-radius: 4px;
+}
+.chip,
+.tag,
+.badge,
+.mode-pill,
+.segmented,
+.segmented button,
+.more-btn,
+.icon-btn {
+  border-radius: var(--radius-pill);
+}
+.bottom-nav {
+  background: var(--surface-200);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.page.home {
+  padding-bottom: 8px;
 }
