@@ -37,7 +37,7 @@ export function DatesTab({ trip, update }: TabProps) {
       <div className="intro">
         <h2>When & how long</h2>
         <p className="muted">
-          Tell ATLAS when you <em>could</em> travel. It finds the vacation windows — dates and trip length — that fit your budget. Nothing is
+          Tell ORIVOIR when you <em>could</em> travel. It finds the vacation windows — dates and trip length — that fit your budget. Nothing is
           costed over your whole availability.
         </p>
       </div>
@@ -140,7 +140,7 @@ function AvailabilityCard({
         ]
           .filter(Boolean)
           .join(', ')
-      : 'any length — ATLAS suggests';
+      : 'any length — ORIVOIR suggests';
   return (
     <section className="card stage">
       <StageHead n={1} title="When you could travel" done={done && !editing}>
@@ -169,7 +169,7 @@ function AvailabilityCard({
             <dd>{cons.departureAirport || '—'}</dd>
           </div>
           <p className="summary-note">
-            {span} nights to choose from — ATLAS looks for the best trip <em>inside</em> this range.
+            {span} nights to choose from — ORIVOIR looks for the best trip <em>inside</em> this range.
           </p>
         </dl>
       ) : (
@@ -184,7 +184,7 @@ function AvailabilityCard({
           </div>
           {span !== null && span > 0 && (
             <p className="availability-pill">
-              {span} nights to choose from — ATLAS looks for the best trip <em>inside</em> this range, not a {span}-night trip.
+              {span} nights to choose from — ORIVOIR looks for the best trip <em>inside</em> this range, not a {span}-night trip.
             </p>
           )}
           <Field label="Flying from">
@@ -531,7 +531,7 @@ function WindowsCard({ trip, update }: TabProps) {
       <StageHead n={3} title="Find your vacation windows" done={windows.some((w) => w.status === 'locked')} />
 
       {missing.length > 0 ? (
-        <p className="muted small">Finish the steps above, then ATLAS compares dates and trip lengths for you.</p>
+        <p className="muted small">Finish the steps above, then ORIVOIR compares dates and trip lengths for you.</p>
       ) : (
         <>
           <div className="actions">

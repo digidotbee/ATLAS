@@ -41,7 +41,7 @@ export function PrintView({ id }: { id: string }) {
       <article className="sheet">
         <header className="sheet-head">
           <div>
-            <p className="sheet-brand">ATLAS · {data.profile.familyName ? `${data.profile.familyName} family` : 'Family'} itinerary</p>
+            <p className="sheet-brand">ORIVOIR · {data.profile.familyName ? `${data.profile.familyName} family` : 'Family'} itinerary</p>
             <h1>{trip.name}</h1>
             <p>
               {trip.destination}

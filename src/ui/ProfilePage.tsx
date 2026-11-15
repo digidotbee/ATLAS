@@ -15,7 +15,7 @@ export function ProfilePage() {
     <div className="page narrow stack">
       <p className="eyebrow">Family profile</p>
       <h1>How you like to travel</h1>
-      <p className="lede">ATLAS uses this in every research brief and highlights options that fit. It doesn't limit what you can explore.</p>
+      <p className="lede">ORIVOIR uses this in every research brief and highlights options that fit. It doesn't limit what you can explore.</p>
       <div className="card stack-sm">
         <div className="grid-2">
           <Field label="Family name" hint="Shown on printed itineraries">
@@ -62,7 +62,7 @@ export function ProfilePage() {
         </form>
       </div>
       <div className="card">
-        <Field label="Anything else ATLAS should know" hint="e.g. “We like quiet coastal neighborhoods where we can bike to the beach and surf.”">
+        <Field label=”Anything else ORIVOIR should know” hint=”e.g. “We like quiet coastal neighborhoods where we can bike to the beach and surf.””>
           <textarea rows={4} value={p.notes} onChange={(e) => updateProfile((x) => ({ ...x, notes: e.target.value }))} />
         </Field>
       </div>

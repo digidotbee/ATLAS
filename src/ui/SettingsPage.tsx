@@ -33,7 +33,7 @@ export function SettingsPage() {
       <section className="card stack-sm">
         <h2>Sync across devices</h2>
         <p className="muted small">
-          ATLAS always saves in this browser. To use it on your phone and laptop, connect a private GitHub Gist — ATLAS keeps all your trips
+          ORIVOIR always saves in this browser. To use it on your phone and laptop, connect a private GitHub Gist — ORIVOIR keeps all your trips
           in one private file there. The token stays on this device and is never stored in the Gist.
         </p>
         {syncSettings ? (
@@ -41,7 +41,7 @@ export function SettingsPage() {
             <p>
               <strong>Connected.</strong>{' '}
               <a href={`https://gist.github.com/${syncSettings.gistId}`} target="_blank" rel="noreferrer noopener">
-                View your ATLAS Gist ↗
+                View your ORIVOIR Gist ↗
               </a>
             </p>
             <div className="actions">
@@ -78,7 +78,7 @@ export function SettingsPage() {
                 </a>
                 .
               </li>
-              <li>Name it “ATLAS”, pick an expiration, and under <em>Account permissions</em> set <strong>Gists: Read and write</strong>. Nothing else is needed.</li>
+              <li>Name it “ORIVOIR”, pick an expiration, and under <em>Account permissions</em> set <strong>Gists: Read and write</strong>. Nothing else is needed.</li>
               <li>Generate the token, then paste it below.</li>
             </ol>
             <Field label="GitHub token">
@@ -114,7 +114,7 @@ export function SettingsPage() {
               if (!f) return;
               try {
                 const parsed = parseAtlasData(JSON.parse(await f.text()), f.name);
-                if (!confirm(`Replace everything in ATLAS with “${f.name}” (${parsed.trips.length} trips)?`)) return;
+                if (!confirm(`Replace everything in ORIVOIR with “${f.name}” (${parsed.trips.length} trips)?`)) return;
                 store.replaceAll(parsed);
                 setImportMsg({ tone: 'info', text: `Restored ${parsed.trips.length} trips.` });
               } catch (err) {

@@ -355,7 +355,7 @@ function ResearchHelper({ prompt, initialFocus, onImport }: { prompt: (f: Catego
     <section className="card research">
       <h3>Research helper</h3>
       <p className="muted small">
-        ATLAS writes a research brief from this trip and your family's preferences. Paste it into Claude or any assistant, then paste
+        ORIVOIR writes a research brief from this trip and your family's preferences. Paste it into Claude or any assistant, then paste
         the reply back here — options import straight into your shortlist, with prices marked estimated or verified.
       </p>
       <div className="grid-2">

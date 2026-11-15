@@ -39,7 +39,7 @@ async function call(f: Fetch, token: string, path: string, init: RequestInit = {
     throw new SyncError('The token does not have Gist permission. For a fine-grained token enable "Gists: Read and write"; for a classic token tick the "gist" scope.', 'permission');
   }
   if (res.status === 404) {
-    throw new SyncError('The ATLAS Gist was not found — it may have been deleted, or the token cannot see it. Reconnect sync in Settings.', 'notFound');
+    throw new SyncError('The ORIVOIR Gist was not found — it may have been deleted, or the token cannot see it. Reconnect sync in Settings.', 'notFound');
   }
   throw new SyncError(`GitHub returned ${res.status}. ${detail.slice(0, 200)}`, 'server');
 }
@@ -75,7 +75,7 @@ export async function createAtlasGist(f: Fetch, token: string, data: AtlasData):
   return (await call(f, token, '/gists', {
     method: 'POST',
     body: JSON.stringify({
-      description: 'ATLAS travel planner data (private)',
+      description: 'ORIVOIR travel planner data (private)',
       public: false,
       files: { [GIST_FILE]: { content: JSON.stringify(data, null, 1) } },
     }),

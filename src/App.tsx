@@ -43,7 +43,7 @@ export function App() {
         <header className="app-header no-print">
           <a className="logo" href={href({ page: 'trips' })}>
             <span className="logo-word">
-              ATLAS<span className="logo-dot">.</span>
+              ORIVOIR<span className="logo-dot">.</span>
             </span>
             <span className="logo-sub">Adventure planner</span>
           </a>
@@ -161,7 +161,7 @@ export function App() {
           <div className="footer-inner">
             <p className="footer-brand">
               <span className="footer-word">
-                ATLAS<span className="logo-dot">.</span>
+                ORIVOIR<span className="logo-dot">.</span>
               </span>
               <span className="footer-tag">Wild by nature. Engineered with intention.</span>
             </p>

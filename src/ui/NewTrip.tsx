@@ -9,7 +9,7 @@ import { go, href } from './router';
 const STEP_COPY: Record<NewTripStep, { title: string; hint: string }> = {
   where: { title: 'Where are you dreaming of going?', hint: 'A country, a region, a town — or just an idea like “Atlantic coast of Portugal”.' },
   budget: { title: 'What’s the total budget?', hint: 'Everything included: flights, places to stay, getting around, food, experiences and a cushion for surprises.' },
-  when: { title: 'When could you travel?', hint: 'Your availability, not the trip dates. ATLAS finds the best dates and trip length inside it.' },
+  when: { title: 'When could you travel?', hint: 'Your availability, not the trip dates. ORIVOIR finds the best dates and trip length inside it.' },
   who: { title: 'Who’s coming?', hint: '' },
 };
 
@@ -160,7 +160,7 @@ export function NewTrip() {
               </Field>
             </div>
             <details className="more" open={Boolean(d.minNights || d.prefNights || d.maxNights)}>
-              <summary>Trip length (optional — ATLAS suggests one if blank)</summary>
+              <summary>Trip length (optional — ORIVOIR suggests one if blank)</summary>
               <div className="grid-3">
                 <Field label="Shortest" hint="nights">
                   <NumberInput value={d.minNights} min={1} onChange={(v) => set({ minNights: v })} aria-label="Minimum nights" />
