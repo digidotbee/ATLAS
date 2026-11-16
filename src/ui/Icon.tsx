@@ -1,44 +1,7 @@
 import React from 'react';
-import {
-  Sunrise,
-  Compass,
-  Luggage,
-  CalendarCheck,
-  MapPin,
-  Map,
-  ClipboardList,
-  Ticket,
-  PlaneTakeoff,
-  BedDouble,
-  House,
-  Ship,
-  Dumbbell,
-  TreePine,
-  Palmtree,
-  Mountain,
-  Building2,
-  Car,
-  Footprints,
-  TentTree,
-  Bike,
-  Sailboat,
-  PawPrint,
-  UtensilsCrossed,
-  Soup,
-  CookingPot,
-  PartyPopper,
-  Sparkles,
-  Guitar,
-  Landmark,
-  CalendarDays,
-  Heart,
-  Bookmark,
-  Share2,
-  UsersRound,
-  SlidersHorizontal,
-  Settings2,
-  type LucideIcon,
-} from 'lucide-react';
+import { ICON_MAP, type IconName } from './icons';
+
+export type { IconName };
 
 /**
  * WILDSTROM Icon component — powered by Lucide React
@@ -52,91 +15,8 @@ import {
  *   </div>
  *
  * Icon tile CSS is defined in theme.css under `.icon-tile`.
+ * Full icon registry lives in ./icons.ts.
  */
-
-export type IconName =
-  | 'adventure'
-  | 'explore'
-  | 'trip'
-  | 'itinerary'
-  | 'destinations'
-  | 'map'
-  | 'plan'
-  | 'bookings'
-  | 'flights'
-  | 'stays'
-  | 'local'
-  | 'activities'
-  | 'nature'
-  | 'beach'
-  | 'mountains'
-  | 'city'
-  | 'road-trip'
-  | 'hiking'
-  | 'camping'
-  | 'cycling'
-  | 'water-sports'
-  | 'wildlife'
-  | 'food-drink'
-  | 'eating-out'
-  | 'cooking'
-  | 'party-club'
-  | 'festival'
-  | 'concert'
-  | 'culture'
-  | 'events'
-  | 'cruise'
-  | 'favorites'
-  | 'saved'
-  | 'share'
-  | 'collaborate'
-  | 'filters'
-  | 'settings';
-
-/** Maps ORIVOIR semantic icon names to Lucide components. */
-const ICON_MAP: Record<IconName, LucideIcon> = {
-  // Navigation
-  adventure:    Sunrise,
-  explore:      Compass,
-  trip:         Luggage,
-  itinerary:    CalendarCheck,
-  destinations: MapPin,
-  map:          Map,
-  plan:         ClipboardList,
-  bookings:     Ticket,
-  flights:      PlaneTakeoff,
-  stays:        BedDouble,
-  local:        House,
-  cruise:       Ship,
-  // Activity
-  activities:   Dumbbell,
-  nature:       TreePine,
-  beach:        Palmtree,
-  mountains:    Mountain,
-  city:         Building2,
-  'road-trip':  Car,
-  hiking:       Footprints,
-  camping:      TentTree,
-  cycling:      Bike,
-  'water-sports': Sailboat,
-  wildlife:     PawPrint,
-  // Food / Social
-  'food-drink': UtensilsCrossed,
-  'eating-out': Soup,
-  cooking:      CookingPot,
-  'party-club': PartyPopper,
-  festival:     Sparkles,
-  concert:      Guitar,
-  culture:      Landmark,
-  events:       CalendarDays,
-  // Utility
-  favorites:    Heart,
-  saved:        Bookmark,
-  share:        Share2,
-  collaborate:  UsersRound,
-  filters:      SlidersHorizontal,
-  settings:     Settings2,
-};
 
 interface IconProps {
   /** ORIVOIR semantic icon name */
