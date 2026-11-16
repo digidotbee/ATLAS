@@ -127,27 +127,33 @@ Max content width: `1280px`. Content padding: `--space-6` (24px) on mobile, `--s
 
 ## 7. Icon System
 
-### Files
+### Library
 
-- **Source:** `src/assets/icons/*.svg` (36 files)
-- **Generator:** `scripts/gen-icons.py`
+WILDSTROM uses **[Lucide React](https://lucide.dev)** (MIT license) as its icon foundation.  
+No custom SVG files. No generator script. Import and render directly.
+
+- **Package:** `lucide-react`
 - **React component:** `src/ui/Icon.tsx`
+- **Icon count:** 36 ORIVOIR semantic names → 36 Lucide components (all verified 24×24)
 
-### SVG Spec
+### Usage
 
-Every icon SVG must conform to:
-```xml
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-     fill="currentColor" aria-hidden="true">
-  <!-- glyph paths only — no fill="#…", no gradient, no opacity outside .3–1 -->
-</svg>
+```tsx
+import { Icon } from '@/ui/Icon';
+
+// Inline — inherits color from surrounding CSS context
+<Icon name="destinations" size={20} />
+
+// With accessible label (icon has standalone meaning)
+<Icon name="flights" size={20} label="Flights" />
+
+// Optional stroke weight override (Lucide default is 2)
+<Icon name="settings" size={20} strokeWidth={1.5} />
 ```
 
-- `viewBox`: always `0 0 24 24`
-- `fill`: always `"currentColor"` on the root element; individual paths may omit it (inherits) or use `fill="var(--surface-100, #1d222f)"` to punch holes
-- No baked-in gradient
-- Use `fill-rule="evenodd"` to create hollow cutouts where background shows through
-- Stroke allowed for details (checkmarks, hatching) with `fill="none" stroke="currentColor"`
+### How Color Works
+
+Lucide icons render via `currentColor` by default. Set color on the icon's container or via the `color` prop for explicit overrides. The `.icon-tile` gradient pattern below is the preferred treatment.
 
 ### Icon Tile (gradient container)
 
@@ -218,44 +224,44 @@ import { Icon } from '@/ui/Icon';
 
 ### Complete Icon Set
 
-| Name          | Category    | Description                      |
-|---------------|-------------|----------------------------------|
-| adventure     | Navigation  | Sun disc + horizon               |
-| explore       | Navigation  | Compass rose                     |
-| trip          | Navigation  | Rolling suitcase                 |
-| itinerary     | Navigation  | Calendar with checkmark          |
-| destinations  | Navigation  | Teardrop map pin                 |
-| map           | Navigation  | Folded map                       |
-| plan          | Navigation  | Checklist clipboard              |
-| bookings      | Navigation  | Ticket stub                      |
-| flights       | Navigation  | Aircraft from above              |
-| stays         | Navigation  | Bed with pillows                 |
-| local         | Navigation  | House / home base                |
-| activities    | Activity    | Hiker silhouette                 |
-| nature        | Activity    | Pine trees                       |
-| beach         | Activity    | Palm tree + sun                  |
-| mountains     | Activity    | Three peaks                      |
-| city          | Activity    | Skyline silhouette               |
-| road-trip     | Activity    | Car from side                    |
-| hiking        | Activity    | Boot                             |
-| camping       | Activity    | Tent with trees                  |
-| cycling       | Activity    | Bicycle                          |
-| water-sports  | Activity    | Surfboard + wave                 |
-| wildlife      | Activity    | Deer silhouette                  |
-| food-drink    | Food/Social | Fork + knife                     |
-| eating-out    | Food/Social | Cloche plate cover               |
-| cooking       | Food/Social | Pot with steam                   |
-| party-club    | Food/Social | Disco ball                       |
-| festival      | Food/Social | Marquee tent                     |
-| concert       | Food/Social | Guitar                           |
-| culture       | Food/Social | Classical columns                |
-| events        | Food/Social | Calendar with star               |
-| favorites     | Utility     | Heart                            |
-| saved         | Utility     | Bookmark                         |
-| share         | Utility     | Three circles + lines            |
-| collaborate   | Utility     | Two people                       |
-| filters       | Utility     | Three-lever sliders              |
-| settings      | Utility     | Gear / cog                       |
+| Name          | Category    | Lucide Component   | Notes                            |
+|---------------|-------------|--------------------|----------------------------------|
+| adventure     | Navigation  | `Sunrise`          | More evocative than Sun          |
+| explore       | Navigation  | `Compass`          | —                                |
+| trip          | Navigation  | `Luggage`          | —                                |
+| itinerary     | Navigation  | `CalendarCheck`    | —                                |
+| destinations  | Navigation  | `MapPin`           | —                                |
+| map           | Navigation  | `Map`              | —                                |
+| plan          | Navigation  | `ClipboardList`    | —                                |
+| bookings      | Navigation  | `Ticket`           | —                                |
+| flights       | Navigation  | `PlaneTakeoff`     | More dynamic than Plane          |
+| stays         | Navigation  | `BedDouble`        | Better than Bed                  |
+| local         | Navigation  | `House`            | —                                |
+| activities    | Activity    | `Dumbbell`         | Footprints used below for hiking |
+| nature        | Activity    | `TreePine`         | Cleaner than Trees               |
+| beach         | Activity    | `Palmtree`         | Better ORIVOIR vibe than Umbrella|
+| mountains     | Activity    | `Mountain`         | —                                |
+| city          | Activity    | `Building2`        | —                                |
+| road-trip     | Activity    | `Car`              | Route is alt                     |
+| hiking        | Activity    | `Footprints`       | —                                |
+| camping       | Activity    | `TentTree`         | Better than Tent                 |
+| cycling       | Activity    | `Bike`             | —                                |
+| water-sports  | Activity    | `Sailboat`         | More specific than Waves         |
+| wildlife      | Activity    | `PawPrint`         | Better than Bird                 |
+| food-drink    | Food/Social | `UtensilsCrossed`  | —                                |
+| eating-out    | Food/Social | `Soup`             | Distinct from food-drink         |
+| cooking       | Food/Social | `CookingPot`       | Better than ChefHat              |
+| party-club    | Food/Social | `PartyPopper`      | Distinct from concert            |
+| festival      | Food/Social | `Sparkles`         | PartyPopper taken above          |
+| concert       | Food/Social | `Guitar`           | Distinct from party-club         |
+| culture       | Food/Social | `Landmark`         | —                                |
+| events        | Food/Social | `CalendarDays`     | No conflict with CalendarCheck   |
+| favorites     | Utility     | `Heart`            | —                                |
+| saved         | Utility     | `Bookmark`         | —                                |
+| share         | Utility     | `Share2`           | Better shape than Share          |
+| collaborate   | Utility     | `UsersRound`       | Warmer than Users                |
+| filters       | Utility     | `SlidersHorizontal`| —                                |
+| settings      | Utility     | `Settings2`        | Gear style                       |
 
 ---
 
@@ -425,17 +431,15 @@ Do not animate layout (width, height, top, left) in the critical path. Use `tran
 
 ```
 src/
-  assets/
-    icons/          ← 36 SVG glyph files (generated by scripts/gen-icons.py)
   ui/
-    Icon.tsx        ← Icon component
+    Icon.tsx        ← Icon component (wraps lucide-react)
   theme.css         ← CSS token definitions (authoritative for all tokens)
   styles.css        ← Base reset and global styles
 docs/
   design-system.md  ← THIS FILE (source of truth)
-scripts/
-  gen-icons.py      ← Icon generation script
 ```
+
+Icons are sourced from the `lucide-react` npm package. No local SVG files or generator script.
 
 ---
 
@@ -443,8 +447,9 @@ scripts/
 
 | Date       | Change                                                     |
 |------------|------------------------------------------------------------|
+| 2026-11-16 | Switched icon system to Lucide React; custom SVGs removed  |
+| 2026-11-16 | Icon.tsx rewritten to map 36 ORIVOIR names → Lucide components |
 | 2026-11-16 | Initial WILDSTROM spec written and committed to repo       |
-| 2026-11-16 | 36 production SVG icons generated; Icon.tsx component added|
 | 2026-11-15 | Font stack updated: Fraunces 600+900 / DM Sans / DM Mono   |
 | 2026-11-15 | Wordmark weight updated to 900; serif override clarified    |
 | 2026-11-14 | Clover & Rye renamed WILDSTROM; Storm/Daylight themes set  |

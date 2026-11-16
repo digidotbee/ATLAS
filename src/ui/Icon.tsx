@@ -1,12 +1,50 @@
 import React from 'react';
+import {
+  Sunrise,
+  Compass,
+  Luggage,
+  CalendarCheck,
+  MapPin,
+  Map,
+  ClipboardList,
+  Ticket,
+  PlaneTakeoff,
+  BedDouble,
+  House,
+  Dumbbell,
+  TreePine,
+  Palmtree,
+  Mountain,
+  Building2,
+  Car,
+  Footprints,
+  TentTree,
+  Bike,
+  Sailboat,
+  PawPrint,
+  UtensilsCrossed,
+  Soup,
+  CookingPot,
+  PartyPopper,
+  Sparkles,
+  Guitar,
+  Landmark,
+  CalendarDays,
+  Heart,
+  Bookmark,
+  Share2,
+  UsersRound,
+  SlidersHorizontal,
+  Settings2,
+  type LucideIcon,
+} from 'lucide-react';
 
 /**
- * WILDSTROM Icon component
+ * WILDSTROM Icon component — powered by Lucide React
  *
- * Renders a glyph-only SVG icon from src/assets/icons/.
- * The icon itself is `fill="currentColor"` with no baked-in gradient.
- * Wrap in an `.icon-tile` container div with a CSS gradient class to
- * apply the Storm or Daylight gradient treatment:
+ * Renders a Lucide icon using `currentColor` so it inherits color from the
+ * CSS context. Wrap in an `.icon-tile` container to apply Storm / Daylight
+ * gradient treatments:
  *
  *   <div className="icon-tile icon-tile--accent">
  *     <Icon name="adventure" size={20} />
@@ -53,45 +91,63 @@ export type IconName =
   | 'filters'
   | 'settings';
 
+/** Maps ORIVOIR semantic icon names to Lucide components. */
+const ICON_MAP: Record<IconName, LucideIcon> = {
+  // Navigation
+  adventure:    Sunrise,
+  explore:      Compass,
+  trip:         Luggage,
+  itinerary:    CalendarCheck,
+  destinations: MapPin,
+  map:          Map,
+  plan:         ClipboardList,
+  bookings:     Ticket,
+  flights:      PlaneTakeoff,
+  stays:        BedDouble,
+  local:        House,
+  // Activity
+  activities:   Dumbbell,
+  nature:       TreePine,
+  beach:        Palmtree,
+  mountains:    Mountain,
+  city:         Building2,
+  'road-trip':  Car,
+  hiking:       Footprints,
+  camping:      TentTree,
+  cycling:      Bike,
+  'water-sports': Sailboat,
+  wildlife:     PawPrint,
+  // Food / Social
+  'food-drink': UtensilsCrossed,
+  'eating-out': Soup,
+  cooking:      CookingPot,
+  'party-club': PartyPopper,
+  festival:     Sparkles,
+  concert:      Guitar,
+  culture:      Landmark,
+  events:       CalendarDays,
+  // Utility
+  favorites:    Heart,
+  saved:        Bookmark,
+  share:        Share2,
+  collaborate:  UsersRound,
+  filters:      SlidersHorizontal,
+  settings:     Settings2,
+};
+
 interface IconProps {
-  /** Icon name matching a file in src/assets/icons/ */
+  /** ORIVOIR semantic icon name */
   name: IconName;
   /** Icon size in px; sets both width and height. Default: 24 */
   size?: number;
-  /** Additional CSS class(es) to apply to the <svg> element */
+  /** Additional CSS class(es) to apply to the icon */
   className?: string;
   /** Explicit color; overrides CSS `color` inheritance */
   color?: string;
   /** Accessible label; use when the icon has semantic meaning standalone */
   label?: string;
-}
-
-// Eagerly import all icons via Vite's import.meta.glob.
-// Each entry is a raw SVG string (via ?raw suffix) keyed by filename.
-const svgModules = import.meta.glob<string>('../assets/icons/*.svg', {
-  eager: true,
-  query: '?raw',
-  import: 'default',
-});
-
-function getSvgContent(name: IconName): string | null {
-  const key = `../assets/icons/${name}.svg`;
-  return svgModules[key] ?? null;
-}
-
-/**
- * Extracts the inner SVG content (everything between <svg …> and </svg>)
- * and the viewBox attribute from a raw SVG string.
- */
-function parseSvg(raw: string): { inner: string; viewBox: string } {
-  const viewBoxMatch = raw.match(/viewBox="([^"]+)"/);
-  const viewBox = viewBoxMatch ? viewBoxMatch[1] : '0 0 24 24';
-  // Strip outer <svg …> wrapper — keep only child elements
-  const inner = raw
-    .replace(/<svg[^>]*>/, '')
-    .replace(/<\/svg>/, '')
-    .trim();
-  return { inner, viewBox };
+  /** Stroke width override. Default: Lucide default (2) */
+  strokeWidth?: number;
 }
 
 export const Icon: React.FC<IconProps> = ({
@@ -100,40 +156,27 @@ export const Icon: React.FC<IconProps> = ({
   className,
   color,
   label,
+  strokeWidth,
 }) => {
-  const raw = getSvgContent(name);
+  const LucideComponent = ICON_MAP[name];
 
-  if (!raw) {
+  if (!LucideComponent) {
     if (import.meta.env.DEV) {
-      console.warn(`[Icon] Missing icon: "${name}"`);
+      console.warn(`[Icon] Unknown icon name: "${name}"`);
     }
-    return (
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        aria-hidden="true"
-        className={className}
-        style={color ? { color } : undefined}
-      />
-    );
+    // Render an invisible placeholder to avoid layout shifts
+    return <span style={{ display: 'inline-block', width: size, height: size }} aria-hidden="true" />;
   }
 
-  const { inner, viewBox } = parseSvg(raw);
-
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox={viewBox}
-      fill="currentColor"
+    <LucideComponent
+      size={size}
+      color={color ?? 'currentColor'}
+      strokeWidth={strokeWidth}
       aria-hidden={!label}
       role={label ? 'img' : undefined}
       aria-label={label}
       className={className}
-      style={color ? { color } : undefined}
-      dangerouslySetInnerHTML={{ __html: inner }}
     />
   );
 };
