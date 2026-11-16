@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-  <path d="M5 8c5 0 9 3 14 3-5 0-9 3-14 3V8z" fill-rule="evenodd"/>
-  <path d="M8 16c3 0 6-1.5 9-1.5-3 0-6 1.5-9 1.5z" fill-rule="evenodd" opacity=".55"/>
-  <rect x="10" y="3" width="4" height="10" rx="2" transform="rotate(-30 12 8)"/>
-  <path d="M14.5 5 13 9" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity=".45"/>
-</svg>
