@@ -88,8 +88,9 @@
 
 /* ---------- Shared scales + mapping onto the app's existing tokens ---------- */
 :root {
-  --serif: 'Merriweather', Georgia, serif;
-  --sans: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --serif: 'Fraunces', Georgia, serif;
+  --sans: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   --wordmark: 'Fraunces', Georgia, serif;
 
   --radius-xs: 2px; /* data / crisp side */
@@ -212,7 +213,7 @@ a {
   text-shadow: none;
 }
 .logo-word {
-  font: 600 30px/1 var(--wordmark);
+  font: 900 30px/1 var(--wordmark);
   color: var(--ink);
 }
 .logo-dot {
@@ -673,7 +674,7 @@ details > summary,
   flex-wrap: wrap;
 }
 .footer-word {
-  font: 600 18px/1 var(--wordmark);
+  font: 900 18px/1 var(--wordmark);
   color: var(--ink);
 }
 .footer-tag {

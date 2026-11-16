@@ -20,7 +20,8 @@
   --radius: 14px;
   --shadow: 0 1px 2px rgb(29 42 46 / 6%), 0 4px 16px rgb(29 42 46 / 6%);
   --serif: 'Fraunces', Georgia, 'Times New Roman', serif;
-  --sans: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --sans: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   color-scheme: light;
 }
 
@@ -85,7 +86,7 @@ textarea {
   resize: vertical;
 }
 .mono {
-  font: 13px/1.45 ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font: 13px/1.45 var(--mono);
 }
 .muted {
   color: var(--muted);
