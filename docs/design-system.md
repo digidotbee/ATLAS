@@ -237,6 +237,7 @@ import { Icon } from '@/ui/Icon';
 | flights       | Navigation  | `PlaneTakeoff`     | More dynamic than Plane          |
 | stays         | Navigation  | `BedDouble`        | Better than Bed                  |
 | local         | Navigation  | `House`            | —                                |
+| cruise        | Navigation  | `Ship`             | Passenger liner silhouette       |
 | activities    | Activity    | `Dumbbell`         | Footprints used below for hiking |
 | nature        | Activity    | `TreePine`         | Cleaner than Trees               |
 | beach         | Activity    | `Palmtree`         | Better ORIVOIR vibe than Umbrella|
@@ -447,6 +448,7 @@ Icons are sourced from the `lucide-react` npm package. No local SVG files or gen
 
 | Date       | Change                                                     |
 |------------|------------------------------------------------------------|
+| 2026-11-16 | Added `cruise` (Ship) icon; `OrivoirIcon` alias exported   |
 | 2026-11-16 | Switched icon system to Lucide React; custom SVGs removed  |
 | 2026-11-16 | Icon.tsx rewritten to map 36 ORIVOIR names → Lucide components |
 | 2026-11-16 | Initial WILDSTROM spec written and committed to repo       |

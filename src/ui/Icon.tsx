@@ -11,6 +11,7 @@ import {
   PlaneTakeoff,
   BedDouble,
   House,
+  Ship,
   Dumbbell,
   TreePine,
   Palmtree,
@@ -84,6 +85,7 @@ export type IconName =
   | 'concert'
   | 'culture'
   | 'events'
+  | 'cruise'
   | 'favorites'
   | 'saved'
   | 'share'
@@ -105,6 +107,7 @@ const ICON_MAP: Record<IconName, LucideIcon> = {
   flights:      PlaneTakeoff,
   stays:        BedDouble,
   local:        House,
+  cruise:       Ship,
   // Activity
   activities:   Dumbbell,
   nature:       TreePine,
@@ -182,3 +185,10 @@ export const Icon: React.FC<IconProps> = ({
 };
 
 export default Icon;
+
+/**
+ * Alias for `Icon` — use whichever reads better in context.
+ * Both are identical; `OrivoirIcon` signals ORIVOIR semantic names
+ * rather than raw Lucide names.
+ */
+export const OrivoirIcon = Icon;
