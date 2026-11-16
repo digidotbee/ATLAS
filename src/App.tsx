@@ -41,11 +41,14 @@ export function App() {
     <>
       {!isPrint && (
         <header className="app-header no-print">
-          <a className="logo" href={href({ page: 'trips' })}>
-            <span className="logo-word">
-              ORIVOIR<span className="logo-dot">.</span>
+          <img className="header-landscape" src="/hero/orivoir-landscape.svg" alt="" aria-hidden="true" />
+          <a className="logo" href={href({ page: 'trips' })} aria-label="ORIVOIR home">
+            <span className="logo-copy">
+              <span className="logo-word">
+                ORIVOIR
+              </span>
+              <span className="logo-sub">Adventure planner</span>
             </span>
-            <span className="logo-sub">Adventure planner</span>
           </a>
           <nav className="app-nav">
             <a href={href({ page: 'trips' })} className={route.page === 'trips' ? 'active' : ''}>
@@ -58,39 +61,41 @@ export function App() {
               Planner
             </a>
           </nav>
-          <button
-            type="button"
-            className="icon-btn"
-            onClick={() => setTheme(effectiveTheme === 'storm' ? 'daylight' : 'storm')}
-            aria-label={effectiveTheme === 'storm' ? 'Switch to Daylight' : 'Switch to Storm'}
-            title={effectiveTheme === 'storm' ? 'Daylight' : 'Storm'}
-          >
-            {effectiveTheme === 'storm' ? (
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
-                <circle cx="12" cy="12" r="4.2" />
-                <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" />
+          <div className="header-actions">
+            <button
+              type="button"
+              className="icon-btn"
+              onClick={() => setTheme(effectiveTheme === 'storm' ? 'daylight' : 'storm')}
+              aria-label={effectiveTheme === 'storm' ? 'Switch to Daylight' : 'Switch to Storm'}
+              title={effectiveTheme === 'storm' ? 'Daylight' : 'Storm'}
+            >
+              {effectiveTheme === 'storm' ? (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4.2" />
+                  <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" />
+                </svg>
+              ) : (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+                  <path d="M7 18h10a4 4 0 0 0 .5-7.97A5.5 5.5 0 0 0 6.6 9.1 4.5 4.5 0 0 0 7 18z" />
+                  <path d="m11.5 13-1.5 3h3l-1.5 3" />
+                </svg>
+              )}
+            </button>
+            <a className="icon-btn" href={href({ page: 'profile' })} aria-label="Family profile" title="Family profile">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+                <circle cx="9" cy="8" r="3.2" />
+                <path d="M3 19c.6-3.3 3-5 6-5s5.4 1.7 6 5" />
+                <circle cx="16.5" cy="7.5" r="2.6" />
+                <path d="M16 12.6c2.6 0 4.5 1.5 5 4.4" />
               </svg>
-            ) : (
+            </a>
+            <a className="icon-btn" href={href({ page: 'settings' })} aria-label="Settings" title="Settings">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
-                <path d="M7 18h10a4 4 0 0 0 .5-7.97A5.5 5.5 0 0 0 6.6 9.1 4.5 4.5 0 0 0 7 18z" />
-                <path d="m11.5 13-1.5 3h3l-1.5 3" />
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
               </svg>
-            )}
-          </button>
-          <a className="icon-btn" href={href({ page: 'profile' })} aria-label="Family profile" title="Family profile">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
-              <circle cx="9" cy="8" r="3.2" />
-              <path d="M3 19c.6-3.3 3-5 6-5s5.4 1.7 6 5" />
-              <circle cx="16.5" cy="7.5" r="2.6" />
-              <path d="M16 12.6c2.6 0 4.5 1.5 5 4.4" />
-            </svg>
-          </a>
-          <a className="icon-btn" href={href({ page: 'settings' })} aria-label="Settings" title="Settings">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
-            </svg>
-          </a>
+            </a>
+          </div>
           <SyncBadge />
         </header>
       )}
@@ -159,16 +164,7 @@ export function App() {
       {!isPrint && (
         <footer className="app-footer no-print">
           <div className="footer-inner">
-            <p className="footer-brand">
-              <span className="footer-word">
-                ORIVOIR<span className="logo-dot">.</span>
-              </span>
-              <span className="footer-tag">Wild by nature. Engineered with intention.</span>
-            </p>
-            <nav className="footer-links" aria-label="Footer">
-              <a href={href({ page: 'profile' })}>Family</a>
-              <a href={href({ page: 'settings' })}>Settings</a>
-            </nav>
+            <p className="footer-tag">Orivoir was engineered with wild intention and love for you.</p>
           </div>
         </footer>
       )}

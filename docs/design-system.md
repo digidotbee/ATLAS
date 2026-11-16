@@ -7,8 +7,8 @@
 
 ## 1. Brand Identity
 
-**Product name:** ORIVOIR.  
-**Brand mark:** "ORIVOIR." — the period is part of the mark; always include it.  
+**Product name:** ORIVOIR
+**Brand mark:** "ORIVOIR"
 **Tagline:** ADVENTURE PLANNER  
 **Design system name:** WILDSTORM  
 
