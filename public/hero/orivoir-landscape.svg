@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 180" fill="none" role="img" aria-labelledby="title desc">
+<title id="title">Orivoir atmospheric sunrise landscape</title><desc id="desc">Warm glowing sun behind translucent sage and seafoam hills with layered deep teal foreground, transparent background.</desc>
+<defs>
+ <linearGradient id="sunCore" x1=".16" y1="0" x2=".86" y2="1" gradientUnits="objectBoundingBox"><stop stop-color="#FFE05A"/><stop offset=".36" stop-color="#FFBB24"/><stop offset=".78" stop-color="#FF9517"/><stop offset="1" stop-color="#ED7624"/></linearGradient>
+ <radialGradient id="sunBloom"><stop stop-color="#FFC53B" stop-opacity=".40"/><stop offset=".52" stop-color="#F4B63C" stop-opacity=".15"/><stop offset="1" stop-color="#FFB942" stop-opacity="0"/></radialGradient>
+ <linearGradient id="ridgeBack" x1="0" y1="0" x2="800" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="#237B75" stop-opacity=".04"/><stop offset=".22" stop-color="#74B99B"/><stop offset=".48" stop-color="#A5C889"/><stop offset=".67" stop-color="#7FAA82"/><stop offset="1" stop-color="#477A66" stop-opacity=".03"/></linearGradient>
+ <linearGradient id="ridgeTop" x1="210" y1="100" x2="650" y2="178" gradientUnits="userSpaceOnUse"><stop stop-color="#4CA18E"/><stop offset=".35" stop-color="#8BC29A"/><stop offset=".66" stop-color="#70B09B"/><stop offset="1" stop-color="#316E68" stop-opacity=".25"/></linearGradient>
+ <linearGradient id="ridgeMiddle" x1="120" y1="135" x2="790" y2="155" gradientUnits="userSpaceOnUse"><stop stop-color="#076B6B" stop-opacity=".25"/><stop offset=".34" stop-color="#1D8B80"/><stop offset=".61" stop-color="#4F9C8A" stop-opacity=".84"/><stop offset="1" stop-color="#164E50" stop-opacity=".18"/></linearGradient>
+ <linearGradient id="ridgeSage" x1="360" y1="100" x2="720" y2="174" gradientUnits="userSpaceOnUse"><stop stop-color="#B3CD8F" stop-opacity=".65"/><stop offset=".42" stop-color="#86B48B" stop-opacity=".7"/><stop offset="1" stop-color="#4B806D" stop-opacity=".2"/></linearGradient>
+ <linearGradient id="ridgeFront" x1="100" y1="153" x2="770" y2="178" gradientUnits="userSpaceOnUse"><stop stop-color="#053E48" stop-opacity=".1"/><stop offset=".26" stop-color="#004C52"/><stop offset=".52" stop-color="#006168"/><stop offset=".78" stop-color="#0A4C52"/><stop offset="1" stop-color="#07373F" stop-opacity=".35"/></linearGradient>
+ <linearGradient id="edgeFade" x1="0" y1="0" x2="800" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="black" stop-opacity="0"/><stop offset=".14" stop-color="white"/><stop offset=".83" stop-color="white"/><stop offset="1" stop-color="black" stop-opacity="0"/></linearGradient>
+ <mask id="softSides"><rect width="800" height="180" fill="url(#edgeFade)"/></mask>
+ <filter id="sunGlow" x="-70%" y="-70%" width="240%" height="240%"><feGaussianBlur stdDeviation="12"/></filter>
+</defs>
+<g mask="url(#softSides)">
+ <ellipse cx="419" cy="98" rx="110" ry="100" fill="url(#sunBloom)" filter="url(#sunGlow)"/>
+ <circle cx="420" cy="82" r="56" fill="url(#sunCore)"/>
+ <path d="M0 177 C86 176 157 160 220 135 C266 116 303 95 344 101 C374 105 395 124 417 121 C442 119 464 94 491 94 C529 95 554 125 603 139 C668 158 730 158 800 162 L800 180 H0Z" fill="url(#ridgeBack)"/>
+ <path d="M0 180 C98 176 167 155 241 124 C293 102 319 112 351 125 C390 140 420 112 455 93 C486 76 499 79 523 92 C564 115 599 146 657 152 C710 158 753 158 800 160 V180Z" fill="url(#ridgeTop)" opacity=".9"/>
+ <path d="M150 180 C237 163 289 130 334 127 C382 124 405 145 438 140 C479 132 499 113 527 119 C562 127 589 149 635 156 C698 166 744 162 800 166 V180Z" fill="url(#ridgeSage)"/>
+ <path d="M0 180 C107 175 163 157 236 135 C289 119 316 120 349 136 C391 157 422 165 454 150 C487 134 508 124 537 131 C585 144 614 157 661 160 C718 164 758 164 800 167 V180Z" fill="url(#ridgeMiddle)" opacity=".85"/>
+ <path d="M0 180 C100 179 170 169 231 153 C278 140 299 133 323 136 C367 143 391 170 435 171 C484 172 506 152 543 149 C580 146 605 165 660 169 C709 172 757 171 800 172 V180Z" fill="url(#ridgeFront)"/>
+</g>
+</svg>
