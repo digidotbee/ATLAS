@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+  <rect x="5" y="8" width="14" height="12" rx="1.5" fill-rule="evenodd"/>
+  <rect x="9" y="4" width="6" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.75"/>
+  <rect x="5" y="13" width="14" height="1.5" rx=".75"/>
+  <circle cx="8.5" cy="20.5" r="1.25" fill="var(--surface-100, #fff)"/>
+  <circle cx="15.5" cy="20.5" r="1.25" fill="var(--surface-100, #fff)"/>
+</svg>

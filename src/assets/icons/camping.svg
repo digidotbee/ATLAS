@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+  <path d="M12 3 4 20h16L12 3z" fill-rule="evenodd"/>
+  <path d="M12 3l-3.5 17h7L12 3z" fill="var(--surface-100, #1d222f)" opacity=".3"/>
+  <path d="M9 20v-5h6v5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <path d="M2 20 5 14l3 6" fill-rule="evenodd" opacity=".55"/>
+  <path d="M22 20l-3-6-3 6" fill-rule="evenodd" opacity=".55"/>
+</svg>
