@@ -6,6 +6,7 @@ export interface NewTripDraft {
   name: string;
   region: string;
   budget: number | null;
+  budgetSkipped: boolean;
   currency: string;
   earliest: string;
   latest: string;
@@ -19,6 +20,14 @@ export interface NewTripDraft {
   childAges: string;
 }
 
+export type BudgetMode = 'total' | 'perPerson';
+
+/** Resolve the entered amount only once the final traveler count is known. */
+export function budgetTotalForEntry(amount: number | null, mode: BudgetMode, adults: number, children: number): number | null {
+  if (amount === null) return null;
+  return mode === 'perPerson' ? amount * (adults + children) : amount;
+}
+
 export const NEW_TRIP_STEPS = ['where', 'budget', 'when', 'who'] as const;
 export type NewTripStep = (typeof NEW_TRIP_STEPS)[number];
 
@@ -27,7 +36,7 @@ export function stepErrors(step: NewTripStep, d: NewTripDraft): string[] {
   const e: string[] = [];
   if (step === 'where' && !d.destination.trim()) e.push('Add a destination, region or idea.');
   if (step === 'budget') {
-    if (!d.budget || d.budget <= 0) e.push('Enter a total budget.');
+    if (!d.budgetSkipped && (d.budget === null || !Number.isFinite(d.budget) || d.budget <= 0)) e.push('Enter a budget greater than zero, or skip for now.');
     if (!/^[A-Z]{3}$/.test(d.currency)) e.push('Currency must be a 3-letter code such as USD or EUR.');
   }
   if (step === 'when') {

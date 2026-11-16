@@ -77,14 +77,14 @@ export interface BudgetLine {
 
 export interface BudgetSummary {
   shape: TripShape;
-  budget: number;
+  budget: number | null;
   lines: BudgetLine[];
   byCategory: Record<Category, number>;
   committed: number;
   estimated: number;
   verified: number;
   contingency: number;
-  remaining: number;
+  remaining: number | null;
   /** Cost of everything still marked "considering", if it were all chosen. */
   consideringTotal: number;
   warnings: string[];
@@ -158,8 +158,8 @@ export function summarize(trip: Trip, date: DateOption | null = chosenDate(trip)
     else estimated += l.amount;
   }
   const committed = round2(estimated + verified);
-  const contingency = round2((trip.budgetTotal * trip.contingencyPct) / 100);
-  const remaining = round2(trip.budgetTotal - committed - contingency);
+  const contingency = trip.budgetTotal === null ? 0 : round2((trip.budgetTotal * trip.contingencyPct) / 100);
+  const remaining = trip.budgetTotal === null ? null : round2(trip.budgetTotal - committed - contingency);
 
   const consideringTotal = round2(
     trip.candidates
@@ -215,6 +215,7 @@ export interface Affordability {
  * Returns null when there is nothing to base a daily cost on yet.
  */
 export function affordableNights(trip: Trip, flightPerPerson: number | null): Affordability | null {
+  if (trip.budgetTotal === null) return null;
   const people = travelerCount(trip);
   const selected = trip.candidates.filter((c) => c.status === 'selected');
   const flightItems = selected.filter((c) => c.category === 'flights');

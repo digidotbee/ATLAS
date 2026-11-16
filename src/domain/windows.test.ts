@@ -128,6 +128,15 @@ describe('flexible-date planning engine', () => {
     expect(tight.constraints!.minNights).toBe(7);
   });
 
+  it('generates windows without applying a budget cap when no target is set', () => {
+    const t = plannedTrip({ budgetTotal: null });
+    const result = generateWindows(t);
+    expect(result.windows.length).toBeGreaterThan(0);
+    expect(result.shortfall).toBeNull();
+    expect(result.windows.every((window) => window.remainingBudget === null)).toBe(true);
+    expect(evaluateWindow(t, '2027-05-21', 10)?.parts.cost).toBeNull();
+  });
+
   it('9. rejected windows stay rejected and are not re-proposed', () => {
     const t = plannedTrip();
     const first = generateWindows(t);

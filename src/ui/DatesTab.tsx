@@ -615,7 +615,7 @@ function CompareTable({ windows, currency }: { windows: CandidateTravelWindow[];
     { label: 'Leave home', get: (w) => fmt(w.departureDate) },
     { label: 'Nights there', get: (w) => w.destinationNights },
     { label: 'Projected total ≈', get: (w) => <Money amount={w.projectedTotal} currency={currency} /> },
-    { label: 'Left over', get: (w) => <Money amount={w.remainingBudget} currency={currency} /> },
+    { label: 'Left over', get: (w) => (w.remainingBudget === null ? 'No budget target' : <Money amount={w.remainingBudget} currency={currency} />) },
     { label: 'Per night ≈', get: (w) => <Money amount={w.projectedTotal / w.destinationNights} currency={currency} /> },
     { label: 'Weather', get: (w) => (w.weatherScore === null ? '—' : `${w.weatherScore}/5`) },
     { label: 'Score', get: (w) => w.score },
@@ -664,7 +664,7 @@ function WindowCard({ w, trip, update, profileAirport }: { w: CandidateTravelWin
     ['Food', w.foodTotal],
     ['Activities', w.activitiesTotal],
     ['Taxes & fees', w.feesTotal],
-    [`Cushion (${trip.contingencyPct}%)`, w.contingency],
+    ...(trip.budgetTotal === null ? [] : [[`Cushion (${trip.contingencyPct}%)`, w.contingency] as [string, number]]),
   ];
   void profileAirport;
 
@@ -691,9 +691,13 @@ function WindowCard({ w, trip, update, profileAirport }: { w: CandidateTravelWin
         </div>
         <div className="window-total">
           <Money amount={w.projectedTotal} currency={cur} />
-          <span className={w.remainingBudget < 0 ? 'over small' : 'small'}>
-            <Money amount={w.remainingBudget} currency={cur} /> left
-          </span>
+          {w.remainingBudget === null ? (
+            <span className="small">No budget target</span>
+          ) : (
+            <span className={w.remainingBudget < 0 ? 'over small' : 'small'}>
+              <Money amount={w.remainingBudget} currency={cur} /> left
+            </span>
+          )}
           <PriceBadge status={w.priceStatus} />
           <span className={`conf conf-${w.confidence}`}>{w.confidence} confidence</span>
         </div>

@@ -102,7 +102,7 @@ export function nearlyIdentical(a: { departureDate: string; destinationNights: n
 }
 
 interface Evaluated extends Omit<CandidateTravelWindow, 'id' | 'status' | 'feedback' | 'labels' | 'score'> {
-  parts: { cost: number; value: number; duration: number; weather: number | null; preferences: number | null };
+  parts: { cost: number | null; value: number; duration: number; weather: number | null; preferences: number | null };
   fareMonth: string;
   farePerPerson: number;
 }
@@ -140,9 +140,9 @@ export function evaluateWindow(
   const foodTotal = round2((a.foodPerPersonPerDay ?? 0) * people * days);
   const activitiesTotal = round2((a.activitiesPerPersonPerDay ?? 0) * people * days);
   const feesTotal = round2((lodgingTotal * a.feesPct) / 100);
-  const contingency = round2((trip.budgetTotal * trip.contingencyPct) / 100);
+  const contingency = trip.budgetTotal === null ? 0 : round2((trip.budgetTotal * trip.contingencyPct) / 100);
   const projectedTotal = round2(airfareTotal + lodgingTotal + groundTransportTotal + foodTotal + activitiesTotal + feesTotal + contingency);
-  const remainingBudget = round2(trip.budgetTotal - projectedTotal);
+  const remainingBudget = trip.budgetTotal === null ? null : round2(trip.budgetTotal - projectedTotal);
 
   // Weather: day-weighted average of monthly climate scores across the stay.
   let wSum = 0;
@@ -203,7 +203,13 @@ export function evaluateWindow(
     fareOverridePerPerson: override?.fareOverridePerPerson ?? null,
     fareOverrideVerified: override?.fareOverrideVerified ?? false,
     fareOverrideSource: override?.fareOverrideSource ?? '',
-    parts: { cost: Math.max(0, remainingBudget) / trip.budgetTotal, value: 0, duration, weather: weatherScore === null ? null : weatherScore / 5, preferences },
+    parts: {
+      cost: trip.budgetTotal === null ? null : Math.max(0, remainingBudget ?? 0) / trip.budgetTotal,
+      value: 0,
+      duration,
+      weather: weatherScore === null ? null : weatherScore / 5,
+      preferences,
+    },
     fareMonth,
     farePerPerson,
   };
@@ -289,7 +295,7 @@ export function generateWindows(trip: Trip): GenerateResult {
   }
   const notRejected = (e: { departureDate: string; destinationNights: number }) => !rejected.some((r) => nearlyIdentical(r, e));
 
-  let affordable = [...seen.values()].filter((e) => e.remainingBudget >= 0 && notRejected(e));
+  let affordable = [...seen.values()].filter((e) => (e.remainingBudget === null || e.remainingBudget >= 0) && notRejected(e));
   // Refine around the best few coarse results.
   const coarseTop = scoreAll(affordable, weights)
     .sort((x, y) => y.score - x.score)
@@ -305,7 +311,7 @@ export function generateWindows(trip: Trip): GenerateResult {
     }
   }
   const evaluatedCount = seen.size;
-  affordable = [...seen.values()].filter((e) => e.remainingBudget >= 0 && notRejected(e));
+  affordable = [...seen.values()].filter((e) => (e.remainingBudget === null || e.remainingBudget >= 0) && notRejected(e));
 
   if (affordable.length === 0) {
     const all = [...seen.values()].filter(notRejected);
@@ -318,7 +324,7 @@ export function generateWindows(trip: Trip): GenerateResult {
       };
     }
     const cheapest = all.reduce((x, y) => (y.projectedTotal < x.projectedTotal ? y : x));
-    const amount = round2(cheapest.projectedTotal - trip.budgetTotal);
+    const amount = trip.budgetTotal === null ? 0 : round2(cheapest.projectedTotal - trip.budgetTotal);
     const cw = toWindow(cheapest, 0, [], 'proposed', '');
     return {
       windows: previous,
@@ -375,7 +381,11 @@ export function generateWindows(trip: Trip): GenerateResult {
 function toWindow(e: Evaluated, score: number, labels: string[], status: CandidateTravelWindow['status'], feedback: string): CandidateTravelWindow {
   const { parts, fareMonth, farePerPerson, ...rest } = e;
   const reasons = [
-    rest.remainingBudget >= 0 ? `Fits the budget with ${Math.round(rest.remainingBudget)} to spare` : `Over budget by ${Math.round(-rest.remainingBudget)}`,
+    rest.remainingBudget === null
+      ? 'No budget target set'
+      : rest.remainingBudget >= 0
+        ? `Fits the budget with ${Math.round(rest.remainingBudget)} to spare`
+        : `Over budget by ${Math.round(-rest.remainingBudget)}`,
     `${rest.destinationNights} nights at the destination`,
     rest.fareOverridePerPerson
       ? `Airfare ${farePerPerson}/person for these exact dates${rest.fareOverrideVerified ? ' (you checked it)' : ' (estimate)'}`

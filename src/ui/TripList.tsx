@@ -126,13 +126,18 @@ function TripCard({ t, featured }: { t: Trip; featured?: boolean }) {
         {d ? (
           <div className="trip-row-budget">
             <BudgetMeter summary={s} currency={t.currency} compact />
-            <span className={s.remaining < 0 ? 'over' : s.remaining < t.budgetTotal * 0.1 ? 'low' : ''}>
-              <Money amount={s.remaining} currency={t.currency} /> left of <Money amount={t.budgetTotal} currency={t.currency} />
-            </span>
+            {s.budget === null || s.remaining === null || t.budgetTotal === null ? (
+              <span className="muted">No budget target · <Money amount={s.committed} currency={t.currency} /> tracked</span>
+            ) : (
+              <span className={s.remaining < 0 ? 'over' : s.remaining < s.budget * 0.1 ? 'low' : ''}>
+                <Money amount={s.remaining} currency={t.currency} /> left of <Money amount={s.budget} currency={t.currency} />
+              </span>
+            )}
           </div>
         ) : (
           <span className="trip-row-budget muted">
-            <Money amount={t.budgetTotal} currency={t.currency} /> · {t.travelers.adults + t.travelers.children} travelers
+            {t.budgetTotal === null ? 'No budget target' : <><Money amount={t.budgetTotal} currency={t.currency} /> · </>}
+            {t.travelers.adults + t.travelers.children} travelers
           </span>
         )}
       </div>

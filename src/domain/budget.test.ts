@@ -107,6 +107,13 @@ describe('budget', () => {
     expect(s.shape.nights).toBe(0);
     expect(s.warnings[0]).toMatch(/Choose travel dates/);
   });
+
+  it('tracks spend without treating a missing target as a zero-dollar cap', () => {
+    const s = summarize(trip({ budgetTotal: null }));
+    expect(s.budget).toBeNull();
+    expect(s.remaining).toBeNull();
+    expect(s.contingency).toBe(0);
+  });
 });
 
 describe('interest matching', () => {

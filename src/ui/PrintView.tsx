@@ -55,14 +55,12 @@ export function PrintView({ id }: { id: string }) {
               {s.shape.people} travelers
             </p>
           </div>
-          <div className={`sheet-remaining ${s.remaining < 0 ? 'over' : ''}`}>
-            <span>{s.remaining < 0 ? 'Over budget' : 'Remaining'}</span>
+          <div className={`sheet-remaining ${s.remaining !== null && s.remaining < 0 ? 'over' : ''}`}>
+            <span>{s.remaining === null ? 'Tracked spend' : s.remaining < 0 ? 'Over budget' : 'Remaining'}</span>
             <strong>
-              <Money amount={Math.abs(s.remaining)} currency={cur} />
+              <Money amount={s.remaining === null ? s.committed : Math.abs(s.remaining)} currency={cur} />
             </strong>
-            <span>
-              of <Money amount={s.budget} currency={cur} />
-            </span>
+            <span>{s.budget === null ? 'No budget target' : <>of <Money amount={s.budget} currency={cur} /></>}</span>
           </div>
         </header>
 

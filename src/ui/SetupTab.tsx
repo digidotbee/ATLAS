@@ -24,7 +24,7 @@ export function SetupTab({ trip, update }: TabProps) {
       <div className="card stack-sm">
         <div className="grid-3">
           <Field label="Total budget">
-            <NumberInput value={trip.budgetTotal} onChange={(v) => update((t) => ({ ...t, budgetTotal: v ?? 0 }))} step={100} aria-label="Total budget" />
+            <NumberInput value={trip.budgetTotal} onChange={(v) => update((t) => ({ ...t, budgetTotal: v }))} step={100} aria-label="Total budget" placeholder="No target set" />
           </Field>
           <Field label="Currency" hint="3-letter code">
             <input value={trip.currency} maxLength={3} onChange={(e) => update((t) => ({ ...t, currency: e.target.value.toUpperCase() }))} />
