@@ -20,24 +20,29 @@ ORIVOIR is a family travel planning application. The visual language is editoria
 
 WILDSTROM ships two complete, switchable themes. Both share the same CSS token names; values differ.
 
-| Token          | Storm (dark)   | Daylight (light) |
-|----------------|----------------|------------------|
-| `--surface-100`| `#1d222f`      | `#f5f4ec`        |
-| `--surface-200`| `#252c3d`      | `#ebe9df`        |
-| `--surface-300`| `#2f3850`      | `#dedad0`        |
-| `--surface-400`| `#3a4561`      | `#cdc8b8`        |
-| `--surface-500`| `#4d5c7a`      | `#b8b1a0`        |
-| `--ink`        | `#f7faee`      | `#262b33`        |
-| `--ink-muted`  | `#9ba8bb`      | `#6b6878`        |
-| `--ink-faint`  | `#4d5c7a`      | `#b8b1a0`        |
-| `--accent`     | `#bad32f`      | `#6b6418`        |
-| `--sunlit`     | `#e0f500`      | `#b89c00`        |
-| `--warm`       | `#f5a623`      | `#c47d00`        |
-| `--sky`        | `#5ec4f0`      | `#1a7fa8`        |
-| `--sea`        | `#2dd4bf`      | `#0d7a6e`        |
-| `--coral`      | `#f27059`      | `#b53d26`        |
-| `--border`     | `rgba(255,255,255,.08)` | `rgba(0,0,0,.08)` |
-| `--shadow`     | (see §8)       | (see §8)         |
+| Token            | Storm (dark)            | Daylight (light)        | Notes                                        |
+|------------------|-------------------------|-------------------------|----------------------------------------------|
+| `--surface-100`  | `#1d222f`               | `#f5f4ec`               | Body background                              |
+| `--surface-200`  | `#252c3d`               | `#e9e8db`               | Cards, elevated surfaces (lighter in Storm)  |
+| `--surface-300`  | `#2f3850`               | `#dedad0`               | —                                            |
+| `--surface-400`  | `#3a4561`               | `#cdc8b8`               | —                                            |
+| `--surface-500`  | `#4d5c7a`               | `#b8b1a0`               | —                                            |
+| `--ink`          | `#f7faee`               | `#262b33`               | Primary text                                 |
+| `--ink-muted`    | `#9ba8bb`               | `#6b6878`               | Secondary text                               |
+| `--ink-faint`    | `#4d5c7a`               | `#b8b1a0`               | Disabled / hint text                         |
+| `--accent`       | `#c0df30`               | `#6b6418`               | Text-safe accent: headings, links, nav labels|
+| `--accent-vivid` | `#c0df30`               | `#bad32f`               | **Graphic-use accent: borders, button fills, checkboxes, indicators — never standalone text on light bg** |
+| `--sunlit`       | `#dcf020`               | `#b89c00`               | Special highlights, hero accents             |
+| `--warm`         | `#f5a623`               | `#c47d00`               | —                                            |
+| `--sky`          | `#5ec4f0`               | `#1a7fa8`               | —                                            |
+| `--sea`          | `#2dd4bf`               | `#0d7a6e`               | —                                            |
+| `--coral`        | `#f27059`               | `#b53d26`               | —                                            |
+| `--focus-ring`   | `#c0df30`               | `#bad32f`               | Vivid lime — per UI prototype                |
+| `--on-accent`    | `#272c35`               | `#f0f9c6`               | Text over accent backgrounds                 |
+| `--border`       | `rgba(255,255,255,.08)` | `rgba(0,0,0,.08)`       | —                                            |
+| `--shadow`       | (see §8)                | (see §8)                | —                                            |
+
+> **`--accent` vs `--accent-vivid`:** Storm uses the same value for both tokens; the split matters in Daylight where vivid chartreuse (`#bad32f`) lacks the contrast for text on cream (`#f5f4ec`) but reads fine on graphical elements. Use `--accent` for anything with text; use `--accent-vivid` for borders, button/chip fills, checkboxes, and status indicators.
 
 **Applying a theme:** Add `data-theme="storm"` or `data-theme="daylight"` to `<html>` or any ancestor element. Storm is the default.
 
@@ -121,7 +126,7 @@ Max content width: `1280px`. Content padding: `--space-6` (24px) on mobile, `--s
 | `--shadow`     | `0 4px 12px rgba(0,0,0,.45)`          | `0 4px 12px rgba(0,0,0,.14)`         |
 | `--shadow-md`  | `0 8px 24px rgba(0,0,0,.55)`          | `0 8px 24px rgba(0,0,0,.16)`         |
 | `--shadow-lg`  | `0 16px 48px rgba(0,0,0,.65)`         | `0 16px 48px rgba(0,0,0,.2)`         |
-| `--glow-accent`| `0 0 20px rgba(186,211,47,.35)`       | `0 0 20px rgba(107,100,24,.2)`       |
+| `--glow-accent`| `0 0 20px rgba(192,223,48,.35)`       | `0 0 20px rgba(107,100,24,.2)`       |
 
 ---
 
@@ -134,7 +139,7 @@ No custom SVG files. No generator script. Import and render directly.
 
 - **Package:** `lucide-react`
 - **React component:** `src/ui/Icon.tsx`
-- **Icon count:** 36 ORIVOIR semantic names → 36 Lucide components (all verified 24×24)
+- **Icon count:** 37 ORIVOIR semantic names → 37 Lucide components (all verified 24×24)
 
 ### Usage
 
@@ -170,7 +175,7 @@ Lucide icons render via `currentColor` by default. Set color on the icon's conta
 
 /* Storm theme gradient variants */
 [data-theme="storm"] .icon-tile--accent {
-  background: linear-gradient(135deg, #bad32f 0%, #e0f500 100%);
+  background: linear-gradient(135deg, #c0df30 0%, #dcf020 100%);
   color: #1d222f;
 }
 [data-theme="storm"] .icon-tile--sky {
@@ -369,6 +374,157 @@ import { Icon } from '@/ui/Icon';
 | Warning   | `--warm` at 15%       | `--warm` at 15%      | `--warm`          |
 | Error     | `--coral` at 15%      | `--coral` at 15%     | `--coral`         |
 
+### Icon Controls Pill
+
+Header pill container for theme-toggle, settings, and icon actions. Pairs with `.icon-controls-pill button` for individual actions.
+
+```css
+.icon-controls-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: color-mix(in srgb, var(--surface-200) 90%, transparent);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-pill);
+  padding: 4px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+```
+
+```tsx
+<div className="icon-controls-pill">
+  <button aria-label="Toggle theme"><Icon name="settings" size={18} /></button>
+  <button aria-label="Open filters"><Icon name="filters" size={18} /></button>
+</div>
+```
+
+### Brief Block
+
+Editorial left-accent callout — used for AI research status, planning notes, or important contextual information. Accent bar uses `--accent-vivid`.
+
+```css
+.brief-block {
+  border-left: 3px solid var(--accent-vivid);
+  padding: 2px 0 2px 16px;
+}
+.brief-block strong {
+  display: block;
+  font: 700 15px/22px var(--sans);
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.brief-block p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 21px;
+  color: var(--ink-soft);
+}
+```
+
+```tsx
+<div className="brief-block">
+  <strong>Research note</strong>
+  <p>Flight prices to Tokyo are typically lowest 6–8 weeks out. Consider booking before mid-April.</p>
+</div>
+```
+
+### Brief Card
+
+AI research brief display — card with monospaced body text and a landscape-gradient icon badge. Used when surfacing structured research output.
+
+```css
+.brief-card {
+  background: var(--surface-200);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.brief-card-body {
+  flex: 1;
+  font: 400 13px/20px var(--mono);
+  color: var(--ink-soft);
+  margin: 0;
+}
+.brief-card-icon {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  /* Landscape palette gradient — matches CTA button and hero SVG */
+  background: linear-gradient(135deg, #f5a623 0%, #f27059 60%, #2dd4bf 100%);
+  color: #fff;
+  box-shadow: var(--shadow);
+}
+```
+
+```tsx
+<div className="brief-card">
+  <div className="brief-card-icon">
+    <Icon name="explore" size={22} />
+  </div>
+  <p className="brief-card-body">
+    Kyoto in October offers ideal weather (18–24°C), autumn foliage beginning in
+    late October, and reduced summer crowds. UNESCO sites: Kinkaku-ji, Fushimi Inari,
+    Ryoan-ji. Recommend 3–4 nights minimum.
+  </p>
+</div>
+```
+
+### CTA Landscape Button
+
+Full-width call-to-action button with the ORIVOIR landscape palette gradient — lime leading into warm orange, coral, and teal horizon. The gradient echoes the `orivoir-landscape.svg` hero illustration.
+
+```css
+.btn-cta-landscape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 16px 20px;
+  border: 0;
+  border-radius: var(--radius-md);
+  font: 700 16px/1 var(--sans);
+  color: var(--on-accent);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    to right,
+    var(--accent-vivid) 0%,
+    var(--accent-vivid) 35%,
+    #d4a234 58%,
+    #3ec4b0 80%,
+    #3a7a9e 100%
+  );
+  box-shadow: var(--shadow-sunlit);
+  text-shadow: none;
+}
+.btn-cta-landscape:hover {
+  filter: brightness(1.06);
+}
+.btn-cta-landscape .arrow {
+  flex: none;
+  opacity: 0.9;
+}
+```
+
+```tsx
+<button className="btn-cta-landscape">
+  <span>Start planning your adventure</span>
+  <Icon name="adventure" size={20} className="arrow" />
+</button>
+```
+
+> **Gradient palette:** `--accent-vivid` (lime) → `#d4a234` (warm gold) → `#3ec4b0` (sea) → `#3a7a9e` (deep sky). Matches the landscape SVG's atmospheric horizon. Use `var(--on-accent)` (`#272c35` Storm / `#f0f9c6` Daylight) for button text.
+
 ---
 
 ## 9. ORIVOIR Header Illustration
@@ -420,8 +576,8 @@ Do not animate layout (width, height, top, left) in the critical path. Use `tran
 
 ## 11. Accessibility
 
-- Color contrast: all text against background ≥ 4.5:1 (WCAG AA). Accent text on dark background meets this in Storm; verify in Daylight with `--accent` text.
-- Focus styles: all interactive elements use `outline: 2px solid var(--accent); outline-offset: 3px` on `:focus-visible`.
+- Color contrast: all text against background ≥ 4.5:1 (WCAG AA). `--accent` (#c0df30 Storm / #6b6418 Daylight) is text-safe on its respective background. `--accent-vivid` is **not** text-safe on Daylight cream — use it only for graphic elements.
+- Focus styles: all interactive elements use `outline: 2px solid var(--focus-ring); outline-offset: 3px` on `:focus-visible`. `--focus-ring` is vivid lime in both themes (Storm: `#c0df30`; Daylight: `#bad32f`) — high visibility on both backgrounds.
 - Icons: use `aria-hidden="true"` when decorative. Use `aria-label` or `.sr-only` label when icon carries meaning.
 - Form fields: always associate `<label>` with input via `for`/`id`.
 - Motion: respect `prefers-reduced-motion`. Wrap all non-essential transitions in `@media (prefers-reduced-motion: no-preference)`.
@@ -448,6 +604,12 @@ Icons are sourced from the `lucide-react` npm package. No local SVG files or gen
 
 | Date       | Change                                                     |
 |------------|------------------------------------------------------------|
+| 2026-11-16 | Storm/Daylight tokens derived from UI prototype screenshots (source of truth) |
+| 2026-11-16 | Added `--accent-vivid` token: Storm `#c0df30`, Daylight `#bad32f` (graphic-only) |
+| 2026-11-16 | Storm `--accent` updated to `#c0df30`; `--sunlit` to `#dcf020`; `--focus-ring` to `#c0df30` |
+| 2026-11-16 | Daylight `--focus-ring` updated to `#bad32f` (vivid lime, per prototype) |
+| 2026-11-16 | Storm `--surface-200` corrected to `#252c3d` (elevated surfaces lighter than body) |
+| 2026-11-16 | New components: `.icon-controls-pill`, `.brief-block`, `.brief-card`, `.btn-cta-landscape` |
 | 2026-11-16 | Added `cruise` (Ship) icon; `OrivoirIcon` alias exported   |
 | 2026-11-16 | Switched icon system to Lucide React; custom SVGs removed  |
 | 2026-11-16 | Icon.tsx rewritten to map 36 ORIVOIR names → Lucide components |
