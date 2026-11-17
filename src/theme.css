@@ -1302,6 +1302,7 @@ span.trip-row-budget {
   width: 100%;
   height: 92px;
   object-fit: fill;
+  transform: translateX(-4vw);
   filter: drop-shadow(-5px -5px 10px var(--button-shadow-highlight)) drop-shadow(5px 5px 10px var(--button-shadow-lowlight));
   pointer-events: none;
 }
