@@ -30,7 +30,8 @@ export function buildResearchPrompt(trip: Trip, profile: FamilyProfile, focus: C
     ? tripDates
         .map((d) => {
           const n = nightsBetween(d.start, d.end);
-          return `- ${d.label || 'Option'}: ${d.start || '?'} to ${d.end || '?'}${n !== null ? ` (${n} nights)` : ''}${d.id === date?.id ? ' ← preferred' : ''}`;
+          const time = d.startTime || d.endTime ? ` (${d.startTime || 'unspecified'}${d.endTime ? `–${d.endTime}` : ''})` : '';
+          return `- ${d.label || 'Option'}: ${d.start || '?'} to ${d.end || '?'}${n !== null ? ` (${n} nights)` : ''}${time}${d.id === date?.id ? ' ← preferred' : ''}`;
         })
         .join('\n')
     : av
@@ -63,7 +64,7 @@ TRIP
 - ${trip.budgetTotal === null ? 'No budget target set; find good options without a spending cap.' : `Total budget: ${trip.budgetTotal} ${trip.currency}, everything included`}
 - Date options:
 ${datesText}
-${trip.flexibility ? `- Flexibility: ${trip.flexibility}\n` : ''}${profile.homeAirport ? `- Flying from: ${profile.homeAirport}\n` : ''}
+${av?.idealDuration ? `- Ideal length: ${av.idealDuration}\n` : ''}${av?.optInBy ? `- Collaborator opt-in deadline: ${av.optInBy}\n` : ''}${trip.flexibility ? `- Flexibility: ${trip.flexibility}\n` : ''}${profile.homeAirport ? `- Flying from: ${profile.homeAirport}\n` : ''}
 WHAT OUR FAMILY LOVES
 ${profile.interests.map((i) => `- ${i}`).join('\n')}
 ${profile.notes ? `\n${profile.notes}\n` : ''}${answers ? `\nTHIS TRIP\n${answers}\n` : ''}${existing ? `\nALREADY ON OUR LIST (don't repeat)\n${existing}\n` : ''}${rejected ? `\nALREADY REJECTED\n${rejected}\n` : ''}

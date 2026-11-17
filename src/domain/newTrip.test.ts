@@ -1,9 +1,28 @@
 import { describe, expect, it } from 'vitest';
-import { budgetTotalForEntry, stepErrors, type NewTripDraft } from './newTrip';
+import { budgetTotalForEntry, preferredNightsForDuration, stepErrors, type NewTripDraft } from './newTrip';
 
 const base: NewTripDraft = {
-  destination: 'Japan', name: '', region: '', budget: 9000, budgetSkipped: false, currency: 'USD', earliest: '', latest: '',
-  minNights: null, prefNights: null, maxNights: null, airport: 'LAS', flexibility: '', adults: 2, children: 2, childAges: '',
+  destination: 'Japan',
+  name: '',
+  region: '',
+  budget: 9000,
+  budgetSkipped: false,
+  currency: 'USD',
+  whenMode: 'date',
+  date: '',
+  endDate: '',
+  startTime: '',
+  endTime: '',
+  singleDay: true,
+  earliest: '',
+  latest: '',
+  optInBy: '',
+  idealDuration: '',
+  airport: 'LAS',
+  flexibility: '',
+  adults: 2,
+  children: 2,
+  childAges: '',
 };
 
 describe('new trip steps', () => {
@@ -18,12 +37,23 @@ describe('new trip steps', () => {
     expect(budgetTotalForEntry(1000, 'total', 2, 1)).toBe(1000);
     expect(budgetTotalForEntry(null, 'perPerson', 2, 1)).toBeNull();
   });
-  it('allows "not sure yet" but not half-entered or backwards dates', () => {
-    expect(stepErrors('when', base)).toEqual([]);
-    expect(stepErrors('when', { ...base, earliest: '2027-05-21' })[0]).toMatch(/both dates/);
-    expect(stepErrors('when', { ...base, earliest: '2027-07-30', latest: '2027-05-21' })[0]).toMatch(/after/);
-    expect(stepErrors('when', { ...base, earliest: '2027-05-21', latest: '2027-07-30', minNights: 14, maxNights: 7 })[0]).toMatch(/Shortest/);
-    expect(stepErrors('when', { ...base, earliest: '2027-05-21', latest: '2027-07-30' })).toEqual([]);
+  it('validates a fixed date and permits a single-day event without an end date', () => {
+    expect(stepErrors('when', base)[0]).toMatch(/Choose a date/);
+    expect(stepErrors('when', { ...base, date: '2027-05-21' })).toEqual([]);
+    expect(stepErrors('when', { ...base, date: '2027-05-21', singleDay: false })[0]).toMatch(/end date/);
+    expect(stepErrors('when', { ...base, date: '2027-07-30', endDate: '2027-05-21', singleDay: false })[0]).toMatch(/on or after/);
+  });
+  it('requires a valid date-decision window and opt-in deadline', () => {
+    const decision: NewTripDraft = { ...base, whenMode: 'decision' };
+    expect(stepErrors('when', decision)).toHaveLength(2);
+    expect(stepErrors('when', { ...decision, earliest: '2027-05-21' })[0]).toMatch(/both possible window dates/);
+    expect(stepErrors('when', { ...decision, earliest: '2027-07-30', latest: '2027-05-21', optInBy: '2027-05-01T18:00' })[0]).toMatch(/after earliest start/);
+    expect(stepErrors('when', { ...decision, earliest: '2027-05-21', latest: '2027-07-30', optInBy: '2027-05-01T18:00' })).toEqual([]);
+  });
+  it('maps familiar day and weekend duration text to trip-length preferences', () => {
+    expect(preferredNightsForDuration('1 weekend')).toBe(2);
+    expect(preferredNightsForDuration('5 days')).toBe(4);
+    expect(preferredNightsForDuration('3 hours')).toBeNull();
   });
   it('needs at least one adult', () => {
     expect(stepErrors('who', { ...base, adults: 0 })).toHaveLength(1);

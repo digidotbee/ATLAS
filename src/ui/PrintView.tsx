@@ -3,7 +3,7 @@ import { buildItinerary } from '../domain/itinerary';
 import { FOLLOW_UP_QUESTIONS } from '../domain/questions';
 import { CATEGORIES, type Candidate } from '../domain/types';
 import { useStore } from '../state/store';
-import { formatDate, Money } from './common';
+import { formatDate, formatLocalTime, Money } from './common';
 import { href } from './router';
 
 /** The printable one-page itinerary. Uses print CSS to fit a single Letter/A4 sheet. */
@@ -48,7 +48,11 @@ export function PrintView({ id }: { id: string }) {
               {d && (
                 <>
                   {' · '}
-                  {formatDate(d.start, { weekday: 'short', month: 'short', day: 'numeric' })} – {formatDate(d.end, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })} · {s.shape.nights} nights
+                  {formatDate(d.start, { weekday: 'short', month: 'short', day: 'numeric' })}
+                  {d.end !== d.start && ` – ${formatDate(d.end, { month: 'short', day: 'numeric', year: 'numeric' })}`}
+                  {d.startTime && ` · ${formatLocalTime(d.startTime)}`}
+                  {d.endTime && `–${formatLocalTime(d.endTime)}`}
+                  {s.shape.nights > 0 && ` · ${s.shape.nights} nights`}
                 </>
               )}
               {' · '}

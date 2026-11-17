@@ -74,3 +74,19 @@ export function formatDate(iso: string, opts: Intl.DateTimeFormatOptions = { mon
   if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return '—';
   return new Date(iso + 'T12:00:00Z').toLocaleDateString(undefined, { ...opts, timeZone: 'UTC' });
 }
+
+export function todayISO(): string {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+}
+
+export function formatLocalTime(time: string): string {
+  if (!/^\d{2}:\d{2}$/.test(time)) return '';
+  return new Date(`2000-01-01T${time}`).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+}
+
+export function formatDateTimeLocal(value: string): string {
+  const [date, time] = value.split('T');
+  if (!date) return '—';
+  return `${formatDate(date, { month: 'short', day: 'numeric', year: 'numeric' })}${time ? ` · ${formatLocalTime(time)}` : ''}`;
+}

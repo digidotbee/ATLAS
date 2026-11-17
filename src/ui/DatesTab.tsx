@@ -16,7 +16,8 @@ import {
   type GenerateResult,
 } from '../domain/windows';
 import { useStore } from '../state/store';
-import { Banner, Field, formatDate, Money, NumberInput, PriceBadge } from './common';
+import { Banner, Field, formatDate, formatDateTimeLocal, formatLocalTime, Money, NumberInput, PriceBadge } from './common';
+import { CalendarPicker } from './CalendarPicker';
 import { href } from './router';
 import type { TabProps } from './TripView';
 
@@ -30,6 +31,7 @@ export function DatesTab({ trip, update }: TabProps) {
   const setCons = (p: Partial<TripConstraints>) => update((t) => ({ ...t, constraints: { ...cons, ...p } }));
   const span = nightsBetween(av.earliestDeparture, av.latestReturn);
   const locked = chosenDate(trip);
+  const lockedNights = locked ? nightsBetween(locked.start, locked.end) : null;
   const legacy = trip.dateOptions.filter((d) => d.legacyAvailability);
 
   return (
@@ -54,8 +56,11 @@ export function DatesTab({ trip, update }: TabProps) {
         <div className="card locked-card">
           <p className="eyebrow">Trip dates in use</p>
           <h3>
-            {formatDate(locked.start, { weekday: 'short', month: 'long', day: 'numeric' })} –{' '}
-            {formatDate(locked.end, { weekday: 'short', month: 'long', day: 'numeric', year: 'numeric' })} · {nightsBetween(locked.start, locked.end)} nights
+            {formatDate(locked.start, { weekday: 'short', month: 'long', day: 'numeric' })}
+            {locked.end !== locked.start && ` – ${formatDate(locked.end, { month: 'long', day: 'numeric', year: 'numeric' })}`}
+            {locked.startTime && ` · ${formatLocalTime(locked.startTime)}`}
+            {locked.endTime && `–${formatLocalTime(locked.endTime)}`}
+            {lockedNights !== null && lockedNights > 0 && ` · ${lockedNights} nights`}
           </h3>
           <p className="muted small">{locked.notes}</p>
           <div className="actions">
@@ -89,10 +94,14 @@ function RangeList({ label, ranges, onChange }: { label: string; ranges: DateRan
     <div className="stack-sm">
       <span className="field-label">{label}</span>
       {ranges.map((r, i) => (
-        <div key={i} className="range-row">
-          <input type="date" value={r.start} aria-label={`${label} from`} onChange={(e) => onChange(ranges.map((x, j) => (j === i ? { ...x, start: e.target.value } : x)))} />
-          <span>to</span>
-          <input type="date" value={r.end} min={r.start} aria-label={`${label} to`} onChange={(e) => onChange(ranges.map((x, j) => (j === i ? { ...x, end: e.target.value } : x)))} />
+        <div key={i} className="range-calendar-row">
+          <CalendarPicker
+            label={`${label} ${i + 1}`}
+            mode="range"
+            start={r.start}
+            end={r.end}
+            onChange={(start, end = '') => onChange(ranges.map((x, j) => (j === i ? { start, end } : x)))}
+          />
           <button type="button" className="btn btn-ghost btn-small" onClick={() => onChange(ranges.filter((_, j) => j !== i))} aria-label="Remove">
             ✕
           </button>
@@ -164,6 +173,18 @@ function AvailabilityCard({
             <dt>Trip length</dt>
             <dd>{lengthText}</dd>
           </div>
+          {av.idealDuration && (
+            <div>
+              <dt>Ideal length</dt>
+              <dd>{av.idealDuration}</dd>
+            </div>
+          )}
+          {av.optInBy && (
+            <div>
+              <dt>Opt in by</dt>
+              <dd>{formatDateTimeLocal(av.optInBy)}</dd>
+            </div>
+          )}
           <div>
             <dt>Flying from</dt>
             <dd>{cons.departureAirport || '—'}</dd>
@@ -174,20 +195,28 @@ function AvailabilityCard({
         </dl>
       ) : (
         <div className="stack-sm">
-          <div className="grid-2">
-            <Field label="Earliest day you can leave home">
-              <input type="date" value={av.earliestDeparture} onChange={(e) => setAv({ earliestDeparture: e.target.value })} />
-            </Field>
-            <Field label="Latest day you must be back home">
-              <input type="date" value={av.latestReturn} min={av.earliestDeparture} onChange={(e) => setAv({ latestReturn: e.target.value })} />
-            </Field>
-          </div>
+          <CalendarPicker
+            label="Possible date window"
+            mode="range"
+            start={av.earliestDeparture}
+            end={av.latestReturn}
+            startLabel="Earliest start"
+            endLabel="Latest wrap-up"
+            onChange={(earliestDeparture, latestReturn = '') => setAv({ earliestDeparture, latestReturn })}
+          />
+          <Field label="Ideal length (optional)">
+            <input value={av.idealDuration ?? ''} onChange={(e) => setAv({ idealDuration: e.target.value })} placeholder="e.g., 3 hours, 1 weekend, or 5 days" />
+          </Field>
+          <Field label="Opt in by">
+            <input type="datetime-local" value={av.optInBy ?? ''} onChange={(e) => setAv({ optInBy: e.target.value })} />
+            <span className="field-hint">Collaborators must submit their availability before this cutoff to join the planning crew.</span>
+          </Field>
           {span !== null && span > 0 && (
             <p className="availability-pill">
               {span} nights to choose from — ORIVOIR looks for the best trip <em>inside</em> this range, not a {span}-night trip.
             </p>
           )}
-          <Field label="Flying from">
+          <Field label="Departing from">
             <input value={cons.departureAirport} onChange={(e) => setCons({ departureAirport: e.target.value.toUpperCase() })} placeholder="LAS" />
           </Field>
           <details className="more" open={Boolean(cons.minNights || cons.maxNights || cons.preferredNights)}>
@@ -825,17 +854,21 @@ function ManualDates({ update }: TabProps) {
   return (
     <div className="stack-sm">
       <p className="small muted">Arrival at your destination to the day you leave it.</p>
-      <div className="grid-3">
-        <Field label="Arrive">
-          <input type="date" value={d.start} onChange={(e) => setD({ ...d, start: e.target.value })} />
-        </Field>
-        <Field label="Leave" hint={n !== null ? `${n} nights` : undefined}>
-          <input type="date" value={d.end} min={d.start} onChange={(e) => setD({ ...d, end: e.target.value })} />
-        </Field>
+      <div className="grid-2">
+        <CalendarPicker
+          label="Trip dates"
+          mode="range"
+          start={d.start}
+          end={d.end}
+          startLabel="Arrive"
+          endLabel="Leave"
+          onChange={(start, end = '') => setD({ ...d, start, end })}
+        />
         <Field label="Airfare per person">
           <NumberInput value={d.flightPerPerson} onChange={(v) => setD({ ...d, flightPerPerson: v })} aria-label="Manual airfare per person" />
         </Field>
       </div>
+      {n !== null && <p className="small muted">{n} nights</p>}
       <button
         type="button"
         className="btn btn-small"
