@@ -30,14 +30,14 @@ WILDSTROM ships two complete, switchable themes. Both share the same CSS token n
 | `--ink`          | `#f7faee`               | `#262b33`               | Primary text                                 |
 | `--ink-muted`    | `#9ba8bb`               | `#6b6878`               | Secondary text                               |
 | `--ink-faint`    | `#4d5c7a`               | `#b8b1a0`               | Disabled / hint text                         |
-| `--accent`       | `#c0df30`               | `#6b6418`               | Text-safe accent: headings, links, nav labels|
-| `--accent-vivid` | `#c0df30`               | `#bad32f`               | **Graphic-use accent: borders, button fills, checkboxes, indicators — never standalone text on light bg** |
-| `--sunlit`       | `#dcf020`               | `#b89c00`               | Special highlights, hero accents             |
+| `--accent`       | `#f4ec2a`               | `#6b6418`               | Text-safe accent: headings, links, nav labels|
+| `--accent-vivid` | `#f4ec2a`               | `#bad32f`               | **Graphic-use accent: borders, button fills, checkboxes, indicators — never standalone text on light bg** |
+| `--sunlit`       | `#f4ec2a`               | `#b89c00`               | Special highlights, hero accents             |
 | `--warm`         | `#f5a623`               | `#c47d00`               | —                                            |
 | `--sky`          | `#5ec4f0`               | `#1a7fa8`               | —                                            |
 | `--sea`          | `#2dd4bf`               | `#0d7a6e`               | —                                            |
 | `--coral`        | `#f27059`               | `#b53d26`               | —                                            |
-| `--focus-ring`   | `#c0df30`               | `#bad32f`               | Vivid lime — per UI prototype                |
+| `--focus-ring`   | `#f4ec2a`               | `#bad32f`               | Vivid chartreuse focus ring                  |
 | `--on-accent`    | `#272c35`               | `#f0f9c6`               | Text over accent backgrounds                 |
 | `--border`       | `rgba(255,255,255,.08)` | `rgba(0,0,0,.08)`       | —                                            |
 | `--shadow`       | (see §8)                | (see §8)                | —                                            |
@@ -175,7 +175,7 @@ Lucide icons render via `currentColor` by default. Set color on the icon's conta
 
 /* Storm theme gradient variants */
 [data-theme="storm"] .icon-tile--accent {
-  background: linear-gradient(135deg, #c0df30 0%, #dcf020 100%);
+  background: var(--accent-vivid);
   color: #1d222f;
 }
 [data-theme="storm"] .icon-tile--sky {
@@ -576,8 +576,8 @@ Do not animate layout (width, height, top, left) in the critical path. Use `tran
 
 ## 11. Accessibility
 
-- Color contrast: all text against background ≥ 4.5:1 (WCAG AA). `--accent` (#c0df30 Storm / #6b6418 Daylight) is text-safe on its respective background. `--accent-vivid` is **not** text-safe on Daylight cream — use it only for graphic elements.
-- Focus styles: all interactive elements use `outline: 2px solid var(--focus-ring); outline-offset: 3px` on `:focus-visible`. `--focus-ring` is vivid lime in both themes (Storm: `#c0df30`; Daylight: `#bad32f`) — high visibility on both backgrounds.
+- Color contrast: all text against background ≥ 4.5:1 (WCAG AA). `--accent` (#f4ec2a Storm / #6b6418 Daylight) is text-safe on its respective background. `--accent-vivid` is **not** text-safe on Daylight cream — use it only for graphic elements.
+- Focus styles: all interactive elements use `outline: 2px solid var(--focus-ring); outline-offset: 3px` on `:focus-visible`. `--focus-ring` is vivid chartreuse (Storm: `#f4ec2a`; Daylight: `#bad32f`) — high visibility on both backgrounds.
 - Icons: use `aria-hidden="true"` when decorative. Use `aria-label` or `.sr-only` label when icon carries meaning.
 - Form fields: always associate `<label>` with input via `for`/`id`.
 - Motion: respect `prefers-reduced-motion`. Wrap all non-essential transitions in `@media (prefers-reduced-motion: no-preference)`.
@@ -608,6 +608,7 @@ Icons are sourced from the `lucide-react` npm package. No local SVG files or gen
 | 2026-11-16 | Added `--accent-vivid` token: Storm `#c0df30`, Daylight `#bad32f` (graphic-only) |
 | 2026-11-16 | Storm `--accent` updated to `#c0df30`; `--sunlit` to `#dcf020`; `--focus-ring` to `#c0df30` |
 | 2026-11-16 | Daylight `--focus-ring` updated to `#bad32f` (vivid lime, per prototype) |
+| 2026-11-17 | Storm chartreuse accents updated to `#f4ec2a` |
 | 2026-11-16 | Storm `--surface-200` corrected to `#252c3d` (elevated surfaces lighter than body) |
 | 2026-11-16 | New components: `.icon-controls-pill`, `.brief-block`, `.brief-card`, `.btn-cta-landscape` |
 | 2026-11-16 | Added `cruise` (Ship) icon; `OrivoirIcon` alias exported   |
