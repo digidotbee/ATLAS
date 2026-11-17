@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { useState } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { DateRange } from '../domain/types';
-import { RangeList } from './DatesTab';
+import { RangeList } from './AvailabilityCard';
 
 afterEach(() => {
   cleanup();
