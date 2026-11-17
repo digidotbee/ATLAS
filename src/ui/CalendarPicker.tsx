@@ -5,6 +5,7 @@ type CalendarMode = 'single' | 'range';
 
 interface CalendarPickerProps {
   label: string;
+  showLabel?: boolean;
   mode: CalendarMode;
   start: string;
   end?: string;
@@ -41,7 +42,7 @@ const WEEKDAYS = Array.from({ length: 7 }, (_, index) =>
   new Date(Date.UTC(2023, 0, index + 1)).toLocaleDateString(undefined, { weekday: 'short', timeZone: 'UTC' }),
 );
 
-export function CalendarPicker({ label, mode, start, end = '', startLabel = 'Start', endLabel = 'End', onChange }: CalendarPickerProps) {
+export function CalendarPicker({ label, showLabel = true, mode, start, end = '', startLabel = 'Start', endLabel = 'End', onChange }: CalendarPickerProps) {
   const today = todayISO();
   const [month, setMonth] = useState(() => monthOf(start));
   const [activePart, setActivePart] = useState<'start' | 'end'>(() => (mode === 'range' && start && !end ? 'end' : 'start'));
@@ -78,8 +79,8 @@ export function CalendarPicker({ label, mode, start, end = '', startLabel = 'Sta
   return (
     <div className="calendar-picker" role="group" aria-label={label}>
       <div className="calendar-picker-head">
-        <strong className="field-label">{label}</strong>
-        <div className="calendar-month-nav">
+        {showLabel && <strong className="field-label">{label}</strong>}
+        <div className={showLabel ? 'calendar-month-nav' : 'calendar-month-nav calendar-month-nav-centered'}>
           <button type="button" className="calendar-nav" aria-label="Previous month" disabled={atEarliestMonth} onClick={() => setMonth(new Date(Date.UTC(year, monthIndex - 1, 1)))}>
             ‹
           </button>
@@ -89,7 +90,7 @@ export function CalendarPicker({ label, mode, start, end = '', startLabel = 'Sta
           </button>
         </div>
       </div>
-      <div className="calendar-selection" aria-live="polite">
+      <div className={`calendar-selection${mode === 'range' ? ' calendar-selection-range' : ''}`} aria-live="polite">
         {mode === 'single' ? (
           <span>{start ? formatDate(start, { month: 'long', day: 'numeric', year: 'numeric' }) : 'Select a date'}</span>
         ) : (

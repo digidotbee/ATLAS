@@ -17,8 +17,9 @@ describe('CalendarPicker', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date(2027, 4, 10, 12));
     const onChange = vi.fn();
-    render(<CalendarPicker label="Possible date window" mode="range" start="2027-05-20" end="" onChange={onChange} />);
+    const { container } = render(<CalendarPicker label="Possible date window" mode="range" start="2027-05-20" end="" onChange={onChange} />);
 
+    expect(container.querySelector('.calendar-selection-range')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: selectName('2027-05-27') }));
 
     expect(onChange).toHaveBeenCalledWith('2027-05-20', '2027-05-27');
