@@ -90,7 +90,7 @@ export function NewTrip() {
   }
 
   const answered: { step: number; label: string; value: string }[] = [];
-  if (i > 0) answered.push({ step: 0, label: 'Where', value: d.destination });
+  if (i > 0 && step !== 'budget') answered.push({ step: 0, label: 'Where', value: d.destination });
   if (i > 1)
     answered.push({
       step: 1,
