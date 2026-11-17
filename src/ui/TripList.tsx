@@ -4,7 +4,7 @@ import { duplicateTrip } from '../domain/factory';
 import type { Trip } from '../domain/types';
 import { useStore } from '../state/store';
 import { BudgetMeter } from './BudgetPanel';
-import { formatDate, Money } from './common';
+import { formatDate, formatLocalTime, Money } from './common';
 import { go, href } from './router';
 
 type Status = { key: 'booked' | 'dates' | 'planning' | 'draft'; label: string };
@@ -35,9 +35,24 @@ function whenText(t: Trip): string {
   const d = chosenDate(t);
   if (d) {
     const n = nightsBetween(d.start, d.end);
-    return `${formatDate(d.start)} – ${formatDate(d.end, { month: 'short', day: 'numeric', year: 'numeric' })}${n !== null ? ` · ${n} nights` : ''}`;
+    const dateText =
+      d.start === d.end
+        ? formatDate(d.start, { month: 'short', day: 'numeric', year: 'numeric' })
+        : `${formatDate(d.start)} – ${formatDate(d.end, { month: 'short', day: 'numeric', year: 'numeric' })}`;
+    const timeText =
+      d.startTime && d.endTime
+        ? `${formatLocalTime(d.startTime)}–${formatLocalTime(d.endTime)}`
+        : d.startTime
+          ? `Starts ${formatLocalTime(d.startTime)}`
+          : d.endTime
+            ? `Until ${formatLocalTime(d.endTime)}`
+            : '';
+    return `${dateText}${timeText ? ` · ${timeText}` : n && n > 0 ? ` · ${n} nights` : ''}`;
   }
-  if (t.availability) return `Available ${formatDate(t.availability.earliestDeparture)} – ${formatDate(t.availability.latestReturn)}`;
+  if (t.availability)
+    return `Available ${formatDate(t.availability.earliestDeparture)} – ${formatDate(t.availability.latestReturn)}${
+      t.availability.optInBy ? ` · Opt in by ${formatDate(t.availability.optInBy.split('T')[0])}${t.availability.optInBy.includes('T') ? ` at ${formatLocalTime(t.availability.optInBy.split('T')[1])}` : ''}` : ''
+    }`;
   return 'Dates not set';
 }
 

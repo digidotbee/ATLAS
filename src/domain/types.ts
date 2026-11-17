@@ -61,6 +61,8 @@ export interface DateOption {
   label: string;
   start: string; // YYYY-MM-DD
   end: string; // YYYY-MM-DD
+  startTime?: string; // HH:mm local time
+  endTime?: string; // HH:mm local time
   /** Airfare estimate for this window, per person. */
   flightPerPerson: number | null;
   flightStatus: PriceStatus;
@@ -81,12 +83,16 @@ export interface DateRange {
 
 /** When the family COULD travel. Not the trip dates. */
 export interface Availability {
-  /** Earliest day you can leave home. */
+  /** Earliest day the event or trip could start. */
   earliestDeparture: string;
-  /** Latest day you must be back home. */
+  /** Latest day the event or trip could wrap up. */
   latestReturn: string;
   preferredRanges: DateRange[];
   excludedRanges: DateRange[];
+  /** Optional local datetime by which collaborators should opt in. */
+  optInBy?: string;
+  /** Free-text ideal duration, e.g. "3 hours", "1 weekend", or "5 days". */
+  idealDuration?: string;
 }
 
 export interface TripConstraints {

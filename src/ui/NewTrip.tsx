@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { formatMoney, nightsBetween } from '../domain/budget';
 import { createTrip } from '../domain/factory';
-import { budgetTotalForEntry, NEW_TRIP_STEPS, stepErrors, type BudgetMode, type NewTripDraft, type NewTripStep } from '../domain/newTrip';
+import { budgetTotalForEntry, NEW_TRIP_STEPS, preferredNightsForDuration, stepErrors, type BudgetMode, type NewTripDraft, type NewTripStep } from '../domain/newTrip';
 import { useStore } from '../state/store';
-import { Banner, Field, formatDate, NumberInput } from './common';
+import { Banner, Field, formatDate, formatDateTimeLocal, NumberInput, todayISO } from './common';
+import { CalendarPicker } from './CalendarPicker';
 import { go, href } from './router';
 
 const STEP_COPY: Record<NewTripStep, { title: string; hint: string }> = {
@@ -15,13 +16,14 @@ const STEP_COPY: Record<NewTripStep, { title: string; hint: string }> = {
     title: 'What’s the budget?',
     hint: 'A rough target to keep everyone aligned — from food and tickets to travel, stays, and a little cushion for surprises.',
   },
-  when: { title: 'When could you travel?', hint: 'Your availability, not the trip dates. ORIVOIR finds the best dates and trip length inside it.' },
+  when: { title: 'When is this happening?', hint: 'Lock in a set date and time now, or open a window for your crew to weigh in.' },
   who: { title: 'Who’s coming?', hint: '' },
 };
 
 export function NewTrip() {
   const { data, addTrip } = useStore();
   const p = data.profile;
+  const today = todayISO();
   const [d, setD] = useState<NewTripDraft>({
     destination: '',
     name: '',
@@ -29,11 +31,16 @@ export function NewTrip() {
     budget: null,
     budgetSkipped: false,
     currency: p.defaultCurrency,
-    earliest: '',
+    whenMode: 'date',
+    date: today,
+    endDate: '',
+    startTime: '',
+    endTime: '',
+    singleDay: true,
+    earliest: today,
     latest: '',
-    minNights: null,
-    prefNights: null,
-    maxNights: null,
+    optInBy: '',
+    idealDuration: '',
     airport: p.homeAirport,
     flexibility: '',
     adults: p.defaultAdults,
@@ -58,6 +65,21 @@ export function NewTrip() {
   }, [i]);
 
   function create() {
+    const dateOptions =
+      d.whenMode === 'date' && d.date
+        ? [
+            {
+              label: d.name || d.destination,
+              start: d.date,
+              end: d.singleDay ? d.date : d.endDate,
+              startTime: d.startTime || undefined,
+              endTime: d.endTime || undefined,
+              flightPerPerson: null,
+              flightStatus: 'estimated' as const,
+              notes: '',
+            },
+          ]
+        : [];
     const trip = createTrip({
       name: d.name,
       destination: d.destination,
@@ -67,16 +89,27 @@ export function NewTrip() {
       adults: d.adults!,
       children: d.children ?? 0,
       childAges: d.childAges,
-      flexibility: d.flexibility,
-      // Availability is never stored as trip dates; ATLAS finds the trip dates inside it.
-      dateOptions: [],
+      flexibility: d.whenMode === 'decision' ? d.flexibility : '',
+      dateOptions,
     });
-    if (d.earliest && d.latest) {
-      trip.availability = { earliestDeparture: d.earliest, latestReturn: d.latest, preferredRanges: [], excludedRanges: [] };
+    if (d.whenMode === 'decision' && d.earliest && d.latest) {
+      trip.availability = {
+        earliestDeparture: d.earliest,
+        latestReturn: d.latest,
+        preferredRanges: [],
+        excludedRanges: [],
+        optInBy: d.optInBy,
+        idealDuration: d.idealDuration.trim() || undefined,
+      };
     }
-    trip.constraints = { departureAirport: d.airport.trim().toUpperCase(), minNights: d.minNights, preferredNights: d.prefNights, maxNights: d.maxNights };
+    trip.constraints = {
+      departureAirport: d.whenMode === 'decision' ? d.airport.trim().toUpperCase() : '',
+      minNights: null,
+      preferredNights: d.whenMode === 'decision' ? preferredNightsForDuration(d.idealDuration) : null,
+      maxNights: null,
+    };
     addTrip(trip);
-    // Hybrid flow: land on the suggested next step.
+    // Fixed dates go straight to the itinerary; date-decision windows go to date planning.
     go({ page: 'trip', id: trip.id, tab: trip.availability ? 'dates' : 'plan' });
   }
 
@@ -90,8 +123,8 @@ export function NewTrip() {
   }
 
   const answered: { step: number; label: string; value: string }[] = [];
-  if (i > 0 && step !== 'budget') answered.push({ step: 0, label: 'Where', value: d.destination });
-  if (i > 1)
+  if (i > 0 && step !== 'budget' && step !== 'when') answered.push({ step: 0, label: 'Where', value: d.destination });
+  if (i > 1 && step !== 'when')
     answered.push({
       step: 1,
       label: 'Budget',
@@ -101,7 +134,12 @@ export function NewTrip() {
     answered.push({
       step: 2,
       label: 'When',
-      value: d.earliest && d.latest ? `${formatDate(d.earliest)} – ${formatDate(d.latest, { month: 'short', day: 'numeric', year: 'numeric' })}` : 'Not sure yet',
+      value:
+        d.whenMode === 'date' && d.date
+          ? `${formatDate(d.date, { month: 'short', day: 'numeric', year: 'numeric' })}${d.startTime ? ` · ${d.startTime}` : ''}`
+          : d.whenMode === 'decision' && d.earliest && d.latest
+            ? `${formatDate(d.earliest)} – ${formatDate(d.latest, { month: 'short', day: 'numeric', year: 'numeric' })}`
+            : 'Dates not set',
     });
 
   return (
@@ -132,8 +170,16 @@ export function NewTrip() {
         </ul>
       )}
 
-      <form className="wizard-step" onSubmit={next} noValidate>
+      <form className={`wizard-step ${step === 'when' ? 'when-wizard-step' : ''}`} onSubmit={next} noValidate>
         {step === 'budget' && <p className="wizard-context">WHERE • {d.destination}</p>}
+        {step === 'when' && (
+          <div className="wizard-contexts">
+            <p className="wizard-context">WHERE • {d.destination}</p>
+            <p className="wizard-context">
+              BUDGET • {d.budgetSkipped ? 'No target set' : `${formatMoney(d.budget ?? 0, d.currency)}${budgetMode === 'perPerson' ? ' per person' : ''}`}
+            </p>
+          </div>
+        )}
         <h1 ref={headingRef} tabIndex={-1}>
           {STEP_COPY[step].title}
         </h1>
@@ -204,42 +250,97 @@ export function NewTrip() {
         )}
 
         {step === 'when' && (
-          <div className="stack">
-            <div className="grid-2">
-              <Field label="Earliest day you can leave home">
-                <input type="date" value={d.earliest} onChange={(e) => set({ earliest: e.target.value })} />
-              </Field>
-              <Field label="Latest day you must be back" hint={span !== null && span > 0 ? `${span} nights of availability` : undefined}>
-                <input type="date" value={d.latest} min={d.earliest} onChange={(e) => set({ latest: e.target.value })} />
-              </Field>
+          <div className="stack when-step">
+            <div className="segmented budget-toggle when-toggle" role="group" aria-label="Date planning mode">
+              <button type="button" className={d.whenMode === 'date' ? 'on' : ''} aria-pressed={d.whenMode === 'date'} onClick={() => set({ whenMode: 'date' })}>
+                SET A DATE
+              </button>
+              <button type="button" className={d.whenMode === 'decision' ? 'on' : ''} aria-pressed={d.whenMode === 'decision'} onClick={() => set({ whenMode: 'decision' })}>
+                SET FOR DATE DECISION
+              </button>
             </div>
-            <details className="more" open={Boolean(d.minNights || d.prefNights || d.maxNights)}>
-              <summary>Trip length (optional — ORIVOIR suggests one if blank)</summary>
-              <div className="grid-3">
-                <Field label="Shortest" hint="nights">
-                  <NumberInput value={d.minNights} min={1} onChange={(v) => set({ minNights: v })} aria-label="Minimum nights" />
-                </Field>
-                <Field label="Ideal" hint="nights">
-                  <NumberInput value={d.prefNights} min={1} onChange={(v) => set({ prefNights: v })} aria-label="Preferred nights" />
-                </Field>
-                <Field label="Longest" hint="nights">
-                  <NumberInput value={d.maxNights} min={1} onChange={(v) => set({ maxNights: v })} aria-label="Maximum nights" />
-                </Field>
+            {d.whenMode === 'date' ? (
+              <div className="stack when-mode-content">
+                <label className="single-day-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={d.singleDay}
+                    onChange={(e) => set(e.target.checked ? { singleDay: true, endDate: '' } : { singleDay: false })}
+                  />
+                  <span>Single day / evening</span>
+                </label>
+                <CalendarPicker
+                  label="Venture dates"
+                  mode={d.singleDay ? 'single' : 'range'}
+                  start={d.date}
+                  end={d.endDate}
+                  startLabel="Start date"
+                  endLabel="End date"
+                  onChange={(date, end = '') => set(d.singleDay ? { date } : { date, endDate: end })}
+                />
+                <div className="grid-2 when-time-row">
+                  <Field label="Start time (optional)">
+                    <input type="time" value={d.startTime} onChange={(e) => set({ startTime: e.target.value })} />
+                  </Field>
+                  <Field label="End time (optional)">
+                    <input type="time" value={d.endTime} onChange={(e) => set({ endTime: e.target.value })} />
+                  </Field>
+                </div>
+                <p className="muted small when-helper">Invitees will go straight into the shared itinerary once created.</p>
               </div>
-            </details>
-            <div className="grid-2">
-              <Field label="Flying from">
-                <input value={d.airport} onChange={(e) => set({ airport: e.target.value.toUpperCase() })} placeholder="LAS" />
-              </Field>
-              <Field label="Anything else about timing?" hint="e.g. “must include Easter week”">
-                <input value={d.flexibility} onChange={(e) => set({ flexibility: e.target.value })} />
-              </Field>
-            </div>
+            ) : (
+              <div className="stack when-mode-content">
+                <h2>What’s the possible window?</h2>
+                <CalendarPicker
+                  label="Possible date window"
+                  mode="range"
+                  start={d.earliest}
+                  end={d.latest}
+                  startLabel="Earliest start"
+                  endLabel="Latest wrap-up"
+                  onChange={(earliest, latest = '') => set({ earliest, latest })}
+                />
+                {span !== null && span > 0 && <p className="availability-pill">{span} nights to choose from</p>}
+                <Field label="Ideal length (optional)" hint="e.g., 3 hours, 1 weekend, or 5 days — ORIVOIR finds the sweet spot.">
+                  <input value={d.idealDuration} onChange={(e) => set({ idealDuration: e.target.value })} placeholder="How long would feel right?" />
+                </Field>
+                <Field label="Opt in by">
+                  <input type="datetime-local" value={d.optInBy} onChange={(e) => set({ optInBy: e.target.value })} />
+                  <span className="field-hint">Collaborators must submit their availability before this cutoff to join the planning crew.</span>
+                </Field>
+                <Field label="Any timing notes? (optional)" hint="e.g., “Evenings work best” or “Must include Sunday brunch”">
+                  <input value={d.flexibility} onChange={(e) => set({ flexibility: e.target.value })} />
+                </Field>
+                <details className="more">
+                  <summary>+ Add departure city / flight info (optional)</summary>
+                  <Field label="Departing from">
+                    <input value={d.airport} onChange={(e) => set({ airport: e.target.value.toUpperCase() })} placeholder="City or airport (e.g., LAS)" />
+                  </Field>
+                </details>
+              </div>
+            )}
           </div>
         )}
 
         {step === 'who' && (
           <div className="stack">
+            {d.whenMode === 'decision' && d.earliest && d.latest && d.optInBy && (
+              <section className="card invite-preview" aria-label="Invite card preview">
+                <p className="eyebrow">Invite card preview</p>
+                <h2>Let’s have an adventure...</h2>
+                <p>
+                  {d.destination} · {formatDate(d.earliest)} – {formatDate(d.latest, { month: 'short', day: 'numeric', year: 'numeric' })}
+                </p>
+                <p>
+                  <strong>Budget:</strong>{' '}
+                  {d.budgetSkipped ? 'No target set' : `${formatMoney(d.budget ?? 0, d.currency)}${budgetMode === 'perPerson' ? ' per person' : ''}`}
+                  {d.idealDuration.trim() && ` · ${d.idealDuration}`}
+                </p>
+                <p>
+                  <strong>Opt in by:</strong> {formatDateTimeLocal(d.optInBy)}
+                </p>
+              </section>
+            )}
             {(p.defaultAdults !== d.adults || p.defaultChildren !== d.children) && (
               <button type="button" className="chip" onClick={() => set({ adults: p.defaultAdults, children: p.defaultChildren })}>
                 Our usual {p.defaultAdults + p.defaultChildren}: {p.defaultAdults} adults, {p.defaultChildren} children
@@ -289,12 +390,7 @@ export function NewTrip() {
             <span />
           )}
           <div className="actions">
-            {step === 'when' && !d.earliest && !d.latest && (
-              <button type="button" className="btn" onClick={() => setI(i + 1)}>
-                Not sure yet
-              </button>
-            )}
-            <button className="btn btn-primary" type="submit">
+            <button className={`btn btn-primary ${last ? '' : 'wizard-next'}`} type="submit">
               {last ? 'Create trip →' : 'Next →'}
             </button>
           </div>
