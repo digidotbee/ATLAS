@@ -156,10 +156,13 @@ export function TripList() {
       <section className="hero-card">
         <div className="hero-copy">
           <h1 className="hero-title">
-            The world <span className="accent">awaits.</span>
+            Good things <span className="accent">await.</span>
           </h1>
+          <p className="hero-subtitle">
+            Gather your people. Pick a date. Plan something worth looking forward to together.
+          </p>
           <a className="btn btn-primary btn-lg" href={href({ page: 'new' })}>
-            Make A Plan <span aria-hidden="true">→</span>
+            Start a Venture <span aria-hidden="true">→</span>
           </a>
         </div>
       </section>
