@@ -73,6 +73,7 @@ describe('new-trip wizard', () => {
     fireEvent.click(screen.getByRole('button', { name: 'SET FOR DATE DECISION' }));
     expect(screen.getByRole('heading', { name: 'What’s the possible window?' })).toBeTruthy();
     expect(screen.getByRole('group', { name: 'Possible date window' })).toBeTruthy();
+    expect(screen.queryByText('Possible date window')).toBeNull();
     expect(screen.getByText('Earliest start')).toBeTruthy();
     expect(screen.getByText('Latest wrap-up')).toBeTruthy();
     expect(screen.getByLabelText(/Ideal length \(optional\)/)).toBeTruthy();
@@ -81,6 +82,8 @@ describe('new-trip wizard', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'SET A DATE' }));
     expect(screen.getByRole('group', { name: 'Venture dates' })).toBeTruthy();
+    expect(screen.queryByText('Venture dates')).toBeNull();
+    expect(document.querySelector('.calendar-month-nav-centered')).toBeTruthy();
     expect(screen.getByRole('checkbox', { name: 'Single day / evening' })).toHaveProperty('checked', true);
     expect(screen.queryByRole('button', { name: /End date/ })).toBeNull();
     expect(screen.getByLabelText('Start time (optional)').closest('.when-time-row')).toBeTruthy();

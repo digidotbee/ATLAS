@@ -271,6 +271,7 @@ export function NewTrip() {
                 </label>
                 <CalendarPicker
                   label="Venture dates"
+                  showLabel={false}
                   mode={d.singleDay ? 'single' : 'range'}
                   start={d.date}
                   end={d.endDate}
@@ -293,6 +294,7 @@ export function NewTrip() {
                 <h2>What’s the possible window?</h2>
                 <CalendarPicker
                   label="Possible date window"
+                  showLabel={false}
                   mode="range"
                   start={d.earliest}
                   end={d.latest}
