@@ -396,13 +396,18 @@ function toWindow(e: Evaluated, score: number, labels: string[], status: Candida
   return { ...rest, id: newId(), score, labels, reasons, status, feedback };
 }
 
-/** Lock a window for Stage B: it becomes the trip's chosen dates (arrival → leaving the destination). */
-export function lockWindow(trip: Trip, windowId: string): Trip {
+/** Finds a window that can be acted on; rejected windows must be restored first. */
+function usableWindow(trip: Trip, windowId: string, action: string): CandidateTravelWindow {
   const w = (trip.windows ?? []).find((x) => x.id === windowId);
   if (!w) throw new Error('That window no longer exists.');
-  if (w.status === 'rejected') throw new Error('Restore this window before locking it.');
-  const option: DateOption = {
-    id: newId(),
+  if (w.status === 'rejected') throw new Error(`Restore this window before ${action} it.`);
+  return w;
+}
+
+/** The trip-date option a window becomes once locked. */
+function dateOptionFromWindow(trip: Trip, w: CandidateTravelWindow, id: string): DateOption {
+  return {
+    id,
     label: `${w.destinationNights} nights · locked window`,
     start: w.arrivalDate,
     end: w.destinationDepartureDate,
@@ -411,6 +416,36 @@ export function lockWindow(trip: Trip, windowId: string): Trip {
     notes: `Leave home ${w.departureDate}, back home ${w.returnDate}. ${w.weatherAssessment}`,
     fromWindowId: w.id,
   };
+}
+
+export type FareOverride = Pick<CandidateTravelWindow, 'fareOverridePerPerson' | 'fareOverrideVerified' | 'fareOverrideSource'>;
+
+/**
+ * Re-costs one window with a fare looked up for its exact dates. Keeps the window's id, status,
+ * labels and feedback; rebuilds totals, reasons and score. A locked window's trip dates follow.
+ */
+export function applyFareOverride(trip: Trip, windowId: string, override: FareOverride): Trip {
+  const w = usableWindow(trip, windowId, 'pricing');
+  const e = evaluateWindow(trip, w.departureDate, w.destinationNights, override);
+  if (!e) throw new Error('Could not re-cost this window: it no longer fits your availability or airfare months.');
+  const next: CandidateTravelWindow = {
+    ...toWindow(e, scoreAll([e], trip.weights ?? DEFAULT_WEIGHTS)[0].score, w.labels, w.status, w.feedback),
+    id: w.id,
+  };
+  return {
+    ...trip,
+    windows: (trip.windows ?? []).map((x) => (x.id === w.id ? next : x)),
+    dateOptions:
+      w.status === 'locked'
+        ? trip.dateOptions.map((d) => (d.fromWindowId === w.id ? dateOptionFromWindow(trip, next, d.id) : d))
+        : trip.dateOptions,
+  };
+}
+
+/** Lock a window for Stage B: it becomes the trip's chosen dates (arrival → leaving the destination). */
+export function lockWindow(trip: Trip, windowId: string): Trip {
+  const w = usableWindow(trip, windowId, 'locking');
+  const option = dateOptionFromWindow(trip, w, newId());
   return {
     ...trip,
     windows: (trip.windows ?? []).map((x) =>
