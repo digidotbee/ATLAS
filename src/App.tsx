@@ -41,7 +41,7 @@ export function App() {
     <>
       {!isPrint && (
         <header className="app-header no-print">
-          <img className="header-landscape" src="/hero/orivoir-landscape.svg" alt="" aria-hidden="true" />
+          <img className="header-landscape" src={`${import.meta.env.BASE_URL}hero/orivoir-landscape.svg`} alt="" aria-hidden="true" />
           <a className="logo" href={href({ page: 'trips' })} aria-label="ORIVOIR home">
             <span className="logo-copy">
               <span className="logo-word">
