@@ -5,7 +5,7 @@ import { buildItinerary } from './itinerary';
 import { migrateTrip } from './migrate';
 import { parseAtlasData } from './validate';
 import type { PlanningAssumptions, Trip } from './types';
-import { evaluateWindow, generateWindows, lockWindow, nearlyIdentical, setWindowStatus } from './windows';
+import { applyFareOverride, evaluateWindow, generateWindows, lockWindow, nearlyIdentical, setWindowStatus } from './windows';
 
 // Mock pricing fixtures — development only, not real research.
 const FIXTURE: PlanningAssumptions = {
@@ -208,5 +208,49 @@ describe('flexible-date planning engine', () => {
     // Unlocking removes those trip dates again.
     const unlocked = setWindowStatus(locked, w.id, 'kept');
     expect(unlocked.chosenDateId).toBeNull();
+  });
+
+  it('13. an exact-date fare re-costs the window without corrupting its reasons', () => {
+    const t = plannedTrip();
+    const w = { ...generateWindows(t).windows[0], status: 'kept' as const, feedback: 'nice', labels: ['Best Value'] };
+    const before = { ...t, windows: [w] };
+    const after = applyFareOverride(before, w.id, { fareOverridePerPerson: 700, fareOverrideVerified: true, fareOverrideSource: 'airline site' });
+    const n = after.windows![0];
+    expect(n.id).toBe(w.id);
+    expect(n.status).toBe('kept');
+    expect(n.feedback).toBe('nice');
+    expect(n.labels).toEqual(['Best Value']);
+    expect(n.airfareTotal).toBe(2800);
+    expect(n.fareOverridePerPerson).toBe(700);
+    expect(n.fareOverrideVerified).toBe(true);
+    expect(n.remainingBudget).toBe(9000 - n.projectedTotal);
+    expect(n.remainingBudget).toBeGreaterThan(w.remainingBudget!);
+    // Exactly one airfare line, and the budget line is still there with the new amount.
+    expect(n.reasons.filter((r) => r.startsWith('Airfare'))).toEqual(['Airfare 700/person for these exact dates (you checked it)']);
+    expect(n.reasons).toContain(`Fits the budget with ${Math.round(n.remainingBudget!)} to spare`);
+    expect(n.score).toBeGreaterThan(0);
+  });
+
+  it('14. an exact-date fare on the locked window updates the trip dates in use', () => {
+    const t = plannedTrip();
+    const r = generateWindows(t);
+    const w = r.windows[0];
+    const locked = lockWindow({ ...t, windows: r.windows }, w.id);
+    const chosenId = locked.chosenDateId;
+    const after = applyFareOverride(locked, w.id, { fareOverridePerPerson: 650, fareOverrideVerified: true, fareOverrideSource: '' });
+    expect(after.chosenDateId).toBe(chosenId);
+    const chosen = after.dateOptions.find((d) => d.id === after.chosenDateId)!;
+    expect(chosen.flightPerPerson).toBe(650);
+    expect(chosen.flightStatus).toBe('verified');
+    expect(after.windows!.find((x) => x.id === w.id)!.status).toBe('locked');
+    expect(summarize(after).byCategory.flights).toBe(2600);
+  });
+
+  it('15. an exact-date fare is refused for missing or rejected windows', () => {
+    const t = plannedTrip();
+    const w = generateWindows(t).windows[0];
+    const o = { fareOverridePerPerson: 700, fareOverrideVerified: false, fareOverrideSource: '' };
+    expect(() => applyFareOverride({ ...t, windows: [w] }, 'nope', o)).toThrow('That window no longer exists.');
+    expect(() => applyFareOverride(setWindowStatus({ ...t, windows: [w] }, w.id, 'rejected'), w.id, o)).toThrow('Restore this window');
   });
 });

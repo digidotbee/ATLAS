@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { chosenDate, formatMoney, nightsBetween, travelerCount } from '../domain/budget';
-import { blankDateOption } from '../domain/factory';
+import { blankDateOption, newId } from '../domain/factory';
 import { buildAssumptionsPrompt, buildWindowFarePrompt, parseImportedAssumptions } from '../domain/research';
 import type { Availability, CandidateTravelWindow, DateRange, PlanningAssumptions, ScoringWeights, TripConstraints } from '../domain/types';
 import {
+  applyFareOverride,
   blankAssumptions,
   DEFAULT_WEIGHTS,
   departureMonths,
@@ -23,12 +24,16 @@ import type { TabProps } from './TripView';
 
 const fmt = (iso: string) => formatDate(iso, { weekday: 'short', month: 'short', day: 'numeric' });
 
+const emptyAvailability = (): Availability => ({ earliestDeparture: '', latestReturn: '', preferredRanges: [], excludedRanges: [] });
+
 export function DatesTab({ trip, update }: TabProps) {
   const { data } = useStore();
-  const av: Availability = trip.availability ?? { earliestDeparture: '', latestReturn: '', preferredRanges: [], excludedRanges: [] };
-  const cons: TripConstraints = trip.constraints ?? { departureAirport: data.profile.homeAirport, minNights: null, preferredNights: null, maxNights: null };
-  const setAv = (p: Partial<Availability>) => update((t) => ({ ...t, availability: { ...av, ...p } }));
-  const setCons = (p: Partial<TripConstraints>) => update((t) => ({ ...t, constraints: { ...cons, ...p } }));
+  const defaultCons: TripConstraints = { departureAirport: data.profile.homeAirport, minNights: null, preferredNights: null, maxNights: null };
+  const av = trip.availability ?? emptyAvailability();
+  const cons = trip.constraints ?? defaultCons;
+  // Build from the latest trip state, not this render's copy, so quick successive edits are never lost.
+  const setAv = (p: Partial<Availability>) => update((t) => ({ ...t, availability: { ...(t.availability ?? emptyAvailability()), ...p } }));
+  const setCons = (p: Partial<TripConstraints>) => update((t) => ({ ...t, constraints: { ...(t.constraints ?? defaultCons), ...p } }));
   const span = nightsBetween(av.earliestDeparture, av.latestReturn);
   const locked = chosenDate(trip);
   const lockedNights = locked ? nightsBetween(locked.start, locked.end) : null;
@@ -89,12 +94,26 @@ export function DatesTab({ trip, update }: TabProps) {
   );
 }
 
-function RangeList({ label, ranges, onChange }: { label: string; ranges: DateRange[]; onChange: (r: DateRange[]) => void }) {
+export function RangeList({ label, ranges, onChange }: { label: string; ranges: DateRange[]; onChange: (r: DateRange[]) => void }) {
+  // Stable row keys (ranges have no ids), so each calendar keeps its own state when a row is removed.
+  const [keys, setKeys] = useState(() => ranges.map(() => newId()));
+  if (keys.length !== ranges.length) {
+    // The list changed from elsewhere (e.g. a sync): keep existing keys, add or trim the rest.
+    setKeys([...keys.slice(0, ranges.length), ...Array.from({ length: Math.max(0, ranges.length - keys.length) }, () => newId())]);
+  }
+  const remove = (i: number) => {
+    setKeys(keys.filter((_, j) => j !== i));
+    onChange(ranges.filter((_, j) => j !== i));
+  };
+  const add = () => {
+    setKeys([...keys, newId()]);
+    onChange([...ranges, { start: '', end: '' }]);
+  };
   return (
     <div className="stack-sm">
       <span className="field-label">{label}</span>
       {ranges.map((r, i) => (
-        <div key={i} className="range-calendar-row">
+        <div key={keys[i] ?? i} className="range-calendar-row">
           <CalendarPicker
             label={`${label} ${i + 1}`}
             mode="range"
@@ -102,12 +121,12 @@ function RangeList({ label, ranges, onChange }: { label: string; ranges: DateRan
             end={r.end}
             onChange={(start, end = '') => onChange(ranges.map((x, j) => (j === i ? { start, end } : x)))}
           />
-          <button type="button" className="btn btn-ghost btn-small" onClick={() => onChange(ranges.filter((_, j) => j !== i))} aria-label="Remove">
+          <button type="button" className="btn btn-ghost btn-small" onClick={() => remove(i)} aria-label="Remove">
             ✕
           </button>
         </div>
       ))}
-      <button type="button" className="btn btn-ghost btn-small" onClick={() => onChange([...ranges, { start: '', end: '' }])}>
+      <button type="button" className="btn btn-ghost btn-small" onClick={add}>
         + Add
       </button>
     </div>
@@ -272,7 +291,13 @@ function DayOffset({ label, value, onChange }: { label: string; value: number; o
 function EstimatesCard({ trip, update }: TabProps) {
   const { data, saveClimate } = useStore();
   const a = trip.assumptions ?? blankAssumptions();
-  const setA = (p: Partial<PlanningAssumptions>) => update((t) => ({ ...t, assumptions: { ...(t.assumptions ?? blankAssumptions()), ...p, origin: p.origin ?? 'manual' } }));
+  /** Patch the latest assumptions; a function patch reads them first (for nested month maps). */
+  const setA = (p: Partial<PlanningAssumptions> | ((cur: PlanningAssumptions) => Partial<PlanningAssumptions>)) =>
+    update((t) => {
+      const cur = t.assumptions ?? blankAssumptions();
+      const patch = typeof p === 'function' ? p(cur) : p;
+      return { ...t, assumptions: { ...cur, ...patch, origin: patch.origin ?? 'manual' } };
+    });
   const av = trip.availability;
   const months = av ? departureMonths(av.earliestDeparture, av.latestReturn) : [];
   const climateMonths = [...new Set(months.map((m) => m.slice(5, 7)))];
@@ -469,12 +494,14 @@ function EstimatesCard({ trip, update }: TabProps) {
                     <Field label="Airfare per person">
                       <NumberInput
                         value={a.airfarePerPersonByMonth[m] ?? null}
-                        onChange={(v) => {
-                          const next = { ...a.airfarePerPersonByMonth };
-                          if (v && v > 0) next[m] = v;
-                          else delete next[m];
-                          setA({ airfarePerPersonByMonth: next });
-                        }}
+                        onChange={(v) =>
+                          setA((cur) => {
+                            const next = { ...cur.airfarePerPersonByMonth };
+                            if (v && v > 0) next[m] = v;
+                            else delete next[m];
+                            return { airfarePerPersonByMonth: next };
+                          })
+                        }
                         step={10}
                         aria-label={`Airfare ${m}`}
                       />
@@ -483,12 +510,14 @@ function EstimatesCard({ trip, update }: TabProps) {
                       <NumberInput
                         value={c?.score ?? null}
                         step={0.5}
-                        onChange={(v) => {
-                          const next = { ...a.climateByMonth };
-                          if (v === null) delete next[mm];
-                          else next[mm] = { score: Math.min(5, Math.max(0, v)), summary: c?.summary ?? '' };
-                          setA({ climateByMonth: next });
-                        }}
+                        onChange={(v) =>
+                          setA((cur) => {
+                            const next = { ...cur.climateByMonth };
+                            if (v === null) delete next[mm];
+                            else next[mm] = { score: Math.min(5, Math.max(0, v)), summary: next[mm]?.summary ?? '' };
+                            return { climateByMonth: next };
+                          })
+                        }
                         aria-label={`Climate score ${mm}`}
                       />
                     </Field>
@@ -581,7 +610,7 @@ function WindowsCard({ trip, update }: TabProps) {
         <div className="grid-4 weights">
           {WEIGHT_LABELS.map(({ k, label, hint }) => (
             <Field key={k} label={label} hint={hint}>
-              <NumberInput value={weights[k]} onChange={(v) => update((t) => ({ ...t, weights: { ...weights, [k]: Math.max(0, v ?? 0) } }))} aria-label={`Weight ${label}`} />
+              <NumberInput value={weights[k]} onChange={(v) => update((t) => ({ ...t, weights: { ...(t.weights ?? DEFAULT_WEIGHTS), [k]: Math.max(0, v ?? 0) } }))} aria-label={`Weight ${label}`} />
             </Field>
           ))}
         </div>
@@ -824,19 +853,15 @@ function WindowCard({ w, trip, update, profileAirport }: { w: CandidateTravelWin
             className="btn btn-small btn-primary"
             disabled={!fare}
             onClick={() => {
-              const e = evaluateWindow(trip, w.departureDate, w.destinationNights, {
-                fareOverridePerPerson: fare,
-                fareOverrideVerified: fareChecked,
-                fareOverrideSource: fareSource,
-              });
-              if (!e) return setErr('Could not re-cost this window.');
-              const { parts: _p, fareMonth: _m, farePerPerson: _f, ...rest } = e;
-              update((t) => ({
-                ...t,
-                windows: (t.windows ?? []).map((x) =>
-                  x.id === w.id ? { ...x, ...rest, reasons: [`Airfare ${fare}/person for these exact dates${fareChecked ? ' (you checked it)' : ' (estimate)'}`, ...x.reasons.slice(1)] } : x,
-                ),
-              }));
+              const override = { fareOverridePerPerson: fare, fareOverrideVerified: fareChecked, fareOverrideSource: fareSource };
+              // Check first so the problem is shown here; state updaters must not throw.
+              try {
+                applyFareOverride(trip, w.id, override);
+              } catch (e) {
+                return setErr((e as Error).message);
+              }
+              setErr('');
+              update((t) => applyFareOverride(t, w.id, override));
               setResearch(false);
             }}
           >
@@ -862,10 +887,10 @@ function ManualDates({ update }: TabProps) {
           end={d.end}
           startLabel="Arrive"
           endLabel="Leave"
-          onChange={(start, end = '') => setD({ ...d, start, end })}
+          onChange={(start, end = '') => setD((x) => ({ ...x, start, end }))}
         />
         <Field label="Airfare per person">
-          <NumberInput value={d.flightPerPerson} onChange={(v) => setD({ ...d, flightPerPerson: v })} aria-label="Manual airfare per person" />
+          <NumberInput value={d.flightPerPerson} onChange={(v) => setD((x) => ({ ...x, flightPerPerson: v }))} aria-label="Manual airfare per person" />
         </Field>
       </div>
       {n !== null && <p className="small muted">{n} nights</p>}
