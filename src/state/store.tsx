@@ -77,6 +77,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   );
   const dataRef = useRef(data);
   dataRef.current = data;
+  const syncRef = useRef(sync);
+  syncRef.current = sync;
   const settingsRef = useRef(syncSettings);
   settingsRef.current = syncSettings;
   const pushTimer = useRef<number | undefined>(undefined);
@@ -142,91 +144,128 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setData((d) => ({ ...fn(d), updatedAt: nowIso() }));
   }, []);
 
-  const store: Store = {
+  const addTrip = useCallback((trip: Trip) => {
+    mutate((d) => ({ ...d, trips: [trip, ...d.trips] }));
+  }, [mutate]);
+  const updateTrip = useCallback((id: string, fn: (t: Trip) => Trip) => {
+    mutate((d) => ({
+      ...d,
+      trips: d.trips.map((t) => (t.id === id ? { ...fn(t), updatedAt: nowIso() } : t)),
+    }));
+  }, [mutate]);
+  const deleteTrip = useCallback((id: string) => {
+    mutate((d) => ({ ...d, trips: d.trips.filter((t) => t.id !== id) }));
+  }, [mutate]);
+  const updateProfile = useCallback((fn: (p: FamilyProfile) => FamilyProfile) => {
+    mutate((d) => ({ ...d, profile: fn(d.profile) }));
+  }, [mutate]);
+  const saveClimate = useCallback((destination: string, climate: Record<string, ClimateMonth>) => {
+    mutate((d) => {
+      const key = destination.trim().toLowerCase();
+      return { ...d, climateCache: { ...(d.climateCache ?? {}), [key]: { ...(d.climateCache?.[key] ?? {}), ...climate } } };
+    });
+  }, [mutate]);
+  const replaceAll = useCallback((next: AtlasData) => {
+    skipPersist.current = false;
+    setLoadError(null);
+    mutate(() => next);
+  }, [mutate]);
+  const resetCorruptLocal = useCallback(() => {
+    clearLocal();
+    skipPersist.current = false;
+    setLoadError(null);
+    setData(emptyData());
+  }, []);
+  const connectSync = useCallback(async (token: string) => {
+    setSync({ state: 'working', label: 'Checking token…' });
+    try {
+      await verifyToken(fetch, token);
+      setSync({ state: 'working', label: 'Looking for your ATLAS Gist…' });
+      const existing = await findAtlasGist(fetch, token);
+      if (!existing) {
+        const created = await createAtlasGist(fetch, token, dataRef.current);
+        storeSettings({ token, gistId: created.id, lastSyncedAt: dataRef.current.updatedAt });
+        setSync({ state: 'idle', at: nowIso() });
+        return;
+      }
+      const remote = await readAtlasGist(fetch, token, existing.id);
+      const local = dataRef.current;
+      // A brand-new device (no trips yet) simply adopts the Gist.
+      if (local.trips.length === 0 || local.updatedAt === remote.updatedAt) {
+        setData(remote);
+        storeSettings({ token, gistId: existing.id, lastSyncedAt: remote.updatedAt });
+        setSync({ state: 'idle', at: nowIso() });
+      } else {
+        storeSettings({ token, gistId: existing.id, lastSyncedAt: '' });
+        setSync({ state: 'conflict', remote });
+      }
+    } catch (e) {
+      setSync({ state: 'error', message: e instanceof SyncError ? e.message : (e as Error).message });
+      throw e;
+    }
+  }, [storeSettings]);
+  const disconnectSync = useCallback(() => {
+    window.clearTimeout(pushTimer.current);
+    storeSettings(null);
+    setSync({ state: 'off' });
+  }, [storeSettings]);
+  const resolveConflict = useCallback(async (keep: 'local' | 'remote') => {
+    const s = settingsRef.current;
+    const currentSync = syncRef.current;
+    if (!s || currentSync.state !== 'conflict') return;
+    const remote = currentSync.remote;
+    setSync({ state: 'working', label: 'Resolving…' });
+    try {
+      if (keep === 'remote') {
+        setData(remote);
+        storeSettings({ ...s, lastSyncedAt: remote.updatedAt });
+      } else {
+        const local = { ...dataRef.current, updatedAt: nowIso() };
+        await writeAtlasGist(fetch, s.token, s.gistId, local);
+        storeSettings({ ...s, lastSyncedAt: local.updatedAt });
+        setData(local);
+      }
+      setSync({ state: 'idle', at: nowIso() });
+    } catch (e) {
+      setSync({ state: 'error', message: (e as Error).message });
+    }
+  }, [storeSettings]);
+
+  const store = useMemo<Store>(() => ({
     data,
     loadError,
     saveError,
     sync,
     syncSettings,
-    addTrip: (trip) => mutate((d) => ({ ...d, trips: [trip, ...d.trips] })),
-    updateTrip: (id, fn) =>
-      mutate((d) => ({
-        ...d,
-        trips: d.trips.map((t) => (t.id === id ? { ...fn(t), updatedAt: nowIso() } : t)),
-      })),
-    deleteTrip: (id) => mutate((d) => ({ ...d, trips: d.trips.filter((t) => t.id !== id) })),
-    updateProfile: (fn) => mutate((d) => ({ ...d, profile: fn(d.profile) })),
-    saveClimate: (destination, climate) =>
-      mutate((d) => {
-        const key = destination.trim().toLowerCase();
-        return { ...d, climateCache: { ...(d.climateCache ?? {}), [key]: { ...(d.climateCache?.[key] ?? {}), ...climate } } };
-      }),
-    replaceAll: (next) => {
-      skipPersist.current = false;
-      setLoadError(null);
-      mutate(() => next);
-    },
-    resetCorruptLocal: () => {
-      clearLocal();
-      skipPersist.current = false;
-      setLoadError(null);
-      setData(emptyData());
-    },
-    connectSync: async (token) => {
-      setSync({ state: 'working', label: 'Checking token…' });
-      try {
-        await verifyToken(fetch, token);
-        setSync({ state: 'working', label: 'Looking for your ATLAS Gist…' });
-        const existing = await findAtlasGist(fetch, token);
-        if (!existing) {
-          const created = await createAtlasGist(fetch, token, dataRef.current);
-          storeSettings({ token, gistId: created.id, lastSyncedAt: dataRef.current.updatedAt });
-          setSync({ state: 'idle', at: nowIso() });
-          return;
-        }
-        const remote = await readAtlasGist(fetch, token, existing.id);
-        const local = dataRef.current;
-        // A brand-new device (no trips yet) simply adopts the Gist.
-        if (local.trips.length === 0 || local.updatedAt === remote.updatedAt) {
-          setData(remote);
-          storeSettings({ token, gistId: existing.id, lastSyncedAt: remote.updatedAt });
-          setSync({ state: 'idle', at: nowIso() });
-        } else {
-          storeSettings({ token, gistId: existing.id, lastSyncedAt: '' });
-          setSync({ state: 'conflict', remote });
-        }
-      } catch (e) {
-        setSync({ state: 'error', message: e instanceof SyncError ? e.message : (e as Error).message });
-        throw e;
-      }
-    },
-    disconnectSync: () => {
-      window.clearTimeout(pushTimer.current);
-      storeSettings(null);
-      setSync({ state: 'off' });
-    },
+    addTrip,
+    updateTrip,
+    deleteTrip,
+    updateProfile,
+    saveClimate,
+    replaceAll,
+    resetCorruptLocal,
+    connectSync,
+    disconnectSync,
     syncNow: runSync,
-    resolveConflict: async (keep) => {
-      const s = settingsRef.current;
-      if (!s || sync.state !== 'conflict') return;
-      const remote = sync.remote;
-      setSync({ state: 'working', label: 'Resolving…' });
-      try {
-        if (keep === 'remote') {
-          setData(remote);
-          storeSettings({ ...s, lastSyncedAt: remote.updatedAt });
-        } else {
-          const local = { ...dataRef.current, updatedAt: nowIso() };
-          await writeAtlasGist(fetch, s.token, s.gistId, local);
-          storeSettings({ ...s, lastSyncedAt: local.updatedAt });
-          setData(local);
-        }
-        setSync({ state: 'idle', at: nowIso() });
-      } catch (e) {
-        setSync({ state: 'error', message: (e as Error).message });
-      }
-    },
-  };
+    resolveConflict,
+  }), [
+    data,
+    loadError,
+    saveError,
+    sync,
+    syncSettings,
+    addTrip,
+    updateTrip,
+    deleteTrip,
+    updateProfile,
+    saveClimate,
+    replaceAll,
+    resetCorruptLocal,
+    connectSync,
+    disconnectSync,
+    runSync,
+    resolveConflict,
+  ]);
 
   return <Ctx.Provider value={store}>{children}</Ctx.Provider>;
 }
