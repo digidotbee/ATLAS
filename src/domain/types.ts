@@ -158,7 +158,7 @@ export interface CandidateTravelWindow {
   feesTotal: number;
   contingency: number;
   projectedTotal: number;
-  remainingBudget: number;
+  remainingBudget: number | null;
   weatherScore: number | null;
   weatherAssessment: string;
   confidence: 'low' | 'medium' | 'high';
@@ -220,7 +220,7 @@ export interface Trip {
   destination: string;
   region: string;
   currency: string;
-  budgetTotal: number;
+  budgetTotal: number | null;
   /** Percent of the total budget held back for surprises. */
   contingencyPct: number;
   travelers: Travelers;

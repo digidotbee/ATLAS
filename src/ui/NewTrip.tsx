@@ -1,14 +1,20 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { formatMoney, nightsBetween } from '../domain/budget';
 import { createTrip } from '../domain/factory';
-import { NEW_TRIP_STEPS, stepErrors, type NewTripDraft, type NewTripStep } from '../domain/newTrip';
+import { budgetTotalForEntry, NEW_TRIP_STEPS, stepErrors, type BudgetMode, type NewTripDraft, type NewTripStep } from '../domain/newTrip';
 import { useStore } from '../state/store';
 import { Banner, Field, formatDate, NumberInput } from './common';
 import { go, href } from './router';
 
 const STEP_COPY: Record<NewTripStep, { title: string; hint: string }> = {
-  where: { title: 'Where are you dreaming of going?', hint: 'A country, a region, a town — or just an idea like “Atlantic coast of Portugal”.' },
-  budget: { title: 'What’s the total budget?', hint: 'Everything included: flights, places to stay, getting around, food, experiences and a cushion for surprises.' },
+  where: {
+    title: 'Where does this venture begin?',
+    hint: 'Name a city, a trailhead, a favorite restaurant, or a vibe you want to explore.',
+  },
+  budget: {
+    title: 'What’s the budget?',
+    hint: 'A rough target to keep everyone aligned — from food and tickets to travel, stays, and a little cushion for surprises.',
+  },
   when: { title: 'When could you travel?', hint: 'Your availability, not the trip dates. ORIVOIR finds the best dates and trip length inside it.' },
   who: { title: 'Who’s coming?', hint: '' },
 };
@@ -21,6 +27,7 @@ export function NewTrip() {
     name: '',
     region: '',
     budget: null,
+    budgetSkipped: false,
     currency: p.defaultCurrency,
     earliest: '',
     latest: '',
@@ -35,6 +42,7 @@ export function NewTrip() {
   });
   const [i, setI] = useState(0);
   const [errors, setErrors] = useState<string[]>([]);
+  const [budgetMode, setBudgetMode] = useState<BudgetMode>('total');
   const step = NEW_TRIP_STEPS[i];
   const last = i === NEW_TRIP_STEPS.length - 1;
   const set = (patch: Partial<NewTripDraft>) => {
@@ -55,7 +63,7 @@ export function NewTrip() {
       destination: d.destination,
       region: d.region,
       currency: d.currency,
-      budgetTotal: d.budget!,
+      budgetTotal: budgetTotalForEntry(d.budget, budgetMode, d.adults!, d.children ?? 0),
       adults: d.adults!,
       children: d.children ?? 0,
       childAges: d.childAges,
@@ -83,7 +91,12 @@ export function NewTrip() {
 
   const answered: { step: number; label: string; value: string }[] = [];
   if (i > 0) answered.push({ step: 0, label: 'Where', value: d.destination });
-  if (i > 1) answered.push({ step: 1, label: 'Budget', value: formatMoney(d.budget ?? 0, d.currency) });
+  if (i > 1)
+    answered.push({
+      step: 1,
+      label: 'Budget',
+      value: d.budgetSkipped ? 'No target set' : `${formatMoney(d.budget ?? 0, d.currency)}${budgetMode === 'perPerson' ? ' per person' : ''}`,
+    });
   if (i > 2)
     answered.push({
       step: 2,
@@ -120,6 +133,7 @@ export function NewTrip() {
       )}
 
       <form className="wizard-step" onSubmit={next} noValidate>
+        {step === 'budget' && <p className="wizard-context">WHERE • {d.destination}</p>}
         <h1 ref={headingRef} tabIndex={-1}>
           {STEP_COPY[step].title}
         </h1>
@@ -127,14 +141,14 @@ export function NewTrip() {
 
         {step === 'where' && (
           <div className="stack">
-            <input className="input-lg" value={d.destination} onChange={(e) => set({ destination: e.target.value })} placeholder="e.g. Guanacaste, Costa Rica" aria-label="Destination" autoFocus />
+            <input className="input-lg" value={d.destination} onChange={(e) => set({ destination: e.target.value })} placeholder="Destination or setting..." aria-label="Destination" autoFocus />
             <details className="more" open={Boolean(d.name || d.region)}>
-              <summary>More details (optional)</summary>
+              <summary>Fine-tune the details (optional)</summary>
               <div className="grid-2">
-                <Field label="Trip name">
+                <Field label="Name this venture">
                   <input value={d.name} onChange={(e) => set({ name: e.target.value })} placeholder="e.g. Pacific coast spring break" />
                 </Field>
-                <Field label="Wider region">
+                <Field label="General area or neighborhood">
                   <input value={d.region} onChange={(e) => set({ region: e.target.value })} placeholder="e.g. Central America" />
                 </Field>
               </div>
@@ -143,9 +157,49 @@ export function NewTrip() {
         )}
 
         {step === 'budget' && (
-          <div className="budget-entry">
-            <NumberInput value={d.budget} onChange={(v) => set({ budget: v })} step={100} placeholder="9000" aria-label="Total budget" />
-            <input className="currency" value={d.currency} onChange={(e) => set({ currency: e.target.value.toUpperCase() })} maxLength={3} aria-label="Currency" />
+          <div className="stack">
+            <div className="segmented budget-toggle" role="group" aria-label="Budget type">
+              <button
+                type="button"
+                className={budgetMode === 'total' ? 'on' : ''}
+                aria-pressed={budgetMode === 'total'}
+                onClick={() => {
+                  setBudgetMode('total');
+                  set({ budgetSkipped: false });
+                }}
+              >
+                Total (Everything included)
+              </button>
+              <button
+                type="button"
+                className={budgetMode === 'perPerson' ? 'on' : ''}
+                aria-pressed={budgetMode === 'perPerson'}
+                onClick={() => {
+                  setBudgetMode('perPerson');
+                  set({ budgetSkipped: false });
+                }}
+              >
+                Per person
+              </button>
+            </div>
+            <div className="budget-entry">
+              <NumberInput
+                value={d.budget}
+                onChange={(v) => set({ budget: v, budgetSkipped: false })}
+                step={100}
+                placeholder="$ 0"
+                aria-label={budgetMode === 'total' ? 'Total budget' : 'Budget per person'}
+              />
+              <input className="currency" value={d.currency} onChange={(e) => set({ currency: e.target.value.toUpperCase() })} maxLength={3} aria-label="Currency" />
+            </div>
+            <p className="budget-helper">
+              {budgetMode === 'total'
+                ? 'Covers the whole venture across everyone joining.'
+                : 'Target spend for each individual collaborator.'}
+            </p>
+            <button type="button" className="wizard-skip" aria-pressed={d.budgetSkipped} onClick={() => set({ budget: null, budgetSkipped: true })}>
+              Skip for now — we'll figure it out as we go
+            </button>
           </div>
         )}
 

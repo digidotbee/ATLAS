@@ -25,7 +25,7 @@ export function parseAtlasData(raw: unknown, source: string): AtlasData {
     for (const key of ['id', 'name', 'destination', 'currency']) {
       if (typeof tr[key] !== 'string') fail(`trip ${i + 1} is missing "${key}".`);
     }
-    if (typeof tr.budgetTotal !== 'number') fail(`trip "${String(tr.name)}" has no numeric budgetTotal.`);
+    if (tr.budgetTotal !== null && typeof tr.budgetTotal !== 'number') fail(`trip "${String(tr.name)}" has no numeric budgetTotal or null budget target.`);
     for (const key of ['dateOptions', 'candidates']) {
       if (!Array.isArray(tr[key])) fail(`trip "${String(tr.name)}" has no ${key} list.`);
     }

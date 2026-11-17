@@ -61,7 +61,7 @@ export interface NewTripInput {
   destination: string;
   region: string;
   currency: string;
-  budgetTotal: number;
+  budgetTotal: number | null;
   adults: number;
   children: number;
   childAges: string;

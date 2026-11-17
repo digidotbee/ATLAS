@@ -1583,6 +1583,21 @@ fieldset.card {
   font-size: 20px;
   padding: 14px 16px;
 }
+.wizard-context {
+  align-self: flex-start;
+  margin: -8px 0 0;
+  padding: 5px 12px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-pill);
+  color: var(--ink-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+.budget-toggle {
+  align-self: flex-start;
+  max-width: 100%;
+}
 .budget-entry {
   display: grid;
   grid-template-columns: 1fr 96px;
@@ -1597,6 +1612,23 @@ fieldset.card {
 .budget-entry .currency {
   text-align: center;
   font-size: 18px;
+}
+.budget-helper {
+  margin: -8px 0 0;
+  color: var(--ink-muted);
+  font-size: 14px;
+}
+.wizard-skip {
+  align-self: flex-start;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
 }
 details.more > summary {
   font-size: 14px;
