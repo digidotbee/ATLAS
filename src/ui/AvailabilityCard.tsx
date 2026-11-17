@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { newId } from '../domain/factory';
 import type { Availability, DateRange, TripConstraints } from '../domain/types';
 import { Field, formatDate, formatDateTimeLocal, NumberInput } from './common';
 import { CalendarPicker } from './CalendarPicker';
@@ -14,7 +15,7 @@ export interface AvailabilityCardProps {
 
 const fmt = (iso: string) => formatDate(iso, { weekday: 'short', month: 'short', day: 'numeric' });
 
-function RangeList({
+export function RangeList({
   label,
   ranges,
   onChange,
@@ -23,11 +24,25 @@ function RangeList({
   ranges: DateRange[];
   onChange: (r: DateRange[]) => void;
 }) {
+  // Stable row keys (ranges have no ids), so each calendar keeps its own state when a row is removed.
+  const [keys, setKeys] = useState(() => ranges.map(() => newId()));
+  if (keys.length !== ranges.length) {
+    // The list changed from elsewhere (e.g. a sync): keep existing keys, add or trim the rest.
+    setKeys([...keys.slice(0, ranges.length), ...Array.from({ length: Math.max(0, ranges.length - keys.length) }, () => newId())]);
+  }
+  const remove = (i: number) => {
+    setKeys(keys.filter((_, j) => j !== i));
+    onChange(ranges.filter((_, j) => j !== i));
+  };
+  const add = () => {
+    setKeys([...keys, newId()]);
+    onChange([...ranges, { start: '', end: '' }]);
+  };
   return (
     <div className="stack-sm">
       <span className="field-label">{label}</span>
       {ranges.map((r, i) => (
-        <div key={i} className="range-calendar-row">
+        <div key={keys[i] ?? i} className="range-calendar-row">
           <CalendarPicker
             label={`${label} ${i + 1}`}
             mode="range"
@@ -38,14 +53,14 @@ function RangeList({
           <button
             type="button"
             className="btn btn-ghost btn-small"
-            onClick={() => onChange(ranges.filter((_, j) => j !== i))}
+            onClick={() => remove(i)}
             aria-label="Remove"
           >
             ✕
           </button>
         </div>
       ))}
-      <button type="button" className="btn btn-ghost btn-small" onClick={() => onChange([...ranges, { start: '', end: '' }])}>
+      <button type="button" className="btn btn-ghost btn-small" onClick={add}>
         + Add
       </button>
     </div>
