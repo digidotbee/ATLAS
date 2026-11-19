@@ -254,7 +254,8 @@ a {
   gap: 2px;
 }
 .logo-word {
-  font: 600 26px/1 var(--wordmark);
+  font: 600 20px/1 var(--wordmark);
+  letter-spacing: 0.08em;
   color: var(--ink);
 }
 .logo-v {
