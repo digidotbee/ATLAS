@@ -12,18 +12,18 @@
   --surface-200: #252c3d;    /* elevated surfaces are LIGHTER than body in dark themes */
   /* ink lifted whiter than the showcase's #f0f9c6 (family request) */
   --ink: #f7faee;
-  --ink-soft: #f7faee;
-  --accent: #f4ec2a;         /* vivid chartreuse — used for text, links, and indicators */
-  --accent-vivid: #f4ec2a;   /* graphic-use accent: borders, button fills, checkboxes (never text-on-dark-bg) */
-  --sunlit: #f4ec2a;         /* chartreuse highlight */
+  --ink-soft: rgba(247, 250, 238, 0.55);
+  --accent: #dfb84b;         /* vivid chartreuse — used for text, links, and indicators */
+  --accent-vivid: #dfb84b;   /* graphic-use accent: borders, button fills, checkboxes (never text-on-dark-bg) */
+  --sunlit: #dfb84b;         /* chartreuse highlight */
   /* flare lifted lighter/whiter than #e0f500 (family request) */
-  --flare: #f2ff9e;
+  --flare: #f0d882;
   /* fixed light ink for text over photography and the thicket band */
   --ink-light: #f7faee;
-  --thicket: #526c4c;
+  --thicket: #387476;
   --thistle: #bcb4d1;
-  --line: #060a1d;
-  --focus-ring: #f4ec2a;     /* vivid chartreuse focus ring */
+  --line: rgba(247, 250, 238, 0.1);
+  --focus-ring: #dfb84b;     /* vivid chartreuse focus ring */
   --on-accent: #272c35;
   --button-hover-color: var(--accent);
   --button-shadow-highlight: rgba(255, 255, 255, 0.06);
@@ -32,7 +32,7 @@
   --button-pressed-stroke: #697283;
   --button-shadow-pressed-inset: inset 2px 2px 4px rgba(0, 0, 0, 0.38), inset -2px -2px 4px rgba(255, 255, 255, 0.05);
   --button-shadow-pressed: 0 0 0 1.5px var(--button-pressed-stroke), var(--button-shadow-pressed-inset);
-  --shadow-sunlit: inset 0 1px 0 rgba(255, 255, 255, 0.25), -2px -2px 6px rgba(242, 244, 233, 0.08), 0 1px 2px rgba(244, 236, 42, 0.4),
+  --shadow-sunlit: inset 0 1px 0 rgba(255, 255, 255, 0.25), -2px -2px 6px rgba(242, 244, 233, 0.08), 0 1px 2px rgba(223, 184, 75, 0.4),
     0 1px 2px #030a11e1;
   --shadow-prism: inset 0 1px 0 rgba(242, 244, 233, 0.06), -6px -6px 14px rgba(242, 244, 233, 0.07), 1px 2px 1px #540b0059,
     3px 5px 6px #bb4a0840, 7px 11px 10px #ecff0026, 13px 21px 28px #0096ad26, 16px 26px 36px rgba(126, 134, 198, 0.11),
