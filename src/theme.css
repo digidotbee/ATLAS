@@ -12,7 +12,7 @@
   --surface-200: #252c3d;    /* elevated surfaces are LIGHTER than body in dark themes */
   /* ink lifted whiter than the showcase's #f0f9c6 (family request) */
   --ink: #f7faee;
-  --ink-soft: rgba(247, 250, 238, 0.55);
+  --ink-soft: rgba(247, 250, 238, 0.75);
   --accent: #dfb84b;         /* vivid chartreuse — used for text, links, and indicators */
   --accent-vivid: #dfb84b;   /* graphic-use accent: borders, button fills, checkboxes (never text-on-dark-bg) */
   --sunlit: #dfb84b;         /* chartreuse highlight */
