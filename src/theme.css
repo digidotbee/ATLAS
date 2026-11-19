@@ -267,10 +267,16 @@ a {
   text-transform: uppercase;
   color: var(--ink-muted);
 }
+.app-nav {
+  gap: 2px;
+}
 .app-nav a {
   color: var(--ink-soft);
   border-radius: var(--radius-pill);
   text-shadow: none;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
 }
 .app-nav a.active,
 .app-nav a:hover {
