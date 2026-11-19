@@ -118,12 +118,12 @@ function TripMenu({ t }: { t: Trip }) {
 }
 
 /** Cold-side data card: flat, hairline, radius-xs. `featured` adds shadow-prism. */
-function TripCard({ t, featured }: { t: Trip; featured?: boolean }) {
+function TripCard({ t, featured, upcoming }: { t: Trip; featured?: boolean; upcoming?: boolean }) {
   const status = tripStatus(t);
   const d = chosenDate(t);
   const s = summarize(t);
   return (
-    <article className={`trip-row${featured ? ' featured' : ''}`}>
+    <article className={`trip-row${featured ? ' featured' : ''}${upcoming ? ' upcoming' : ''}`}>
       <div className="trip-row-main">
         {featured ? <span className="eyebrow">Next venture</span> : t.region && <span className="trip-row-region">{t.region}</span>}
         <h3>
@@ -195,18 +195,18 @@ export function TripList() {
       ) : (
         <>
           {upcoming.length > 0 && (
-            <section className="trip-section trip-section--upcoming">
+            <section className="trip-section">
               <div className="section-head">
                 <h2 className="section-label">Upcoming · {upcoming.length}</h2>
                 <a className="view-all" href={href({ page: 'all' })}>
                   View all <span aria-hidden="true">→</span>
                 </a>
               </div>
-              <TripCard t={next} featured />
+              <TripCard t={next} featured upcoming />
               {laterTrips.length > 0 && (
                 <div className="trip-stack">
                   {laterTrips.map((t) => (
-                    <TripCard key={t.id} t={t} />
+                    <TripCard key={t.id} t={t} upcoming />
                   ))}
                 </div>
               )}
@@ -252,7 +252,10 @@ export function AllTrips() {
         </div>
       ) : (
         <div className="trip-list">
-          {[...upcoming, ...planning].map((t) => (
+          {upcoming.map((t) => (
+            <TripCard key={t.id} t={t} upcoming />
+          ))}
+          {planning.map((t) => (
             <TripCard key={t.id} t={t} />
           ))}
         </div>
