@@ -174,6 +174,7 @@ export function TripList() {
   return (
     <div className="page home">
       <section className="hero-card">
+        <img className="hero-landscape" src={`${import.meta.env.BASE_URL}hero/orivoir-landscape.svg`} alt="" aria-hidden="true" />
         <div className="hero-copy">
           <h1 className="hero-title">
             Good things <span className="accent">await.</span>

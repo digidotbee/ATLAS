@@ -10,23 +10,6 @@ import { AllTrips, TripList } from './ui/TripList';
 import { TripView } from './ui/TripView';
 import { useThemePref } from './ui/theme';
 
-function SyncBadge() {
-  const { sync } = useStore();
-  const map = {
-    off: { cls: 'off', text: 'Saved in this browser' },
-    idle: { cls: 'ok', text: 'Synced' },
-    working: { cls: 'busy', text: 'Syncing…' },
-    error: { cls: 'err', text: 'Sync problem' },
-    conflict: { cls: 'err', text: 'Needs your choice' },
-  } as const;
-  const m = map[sync.state];
-  return (
-    <a className={`sync-badge sync-${m.cls}`} href={href({ page: 'settings' })} title={sync.state === 'error' ? sync.message : m.text}>
-      <i /> {m.text}
-    </a>
-  );
-}
-
 export function App() {
   const route = useRoute();
   const store = useStore();
@@ -41,7 +24,6 @@ export function App() {
     <>
       {!isPrint && (
         <header className="app-header no-print">
-          <img className="header-landscape" src={`${import.meta.env.BASE_URL}hero/orivoir-landscape.svg`} alt="" aria-hidden="true" />
           <a className="logo" href={href({ page: 'trips' })} aria-label="ORIVOIR home">
             <span className="logo-copy">
               <span className="logo-word">
@@ -96,7 +78,6 @@ export function App() {
               </svg>
             </a>
           </div>
-          <SyncBadge />
         </header>
       )}
 
