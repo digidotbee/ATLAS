@@ -195,7 +195,7 @@ export function TripList() {
       ) : (
         <>
           {upcoming.length > 0 && (
-            <section className="trip-section">
+            <section className="trip-section trip-section--upcoming">
               <div className="section-head">
                 <h2 className="section-label">Upcoming · {upcoming.length}</h2>
                 <a className="view-all" href={href({ page: 'all' })}>
