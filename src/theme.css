@@ -2354,29 +2354,23 @@ button:not(:disabled):not(.btn-primary):not(.btn-choose):not(.btn-cta-landscape)
   }
 }
 
-/* Featured (launched) venture card: the WILDSTROM sandbox card, exactly.
-   Rest state is the sandbox surface, border and elevation with no prism shadow.
-   Hover uses the prism shadow the card used to carry at rest. */
-.trip-row.featured {
-  background: var(--surface-200);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.25);
-}
-.trip-row.featured:hover {
-  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
-  box-shadow: var(--shadow-prism);
-}
-
-/* Upcoming cards: the same sandbox card as the featured one, easing in over 0.28s like the sandbox. */
+/* Featured and upcoming venture cards: the WILDSTROM sandbox card.
+   Rest and hover use shadow lists with the same layer count and order
+   (eight layers, inset first) so the glow eases in instead of switching.
+   Hover uses the Storm prism shadow the card used to carry at rest. */
+.trip-row.featured,
 .trip-row.upcoming {
   background: var(--surface-200);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 0 0 transparent, 0 2px 10px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.25),
+    0 0 0 transparent, 0 0 0 transparent, 0 0 0 transparent, 0 0 0 transparent, 0 0 0 transparent;
   transition: border-color 0.56s ease, box-shadow 0.56s ease;
 }
+.trip-row.featured:hover,
 .trip-row.upcoming:hover {
   border-color: color-mix(in srgb, var(--accent) 35%, transparent);
-  box-shadow: var(--shadow-prism);
+  box-shadow: inset 0 1px 0 rgba(242, 244, 233, 0.06), -6px -6px 14px rgba(242, 244, 233, 0.07), 1px 2px 1px #540b0059,
+    3px 5px 6px #bb4a0840, 7px 11px 10px #ecff0026, 13px 21px 28px #0096ad26, 16px 26px 36px rgba(126, 134, 198, 0.11),
+    0 1px 0 1px #00000042;
 }
