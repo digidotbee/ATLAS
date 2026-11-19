@@ -871,8 +871,14 @@ details > summary,
   border-radius: var(--radius-xs);
   box-shadow: none;
 }
-.trip-row:hover {
-  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+/* Hover: the WILDSTROM featured-card lift (gold glow, 35% accent border),
+   with the glow tinted by the prism palette so a rainbow edge remains */
+.trip-row:hover,
+.trip-row.featured:hover {
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.25),
+    0 0 28px rgba(223, 184, 75, 0.28), 12px 14px 32px rgba(0, 150, 173, 0.16),
+    -10px 6px 28px rgba(126, 134, 198, 0.16);
 }
 /* Featured: the one organic card — radius-md + shadow-prism */
 .trip-row.featured {
