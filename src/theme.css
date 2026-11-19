@@ -2379,3 +2379,8 @@ button:not(:disabled):not(.btn-primary):not(.btn-choose):not(.btn-cta-landscape)
 .hero-title {
   font-weight: 300;
 }
+
+/* Home hero title: same soft ink as the venture card dates, so the headline sits in the same tone */
+.hero-title {
+  color: var(--ink-soft);
+}
