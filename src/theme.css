@@ -2270,3 +2270,86 @@ button:not(:disabled):not(.btn-primary):not(.btn-choose):not(.btn-cta-landscape)
   color: var(--button-hover-color);
 }
 
+
+/* ==========================================================================
+   Header rework: one 68px row (wordmark · nav · utility icons),
+   flat icon buttons, landscape moved into the home hero card,
+   and the save status shown beside the venture title.
+   ========================================================================== */
+.app-header {
+  height: 68px;
+  min-height: 68px;
+  padding-top: 0;
+  padding-bottom: 0;
+  flex-wrap: nowrap;
+  align-items: center;
+  overflow: visible;
+}
+.app-header .app-nav {
+  flex: 1;
+  justify-content: center;
+}
+.app-header .header-actions {
+  flex: 0 0 auto;
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+/* Flat icon buttons: no raised shadow, same 40px click area */
+.app-header .icon-btn,
+.app-header .icon-btn:hover,
+.app-header .icon-btn:active,
+.app-header .icon-btn:focus-visible {
+  box-shadow: none;
+}
+.app-header .header-actions .icon-btn {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+}
+
+/* Home hero: landscape anchored to the card's lower-right edge */
+.hero-card {
+  position: relative;
+  overflow: hidden;
+}
+.hero-card > .hero-copy {
+  position: relative;
+  z-index: 1;
+}
+.hero-landscape {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: min(480px, 52%);
+  height: auto;
+  z-index: 0;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* Planner: save status sits under the venture title */
+.trip-header .sync-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .app-header {
+    height: 64px;
+    min-height: 64px;
+  }
+  .app-header .header-actions .icon-btn {
+    flex-basis: 38px;
+    width: 38px;
+    height: 38px;
+  }
+  .hero-landscape {
+    width: 60%;
+    opacity: 0.6;
+  }
+}

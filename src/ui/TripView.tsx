@@ -8,6 +8,7 @@ import { ItineraryTab } from './ItineraryTab';
 import { PlanTab } from './PlanTab';
 import { href, type TripTab } from './router';
 import { SetupTab } from './SetupTab';
+import { SyncBadge } from './SyncBadge';
 
 const TABS: { id: TripTab; label: string; short: string; hint: string }[] = [
   { id: 'plan', label: '1 · Shape it', short: 'Shape', hint: 'Follow-up questions' },
@@ -51,6 +52,7 @@ export function TripView({ id, tab }: { id: string; tab: TripTab }) {
             const parts = [trip.destination.trim() !== trip.name.trim() ? trip.destination : '', trip.region].filter(Boolean);
             return parts.length > 0 ? <p className="muted">{parts.join(' · ')}</p> : null;
           })()}
+          <SyncBadge />
         </div>
         <div className="trip-header-actions">
           <a className={`btn btn-ghost ${tab === 'setup' ? 'active' : ''}`} href={href({ page: 'trip', id: trip.id, tab: 'setup' })}>
