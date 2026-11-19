@@ -2374,3 +2374,8 @@ button:not(:disabled):not(.btn-primary):not(.btn-choose):not(.btn-cta-landscape)
     3px 5px 6px #bb4a0840, 7px 11px 10px #ecff0026, 13px 21px 28px #0096ad26, 16px 26px 36px rgba(126, 134, 198, 0.11),
     0 1px 0 1px #00000042;
 }
+
+/* Home hero title: the sandbox's light Fraunces weight (300), not the bold 600 */
+.hero-title {
+  font-weight: 300;
+}
