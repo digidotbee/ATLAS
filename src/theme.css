@@ -2384,3 +2384,31 @@ button:not(:disabled):not(.btn-primary):not(.btn-choose):not(.btn-cta-landscape)
 .hero-subtitle {
   color: var(--ink-soft);
 }
+
+/* ==========================================================================
+   Budget step polish: helper spacing, flat skip link, matched action row,
+   and a readable amount placeholder.
+   ========================================================================== */
+.budget-helper {
+  margin: 10px 0 0;
+}
+.wizard-skip,
+.wizard-skip:hover,
+.wizard-skip:focus-visible {
+  box-shadow: none;
+  padding: 6px 0;
+}
+.wizard-actions .btn-ghost {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  box-shadow: none;
+  text-shadow: none;
+}
+.wizard-actions .btn-ghost:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  color: var(--accent);
+}
+.budget-entry input::placeholder {
+  opacity: 0.85;
+}
