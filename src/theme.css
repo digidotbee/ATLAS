@@ -254,8 +254,11 @@ a {
   gap: 2px;
 }
 .logo-word {
-  font: 900 26px/1 var(--wordmark);
+  font: 600 26px/1 var(--wordmark);
   color: var(--ink);
+}
+.logo-v {
+  color: var(--accent);
 }
 .logo-sub {
   font: 700 10px/1 var(--sans);

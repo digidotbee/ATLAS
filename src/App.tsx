@@ -45,7 +45,7 @@ export function App() {
           <a className="logo" href={href({ page: 'trips' })} aria-label="ORIVOIR home">
             <span className="logo-copy">
               <span className="logo-word">
-                ORIVOIR
+                ORI<span className="logo-v">V</span>OIR
               </span>
               <span className="logo-sub">Adventure planner</span>
             </span>
