@@ -1,5 +1,7 @@
 # Flow: ATLAS v1 — family travel planner on GitHub Pages
 
+This is the original ATLAS prototype brief. For current wizard and role decisions, see [Venture launch](../docs/venture-launch.md).
+
 ## Context
 - Domain: software (greenfield, personal tool)
 - Decisions (user, 2026-11-14): new repo digidotbee/atlas on GitHub Pages; React + Vite with GitHub Actions deploy;

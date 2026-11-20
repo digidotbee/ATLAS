@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { budgetTotalForEntry, preferredNightsForDuration, stepErrors, type NewTripDraft } from './newTrip';
+import { budgetTotalForEntry, NEW_TRIP_STEPS, optInDeadlineAfter, preferredNightsForDuration, stepErrors, type NewTripDraft } from './newTrip';
 
 const base: NewTripDraft = {
   destination: 'Japan',
@@ -26,6 +26,9 @@ const base: NewTripDraft = {
 };
 
 describe('new trip steps', () => {
+  it('collects Schedule and Crew before Budget & Launch', () => {
+    expect(NEW_TRIP_STEPS).toEqual(['where', 'when', 'who', 'budget']);
+  });
   it('requires a destination and a budget', () => {
     expect(stepErrors('where', { ...base, destination: '  ' })).toHaveLength(1);
     expect(stepErrors('budget', { ...base, budget: null })).toHaveLength(1);
@@ -55,7 +58,15 @@ describe('new trip steps', () => {
     expect(preferredNightsForDuration('5 days')).toBe(4);
     expect(preferredNightsForDuration('3 hours')).toBeNull();
   });
-  it('needs at least one adult', () => {
+  it('sets the deadline shortcuts in local time across the end of a month', () => {
+    const now = new Date(2030, 0, 31, 18, 45).getTime();
+    expect(optInDeadlineAfter(24, now)).toBe('2030-02-01T18:45');
+    expect(optInDeadlineAfter(72, now)).toBe('2030-02-03T18:45');
+  });
+  it('uses whole-person counts with at least one adult', () => {
     expect(stepErrors('who', { ...base, adults: 0 })).toHaveLength(1);
+    expect(stepErrors('who', { ...base, adults: 1.5 })).toHaveLength(1);
+    expect(stepErrors('who', { ...base, children: -1 })).toHaveLength(1);
+    expect(stepErrors('who', { ...base, children: null })).toEqual([]);
   });
 });

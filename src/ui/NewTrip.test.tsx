@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { StoreProvider, useStore } from '../state/store';
+import { formatDateTimeLocal, formatLocalTime } from './common';
 import { NewTrip } from './NewTrip';
 
 function TripState() {
@@ -8,17 +9,31 @@ function TripState() {
   return <output data-testid="saved-trips">{JSON.stringify(data.trips)}</output>;
 }
 
-function startWizardAtWhen(destination: string) {
+function startAtSchedule(destination: string) {
   render(
     <StoreProvider>
       <NewTrip />
       <TripState />
     </StoreProvider>,
   );
+  expect(screen.getByRole('heading', { name: 'Set the Scene' })).toBeTruthy();
   fireEvent.change(screen.getByLabelText('Destination'), { target: { value: destination } });
+  next();
+}
+
+function next() {
   fireEvent.click(screen.getByRole('button', { name: 'Next →' }));
-  fireEvent.click(screen.getByRole('button', { name: "Skip for now — we'll figure it out as we go" }));
-  fireEvent.click(screen.getByRole('button', { name: 'Next →' }));
+}
+
+function continueToBudget() {
+  next();
+  expect(screen.getByRole('heading', { name: 'Crew' })).toBeTruthy();
+  next();
+  expect(screen.getByRole('heading', { name: 'Budget & Launch' })).toBeTruthy();
+}
+
+function preview() {
+  return screen.getByRole('region', { name: 'Invite card preview' });
 }
 
 function calendarDate(daysAhead: number) {
@@ -44,28 +59,22 @@ afterEach(() => {
   localStorage.clear();
 });
 
-describe('new-trip wizard', () => {
-  it('shows the venture location only once', () => {
-    localStorage.clear();
-    render(
-      <StoreProvider>
-        <NewTrip />
-      </StoreProvider>,
-    );
-
-    fireEvent.change(screen.getByLabelText('Destination'), { target: { value: 'Thanksgiving' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Next →' }));
-
+describe('Venture creation wizard', () => {
+  it('shows the location once on Schedule and once in the final invite preview', () => {
+    startAtSchedule('Thanksgiving');
     expect(screen.getAllByText(/Thanksgiving/)).toHaveLength(1);
-    expect(screen.getByText('WHERE • Thanksgiving')).toBeTruthy();
+    expect(screen.queryByRole('group', { name: 'Budget type' })).toBeNull();
+    expect(screen.queryByText(/No target set|\$0/)).toBeNull();
+    continueToBudget();
+    expect(screen.getAllByText(/Thanksgiving/)).toHaveLength(1);
+    expect(preview().textContent).toContain('Thanksgiving');
   });
 
   it('shows the adaptive date modes, context pills, and local-event fields', () => {
-    startWizardAtWhen("Mom's House");
+    startAtSchedule("Mom's House");
 
-    expect(screen.getByRole('heading', { name: 'When is this happening?' })).toBeTruthy();
-    expect(screen.getAllByText('WHERE • Mom\'s House')).toHaveLength(1);
-    expect(screen.getByText('BUDGET • No target set')).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Schedule' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Edit Set the Scene' }).textContent).toContain("Mom's House");
     expect(screen.getByRole('button', { name: 'Next →' }).classList.contains('wizard-next')).toBe(true);
     expect(screen.getByRole('button', { name: calendarDate(0).buttonName }).getAttribute('aria-pressed')).toBe('true');
     expect(screen.getByRole('button', { name: 'SET FOR DATE DECISION' })).toBeTruthy();
@@ -88,30 +97,37 @@ describe('new-trip wizard', () => {
     expect(screen.queryByRole('button', { name: /End date/ })).toBeNull();
     expect(screen.getByLabelText('Start time (optional)').closest('.when-time-row')).toBeTruthy();
     expect(screen.getByLabelText('End time (optional)').closest('.when-time-row')).toBeTruthy();
-    expect(screen.getByText('Invitees will go straight into the shared itinerary once created.')).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Decide dates later' })).toBeNull();
   });
 
-  it('creates a fixed single-day event with optional times as its chosen date', () => {
-    startWizardAtWhen('Mom’s House');
+  it('previews a fixed evening and launches into planning after the Planner skips budget', () => {
+    startAtSchedule('Mom’s House');
     const date = calendarDate(4);
     selectCalendarDate(date);
     fireEvent.change(screen.getByLabelText('Start time (optional)'), { target: { value: '18:00' } });
     fireEvent.change(screen.getByLabelText('End time (optional)'), { target: { value: '21:00' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Next →' }));
-    expect(screen.getByRole('button', { name: 'Create trip →' }).classList.contains('wizard-next')).toBe(false);
-    fireEvent.click(screen.getByRole('button', { name: 'Create trip →' }));
+    continueToBudget();
+    expect(preview().textContent).toContain(formatDateTimeLocal(date.iso));
+    expect(preview().textContent).toContain(formatLocalTime('18:00'));
+    expect(preview().textContent).toContain(formatLocalTime('21:00'));
+    expect(preview().textContent).not.toContain('Opt in by');
+    fireEvent.change(screen.getByLabelText('Currency'), { target: { value: 'X' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Skip for now' }));
+    expect(screen.getByText('Step 4 of 4')).toBeTruthy();
+    expect(screen.getByTestId('saved-trips').textContent).toBe('[]');
+    fireEvent.click(screen.getByRole('button', { name: 'Launch Venture' }));
 
     const [trip] = JSON.parse(screen.getByTestId('saved-trips').textContent ?? '[]');
-    expect(trip.budgetTotal).toBeNull();
+    expect(trip).toMatchObject({ budgetTotal: null, currency: 'USD' });
     expect(trip.availability).toBeUndefined();
     expect(trip.dateOptions).toHaveLength(1);
     expect(trip.dateOptions[0]).toMatchObject({ start: date.iso, end: date.iso, startTime: '18:00', endTime: '21:00' });
     expect(trip.chosenDateId).toBe(trip.dateOptions[0].id);
+    expect(window.location.hash).toBe(`#/trip/${trip.id}/plan`);
   });
 
-  it('creates a multi-day fixed event from the calendar range', () => {
-    startWizardAtWhen('Family weekend');
+  it('previews and saves a fixed multi-day Venture with a total budget', () => {
+    startAtSchedule('Family weekend');
     fireEvent.click(screen.getByRole('checkbox', { name: 'Single day / evening' }));
     expect(screen.getByRole('group', { name: 'Venture dates' })).toBeTruthy();
     expect(screen.getByRole('button', { name: /End date/ })).toBeTruthy();
@@ -119,42 +135,78 @@ describe('new-trip wizard', () => {
     const end = calendarDate(7);
     selectCalendarDate(start, 'Start date');
     selectCalendarDate(end);
-    fireEvent.click(screen.getByRole('button', { name: 'Next →' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Create trip →' }));
+    continueToBudget();
+    fireEvent.change(screen.getByLabelText('Total budget'), { target: { value: '600' } });
+    expect(preview().textContent).toContain(formatDateTimeLocal(start.iso));
+    expect(preview().textContent).toContain(formatDateTimeLocal(end.iso));
+    expect(preview().textContent).toContain('$600 total');
+    fireEvent.click(screen.getByRole('button', { name: 'Launch Venture' }));
 
     const [trip] = JSON.parse(screen.getByTestId('saved-trips').textContent ?? '[]');
     expect(trip.dateOptions[0]).toMatchObject({ start: start.iso, end: end.iso });
+    expect(trip.budgetTotal).toBe(600);
   });
 
-  it('persists a date-decision cutoff and ideal duration for downstream planning', () => {
-    startWizardAtWhen('Thanksgiving');
+  it('updates the Date Decision preview and saves the revised cutoff on launch', () => {
+    startAtSchedule('Thanksgiving');
     fireEvent.click(screen.getByRole('button', { name: 'SET FOR DATE DECISION' }));
     const earliest = calendarDate(4);
     const latest = calendarDate(11);
     selectCalendarDate(earliest, 'Earliest start');
     selectCalendarDate(latest);
     fireEvent.change(screen.getByLabelText(/Ideal length/), { target: { value: '1 weekend' } });
-    fireEvent.change(screen.getByLabelText(/Opt in by/), { target: { value: '2027-10-31T18:00' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Next →' }));
-    const preview = screen.getByRole('region', { name: 'Invite card preview' });
-    expect(preview).toBeTruthy();
-    expect(screen.getByText('Opt in by:')).toBeTruthy();
-    expect(preview.textContent).toContain('Budget: No target set');
-    fireEvent.click(screen.getByRole('button', { name: 'Create trip →' }));
+    const initialCutoff = `${calendarDate(1).iso}T18:00`;
+    const revisedCutoff = `${calendarDate(2).iso}T19:30`;
+    fireEvent.change(screen.getByLabelText('Opt in by'), { target: { value: initialCutoff } });
+    next();
+    expect(screen.queryByRole('region', { name: 'Invite card preview' })).toBeNull();
+    next();
+    expect(preview().textContent).toContain(formatDateTimeLocal(initialCutoff));
+    fireEvent.click(screen.getByRole('button', { name: 'Skip for now' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Schedule' }));
+    fireEvent.change(screen.getByLabelText('Opt in by'), { target: { value: revisedCutoff } });
+    continueToBudget();
+    expect(preview().textContent).toContain(formatDateTimeLocal(revisedCutoff));
+    expect(preview().textContent).not.toContain(formatDateTimeLocal(initialCutoff));
+    expect(preview().textContent).toContain('1 weekend');
+    expect(preview().textContent).toContain('No target set');
+    fireEvent.click(screen.getByRole('button', { name: 'Launch Venture' }));
 
     const [trip] = JSON.parse(screen.getByTestId('saved-trips').textContent ?? '[]');
     expect(trip.dateOptions).toEqual([]);
     expect(trip.availability).toMatchObject({
       earliestDeparture: earliest.iso,
       latestReturn: latest.iso,
-      optInBy: '2027-10-31T18:00',
+      optInBy: revisedCutoff,
       idealDuration: '1 weekend',
     });
     expect(trip.constraints.preferredNights).toBe(2);
+    expect(window.location.hash).toBe(`#/trip/${trip.id}/dates`);
+  });
+
+  it('keeps the per-person entry when the Planner edits Crew and navigates back', () => {
+    startAtSchedule('Cabin weekend');
+    continueToBudget();
+    fireEvent.click(screen.getByRole('button', { name: 'Launch Venture' }));
+    expect(screen.getByRole('alert')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Per person' }));
+    fireEvent.change(screen.getByLabelText('Budget per person'), { target: { value: '150.25' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Crew' }));
+    expect(screen.queryByRole('alert')).toBeNull();
+    expect(screen.getByRole('heading', { name: 'Crew' })).toBeTruthy();
+    fireEvent.change(screen.getByLabelText('Adults'), { target: { value: '4' } });
+    fireEvent.click(screen.getByRole('button', { name: /Back/ }));
+    expect(screen.getByRole('heading', { name: 'Schedule' })).toBeTruthy();
+    continueToBudget();
+    expect(preview().textContent).toContain('6 people');
+    expect(preview().textContent).toContain('$150.25 per person');
+    fireEvent.click(screen.getByRole('button', { name: 'Launch Venture' }));
+    const [trip] = JSON.parse(screen.getByTestId('saved-trips').textContent ?? '[]');
+    expect(trip).toMatchObject({ travelers: { adults: 4, children: 2 }, budgetTotal: 901.50 });
   });
 
   it('requires date details before continuing without a skip action', () => {
-    startWizardAtWhen('Thanksgiving');
+    startAtSchedule('Thanksgiving');
     fireEvent.click(screen.getByRole('button', { name: 'SET FOR DATE DECISION' }));
     fireEvent.click(screen.getByRole('button', { name: 'Next →' }));
     expect(screen.getByText('Add both possible window dates.')).toBeTruthy();

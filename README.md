@@ -1,8 +1,8 @@
-# ATLAS — adventure planner
+# ORIVOIR
 
-A personal, reusable vacation planner. Start with **where**, **total budget**, **who's coming** and **flexible dates**;
-ATLAS then helps you shape the trip, compare date windows, collect and choose options, build a day-by-day itinerary,
-and print a one-page plan — with the budget updating as you go.
+Start a Venture with a destination, spot, or vibe. Compare options, plan the itinerary, track costs, and print a one-page plan.
+
+For the agreed creation wizard and the four MVP roles, see [Venture launch](docs/venture-launch.md).
 
 Live: https://digidotbee.github.io/ATLAS/
 
@@ -29,7 +29,15 @@ npm run dev      # http://localhost:5173/
 npm test
 npm run build
 ```
-Pushing to `main` runs tests and deploys to GitHub Pages (`.github/workflows/deploy.yml`).
+The Planner browser test runs against the production build. Install Chromium once before the first run.
+
+```sh
+npx playwright install --with-deps --only-shell chromium
+npm run build
+npm run test:e2e
+```
+
+Pull requests to `main` run the unit tests, production build, and browser test. A push to `main` deploys the tested build to GitHub Pages after all checks pass.
 
 Code map: `src/domain` (types, budget math, itinerary, research brief/import, validation — all unit-tested),
 `src/storage` (browser + Gist), `src/state/store.tsx`, `src/ui`.
