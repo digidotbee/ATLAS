@@ -26,6 +26,7 @@ export interface NewTripDraft {
 }
 
 export type BudgetMode = 'total' | 'perPerson';
+export const CURRENCY_CODE = /^[A-Z]{3}$/;
 
 /** Resolve the entered amount only once the final traveler count is known. */
 export function budgetTotalForEntry(amount: number | null, mode: BudgetMode, adults: number, children: number): number | null {
@@ -43,7 +44,14 @@ export function preferredNightsForDuration(value: string): number | null {
   return Math.max(1, Math.round(match[2].startsWith('day') ? amount - 1 : amount));
 }
 
-export const NEW_TRIP_STEPS = ['where', 'budget', 'when', 'who'] as const;
+/** A datetime-local field needs wall time at the deadline, including its local offset. */
+export function optInDeadlineAfter(hours: number, now = Date.now()): string {
+  const deadline = new Date(now + hours * 3_600_000);
+  const localTime = deadline.getTime() - deadline.getTimezoneOffset() * 60_000;
+  return new Date(localTime).toISOString().slice(0, 16);
+}
+
+export const NEW_TRIP_STEPS = ['where', 'when', 'who', 'budget'] as const;
 export type NewTripStep = (typeof NEW_TRIP_STEPS)[number];
 
 /** Problems that block moving past a step. */
@@ -52,7 +60,7 @@ export function stepErrors(step: NewTripStep, d: NewTripDraft): string[] {
   if (step === 'where' && !d.destination.trim()) e.push('Add a destination, region or idea.');
   if (step === 'budget') {
     if (!d.budgetSkipped && (d.budget === null || !Number.isFinite(d.budget) || d.budget <= 0)) e.push('Enter a budget greater than zero, or skip for now.');
-    if (!/^[A-Z]{3}$/.test(d.currency)) e.push('Currency must be a 3-letter code such as USD or EUR.');
+    if (!CURRENCY_CODE.test(d.currency)) e.push('Currency must be a 3-letter code such as USD or EUR.');
   }
   if (step === 'when') {
     if (d.whenMode === 'date') {
@@ -68,6 +76,9 @@ export function stepErrors(step: NewTripStep, d: NewTripDraft): string[] {
       if (!d.optInBy) e.push('Set an opt-in deadline.');
     }
   }
-  if (step === 'who' && (!d.adults || d.adults < 1)) e.push('At least one adult is needed.');
+  if (step === 'who') {
+    if (!Number.isInteger(d.adults) || (d.adults ?? 0) < 1) e.push('Enter at least one adult using a whole number.');
+    if (!Number.isInteger(d.children ?? 0) || (d.children ?? 0) < 0) e.push('Enter zero or a whole number of children.');
+  }
   return e;
 }
