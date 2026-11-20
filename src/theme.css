@@ -1630,26 +1630,6 @@ fieldset.card {
   font-size: 20px;
   padding: 14px 16px;
 }
-.wizard-context {
-  align-self: flex-start;
-  margin: -8px 0 0;
-  padding: 5px 12px;
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-pill);
-  color: var(--ink-muted);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-}
-.wizard-contexts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: -8px 0 0;
-}
-.wizard-contexts .wizard-context {
-  margin: 0;
-}
 .budget-toggle {
   align-self: flex-start;
   max-width: 100%;

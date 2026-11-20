@@ -1,8 +1,8 @@
-# ATLAS — adventure planner
+# ORIVOIR
 
-A personal, reusable vacation planner. Start with **where**, **total budget**, **who's coming** and **flexible dates**;
-ATLAS then helps you shape the trip, compare date windows, collect and choose options, build a day-by-day itinerary,
-and print a one-page plan — with the budget updating as you go.
+Start a Venture with a destination, spot, or vibe. Compare options, plan the itinerary, track costs, and print a one-page plan.
+
+For the agreed creation wizard and the four MVP roles, see [Venture launch](docs/venture-launch.md).
 
 Live: https://digidotbee.github.io/ATLAS/
 

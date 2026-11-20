@@ -12,15 +12,20 @@ test('a Planner can create a fixed-date Venture, choose a cabin, and print the s
   await page.getByRole('textbox', { name: 'Destination' }).fill(destination);
   const next = page.getByRole('button', { name: 'Next →', exact: true });
   await next.click();
-  await page.getByRole('button', { name: /Skip for now/ }).click();
-  await next.click();
   await page.getByRole('button', { name: /^set a date$/i }).click();
   await page.getByRole('checkbox', { name: 'Single day / evening' }).uncheck();
   await page.getByRole('button', { name: /Start date/ }).click();
   await page.getByRole('button', { name: 'Select June 15, 2030' }).click();
   await page.getByRole('button', { name: 'Select June 16, 2030' }).click();
   await next.click();
-  await page.getByRole('button', { name: /Create trip/i }).click();
+  await expect(page.getByRole('heading', { name: 'Crew', exact: true })).toBeVisible();
+  await next.click();
+  await page.getByRole('button', { name: 'Skip for now' }).click();
+  const preview = page.getByRole('region', { name: 'Invite card preview' });
+  await expect(preview).toContainText(/Jun 15, 2030.*Jun 16, 2030/);
+  await expect(preview).not.toContainText('Opt in by');
+  await page.getByRole('button', { name: 'Launch Venture' }).click();
+  await expect(page).toHaveURL(/#\/trip\/[^/]+\/plan$/);
   await expect(page.getByRole('heading', { name: destination, exact: true })).toBeVisible();
 
   await page.getByRole('navigation', { name: 'Trip planning steps' }).getByRole('link', { name: /Explore/ }).click();
