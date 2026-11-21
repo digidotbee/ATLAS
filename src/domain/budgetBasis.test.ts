@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { budgetBasisOf, enteredBudget, setBudgetAmount, setBudgetBasis, withBudgetTotal } from './budget';
+import { budgetBasisOf, budgetTargetLabel, enteredBudget, setBudgetAmount, setBudgetBasis, withBudgetTotal } from './budget';
 import { createTrip, emptyData, type NewTripInput } from './factory';
 import type { Trip } from './types';
 import { parseAtlasData } from './validate';
@@ -97,5 +97,31 @@ describe('loading saved budgets', () => {
     expect(() => parseAtlasData(saved({ ...venture(), budgetBasis: 'perNight' }), 'test')).toThrow(/unknown budget basis "perNight"/);
     expect(() => parseAtlasData(saved({ ...venture(), budgetBasis: 'perPerson', budgetPerPerson: '150' }), 'test')).toThrow(/per-person/);
     expect(() => parseAtlasData(saved({ ...venture(), budgetBasis: 'perPerson' }), 'test')).toThrow(/per-person/);
+  });
+});
+
+describe('Budget pill label (BUDGET-01)', () => {
+  it('shows the target as entered and keeps it through a headcount change', () => {
+    const per = venture({ budgetBasis: 'perPerson', budgetPerPerson: 150, budgetTotal: null, adults: 4, children: 0 });
+    expect(budgetTargetLabel(per)).toBe('$150 per person');
+    const six = withPeople(per, 6, 0);
+    expect(budgetTargetLabel(six)).toBe('$150 per person');
+    expect(six.budgetTotal).toBe(900);
+
+    const total = venture({ budgetTotal: 600, adults: 4, children: 0 });
+    expect(budgetTargetLabel(total)).toBe('$600 total');
+    expect(budgetTargetLabel(withPeople(total, 6, 0))).toBe('$600 total');
+  });
+
+  it('keeps cents as entered and has no label without a target', () => {
+    expect(budgetTargetLabel(venture({ budgetBasis: 'perPerson', budgetPerPerson: 150.25, budgetTotal: null }))).toBe('$150.25 per person');
+    expect(budgetTargetLabel(venture({ budgetTotal: null }))).toBeNull();
+    expect(budgetTargetLabel(venture({ budgetBasis: 'perPerson', budgetPerPerson: null, budgetTotal: null }))).toBeNull();
+  });
+
+  it('labels a legacy saved total as a total', () => {
+    const legacy: Trip = { ...venture({ budgetTotal: 600 }) };
+    delete legacy.budgetBasis;
+    expect(budgetTargetLabel(legacy)).toBe('$600 total');
   });
 });

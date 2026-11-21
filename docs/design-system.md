@@ -296,6 +296,7 @@ These are summaries. The exact rules live in `theme.css`.
 | `.trip-row`    | 10px   | 16px 12px 16px 24px| —                         | Venture card (§9 for hover) |
 | `input`        | 6px    | 10px 14px          | DM Sans 400, 15 / 24      | `.input-lg`: 20px text, 14px 16px padding |
 | `.chip`        | 999px  | 3px 10px           | DM Sans 700, 12px, uppercase | Status and filter chips |
+| `.budget-pill` | 999px  | 4px 12px           | DM Sans 700, 13px         | Budget target under the Venture title (BUDGET-01): `--surface-200` with a `--line` border; hover and active use `--accent`. `.unset` (**+Set budget**) is transparent with a dashed `--accent` border and accent text. Transitions only under `prefers-reduced-motion: no-preference`. |
 
 ### Status Colors
 
@@ -521,6 +522,7 @@ Icons are sourced from the `lucide-react` npm package. No local SVG files or gen
 
 | Date       | Change |
 |------------|--------|
+| 2026-11-21 | Budget pill (`.budget-pill`) under the Venture title shows the target as entered or **+Set budget**, and opens the new Budget view; the budget target controls moved there from Venture settings. Borders use `--accent`, not `--accent-vivid`, so the dashed outline stays visible on Daylight cream. First rule guarded by `prefers-reduced-motion`. |
 | 2026-11-21 | Venture settings: budget basis toggle (Total / Per person) reuses `.segmented`; the per-person field hint shows the group total. Budget panel shows the per-person amount next to the total. No new tokens. |
 | 2026-11-21 | Doc brought in line with the code. Rebuilt the theme table from `theme.css` and removed tokens that were never implemented: `--surface-300/400/500`, `--ink-faint`, `--warm`, `--sky`, `--sea`, `--coral`, `--border`, `--shadow-sm/md/lg`, `--glow-accent`. Type scale, spacing, radius, shadows and components are now measured. Header and hero section rewritten. Reduced-motion gap recorded. |
 | 2026-11-19 | Budget step polish: flat Skip link, outlined ghost Back button, helper spacing |

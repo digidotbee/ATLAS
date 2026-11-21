@@ -208,6 +208,16 @@ export function withBudgetTotal(trip: Trip): Trip {
   return total === trip.budgetTotal ? trip : { ...trip, budgetTotal: total };
 }
 
+/**
+ * The Budget pill (BUDGET-01): the target as the Planner entered it, such as "$150 per person"
+ * or "$600 total". null when no target is set, which the pill shows as "+Set budget".
+ */
+export function budgetTargetLabel(trip: Trip): string | null {
+  const amount = enteredBudget(trip);
+  if (amount === null) return null;
+  return `${formatMoney(amount, trip.currency, 2)} ${budgetBasisOf(trip) === 'perPerson' ? 'per person' : 'total'}`;
+}
+
 /** Sets the amount in the Venture's current basis. */
 export function setBudgetAmount(trip: Trip, amount: number | null): Trip {
   return budgetBasisOf(trip) === 'perPerson'
