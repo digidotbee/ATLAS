@@ -74,7 +74,7 @@ Google Fonts import (in `index.html`):
 | Wordmark                | 20 / 20     | 600    | Fraunces | 0.08em tracking, V in `--accent` | `.logo-word`, `.logo-v` |
 | Wordmark subline        | 10 / 10     | 700    | DM Sans  | 0.32em tracking, uppercase | `.logo-sub` |
 | Header nav              | 13 / 24     | 500    | DM Sans  | `--accent` | `.app-nav a` |
-| Hero title              | 40 / 44     | 300    | Fraunces | −0.01em tracking | `.hero-title` |
+| Hero title              | 40 / 44     | 300    | Fraunces | −0.01em tracking, `--ink-soft` (the accent word stays `--accent`) | `.hero-title` |
 | Hero subtitle           | 15 / 24     | 500    | DM Sans  | `--ink-soft` | `.hero-subtitle` |
 | Venture title           | 32 / 38     | 600    | Fraunces |  | `.trip-header h1` |
 | Venture card title      | 26 / 32     | 600    | Fraunces |  | `.trip-row h3` |
@@ -521,6 +521,7 @@ Icons are sourced from the `lucide-react` npm package. No local SVG files or gen
 
 | Date       | Change |
 |------------|--------|
+| 2026-11-21 | Home hero title uses `--ink-soft`, matching the hero subtitle and Venture card dates; the accent word is unchanged |
 | 2026-11-21 | Doc brought in line with the code. Rebuilt the theme table from `theme.css` and removed tokens that were never implemented: `--surface-300/400/500`, `--ink-faint`, `--warm`, `--sky`, `--sea`, `--coral`, `--border`, `--shadow-sm/md/lg`, `--glow-accent`. Type scale, spacing, radius, shadows and components are now measured. Header and hero section rewritten. Reduced-motion gap recorded. |
 | 2026-11-19 | Budget step polish: flat Skip link, outlined ghost Back button, helper spacing |
 | 2026-11-19 | Hero title Fraunces 300; hero subtitle `--ink-soft` |
