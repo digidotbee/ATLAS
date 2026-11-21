@@ -2,6 +2,8 @@
 
 Start a Venture with a destination, spot, or vibe. Compare options, plan the itinerary, track costs, and print a one-page plan.
 
+The [living PRD](docs/prd.md) records the product decisions. The [user stories](docs/user-stories.md) define the acceptance criteria.
+
 For the agreed creation wizard and the four MVP roles, see [Venture launch](docs/venture-launch.md). Personal invitations, joining and Date Lock-In are specified in [Crew invitations](docs/crew-invitations.md) and are not built yet. UI tokens and components are in [the WILDSTROM design system](docs/design-system.md).
 
 Live: https://digidotbee.github.io/ATLAS/
