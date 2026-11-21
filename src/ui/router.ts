@@ -10,8 +10,8 @@ export type Route =
   | { page: 'print'; id: string }
   | { page: 'notFound'; hash: string };
 
-export type TripTab = 'plan' | 'dates' | 'explore' | 'itinerary' | 'setup';
-const TABS: TripTab[] = ['plan', 'dates', 'explore', 'itinerary', 'setup'];
+export type TripTab = 'plan' | 'dates' | 'explore' | 'itinerary' | 'setup' | 'budget';
+const TABS: TripTab[] = ['plan', 'dates', 'explore', 'itinerary', 'setup', 'budget'];
 
 export function parseHash(hash: string): Route {
   const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean);

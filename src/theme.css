@@ -2392,3 +2392,39 @@ button:not(:disabled):not(.btn-primary):not(.btn-choose):not(.btn-cta-landscape)
 .budget-entry input::placeholder {
   opacity: 0.85;
 }
+
+/* ==========================================================================
+   Budget pill (BUDGET-01): the budget target as the Planner entered it,
+   under the Venture title. Every state opens the Budget view.
+   ========================================================================== */
+.budget-pill {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  margin-top: 10px;
+  padding: 4px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface-200);
+  color: var(--ink);
+  font: 700 13px/20px var(--sans);
+  text-decoration: none;
+  text-shadow: none;
+}
+.budget-pill:hover,
+.budget-pill.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  text-decoration: none;
+}
+.budget-pill.unset {
+  border-style: dashed;
+  border-color: var(--accent);
+  background: transparent;
+  color: var(--accent);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .budget-pill {
+    transition: border-color 150ms ease, color 150ms ease;
+  }
+}

@@ -15,6 +15,7 @@ Live: https://digidotbee.github.io/ATLAS/
   Claude (or any assistant), and imports the JSON reply straight into your shortlist. Choose, set aside, mark prices
   *estimated* or *verified*. Only chosen items count.
 - **Itinerary** – place experiences on days, set check-in days for multiple bases, add day notes. Gaps, double bookings and base mismatches are flagged.
+- **Budget** – the pill under the Venture title shows the target as you entered it (*$150 per person* or *$600 total*), or **+Set budget**. It opens the Budget view, where you set the target, currency and cushion. A per-person target stays put while the group target follows the headcount.
 - **One-sheet** – printable single page (Print → Save as PDF).
 - **Family profile** – your interests feed every research brief and highlight options that fit.
 

@@ -2,6 +2,7 @@ import { chosenDate } from '../domain/budget';
 import type { Trip } from '../domain/types';
 import { useStore } from '../state/store';
 import { BudgetPanel } from './BudgetPanel';
+import { BudgetPill, BudgetTab } from './BudgetTab';
 import { DatesTab } from './DatesTab';
 import { ExploreTab } from './ExploreTab';
 import { ItineraryTab } from './ItineraryTab';
@@ -52,6 +53,7 @@ export function TripView({ id, tab }: { id: string; tab: TripTab }) {
             const parts = [trip.destination.trim() !== trip.name.trim() ? trip.destination : '', trip.region].filter(Boolean);
             return parts.length > 0 ? <p className="muted">{parts.join(' · ')}</p> : null;
           })()}
+          <BudgetPill trip={trip} active={tab === 'budget'} />
           <SyncBadge />
         </div>
         <div className="trip-header-actions">
@@ -81,6 +83,7 @@ export function TripView({ id, tab }: { id: string; tab: TripTab }) {
           {tab === 'explore' && <ExploreTab {...props} />}
           {tab === 'itinerary' && <ItineraryTab {...props} />}
           {tab === 'setup' && <SetupTab {...props} />}
+          {tab === 'budget' && <BudgetTab {...props} />}
         </main>
         <BudgetPanel trip={trip} />
       </div>
