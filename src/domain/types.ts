@@ -214,6 +214,9 @@ export interface Move {
   notes: string;
 }
 
+/** How the Planner entered the budget. Data saved before bases existed counts as 'total'. */
+export type BudgetBasis = 'total' | 'perPerson';
+
 export interface Travelers {
   adults: number;
   children: number;
@@ -226,7 +229,15 @@ export interface Trip {
   destination: string;
   region: string;
   currency: string;
+  /**
+   * Group total, everything included. Every budget calculation reads this.
+   * With a per-person basis it is derived: budgetPerPerson × headcount (see withBudgetTotal).
+   */
   budgetTotal: number | null;
+  /** Basis the Planner chose. Missing means 'total'. */
+  budgetBasis?: BudgetBasis;
+  /** The per-person amount the Planner entered; used only with the 'perPerson' basis. */
+  budgetPerPerson?: number | null;
   /** Percent of the total budget held back for surprises. */
   contingencyPct: number;
   travelers: Travelers;

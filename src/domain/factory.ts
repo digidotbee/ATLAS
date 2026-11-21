@@ -1,6 +1,8 @@
+import { withBudgetTotal } from './budget';
 import {
   SCHEMA_VERSION,
   type AtlasData,
+  type BudgetBasis,
   type Candidate,
   type DateOption,
   type FamilyProfile,
@@ -62,6 +64,9 @@ export interface NewTripInput {
   region: string;
   currency: string;
   budgetTotal: number | null;
+  budgetBasis?: BudgetBasis;
+  /** Required with the 'perPerson' basis; the group total is derived from it. */
+  budgetPerPerson?: number | null;
   adults: number;
   children: number;
   childAges: string;
@@ -72,13 +77,16 @@ export interface NewTripInput {
 export function createTrip(input: NewTripInput): Trip {
   const ts = nowIso();
   const dateOptions = input.dateOptions.map((d) => ({ ...d, id: newId() }));
-  return {
+  const basis = input.budgetBasis ?? 'total';
+  return withBudgetTotal({
     id: newId(),
     name: input.name.trim() || input.destination.trim(),
     destination: input.destination.trim(),
     region: input.region.trim(),
     currency: input.currency,
     budgetTotal: input.budgetTotal,
+    budgetBasis: basis,
+    ...(basis === 'perPerson' ? { budgetPerPerson: input.budgetPerPerson ?? null } : {}),
     contingencyPct: 10,
     travelers: { adults: input.adults, children: input.children, childAges: input.childAges },
     flexibility: input.flexibility,
@@ -90,7 +98,7 @@ export function createTrip(input: NewTripInput): Trip {
     notes: '',
     createdAt: ts,
     updatedAt: ts,
-  };
+  });
 }
 
 export function blankDateOption(): DateOption {

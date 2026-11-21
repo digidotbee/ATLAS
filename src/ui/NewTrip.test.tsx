@@ -144,7 +144,8 @@ describe('Venture creation wizard', () => {
 
     const [trip] = JSON.parse(screen.getByTestId('saved-trips').textContent ?? '[]');
     expect(trip.dateOptions[0]).toMatchObject({ start: start.iso, end: end.iso });
-    expect(trip.budgetTotal).toBe(600);
+    expect(trip).toMatchObject({ budgetTotal: 600, budgetBasis: 'total' });
+    expect(trip.budgetPerPerson).toBeUndefined();
   });
 
   it('updates the Date Decision preview and saves the revised cutoff on launch', () => {
@@ -202,7 +203,7 @@ describe('Venture creation wizard', () => {
     expect(preview().textContent).toContain('$150.25 per person');
     fireEvent.click(screen.getByRole('button', { name: 'Launch Venture' }));
     const [trip] = JSON.parse(screen.getByTestId('saved-trips').textContent ?? '[]');
-    expect(trip).toMatchObject({ travelers: { adults: 4, children: 2 }, budgetTotal: 901.50 });
+    expect(trip).toMatchObject({ travelers: { adults: 4, children: 2 }, budgetTotal: 901.50, budgetBasis: 'perPerson', budgetPerPerson: 150.25 });
   });
 
   it('requires date details before continuing without a skip action', () => {

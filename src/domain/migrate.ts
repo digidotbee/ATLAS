@@ -1,4 +1,4 @@
-import { nightsBetween } from './budget';
+import { nightsBetween, withBudgetTotal } from './budget';
 import type { AtlasData, Trip } from './types';
 
 /** A stored "trip date" longer than this was almost certainly an availability range (pre-v1.3). */
@@ -32,5 +32,5 @@ export function migrateTrip(t: Trip): Trip {
 }
 
 export function migrateData(d: AtlasData): AtlasData {
-  return { ...d, trips: d.trips.map(migrateTrip) };
+  return { ...d, trips: d.trips.map((t) => withBudgetTotal(migrateTrip(t))) };
 }
