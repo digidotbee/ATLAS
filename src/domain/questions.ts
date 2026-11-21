@@ -11,12 +11,12 @@ export interface FollowUpQuestion {
 export const FOLLOW_UP_QUESTIONS: FollowUpQuestion[] = [
   {
     id: 'purpose',
-    question: 'What should this trip feel like?',
+    question: 'What should this Venture feel like?',
     hint: 'One line you can come back to when choosing between options.',
   },
   {
     id: 'pace',
-    question: 'What pace suits this trip?',
+    question: 'What pace suits this Venture?',
     hint: 'How many things per day before it stops being fun.',
     options: ['Slow — one anchor a day', 'Balanced', 'Full — see a lot'],
   },

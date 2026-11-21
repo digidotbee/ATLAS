@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "ATLAS — personal family travel planner",
+  "description": "ORIVOIR — collaborative Venture planner",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

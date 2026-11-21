@@ -7,10 +7,10 @@ export function SetupTab({ trip, update }: TabProps) {
   const { deleteTrip } = useStore();
   return (
     <div className="stack">
-      <h2>Trip settings</h2>
+      <h2>Venture settings</h2>
       <div className="card stack-sm">
         <div className="grid-2">
-          <Field label="Trip name">
+          <Field label="Venture name">
             <input value={trip.name} onChange={(e) => update((t) => ({ ...t, name: e.target.value }))} />
           </Field>
           <Field label="Destination">
@@ -52,12 +52,12 @@ export function SetupTab({ trip, update }: TabProps) {
       </div>
       <div className="card danger-zone">
         <h3>Exit Venture</h3>
-        <p className="muted small">Removes this venture and all its research from every synced device.</p>
+        <p className="muted small">Removes this Venture and all its research from every synced device.</p>
         <button
           type="button"
           className="btn danger"
           onClick={() => {
-            if (confirm(`Delete “${trip.name}” and all its research? This can't be undone.`)) {
+            if (confirm(`Exit “${trip.name}”? This removes the Venture and all its research from every synced device and can't be undone.`)) {
               deleteTrip(trip.id);
               go({ page: 'trips' });
             }

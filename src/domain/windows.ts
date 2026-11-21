@@ -320,7 +320,7 @@ export function generateWindows(trip: Trip): GenerateResult {
         windows: previous,
         shortfall: null,
         evaluatedCount,
-        missing: ['No window fits inside the availability range with the current trip-length limits and airfare months.'],
+        missing: ['No window fits inside the availability range with the current length limits and airfare months.'],
       };
     }
     const cheapest = all.reduce((x, y) => (y.projectedTotal < x.projectedTotal ? y : x));
@@ -335,7 +335,7 @@ export function generateWindows(trip: Trip): GenerateResult {
         cheapest: cw,
         suggestions: [
           `The cheapest option found (${cheapest.destinationNights} nights from ${cheapest.departureDate}) is over budget by ${Math.ceil(amount)}.`,
-          'Consider a shorter minimum trip length, a lower lodging estimate, a smaller cushion, or a larger budget.',
+          'Consider a shorter minimum length, a lower lodging estimate, a smaller cushion, or a larger budget.',
           'ATLAS has not changed any of your settings.',
         ],
       },
@@ -357,7 +357,7 @@ export function generateWindows(trip: Trip): GenerateResult {
   tag(scored[0], 'Best Overall Fit');
   tag(byPerNight, 'Best Value');
   if (bestWeather) tag(bestWeather, 'Best Weather Balance');
-  tag(longest, 'Longest Affordable Trip');
+  tag(longest, 'Longest Affordable Venture');
 
   // Labelled winners first, then the highest scores, skipping near-duplicates and pinned windows.
   const picked: (Evaluated & { score: number })[] = [];

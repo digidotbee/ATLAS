@@ -13,7 +13,7 @@ export function ManualDates({ update }: TabProps) {
       <p className="small muted">Arrival at your destination to the day you leave it.</p>
       <div className="grid-2">
         <CalendarPicker
-          label="Trip dates"
+          label="Venture dates"
           mode="range"
           start={d.start}
           end={d.end}

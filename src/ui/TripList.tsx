@@ -106,10 +106,10 @@ function TripMenu({ t }: { t: Trip }) {
             className="danger"
             onClick={() => {
               setOpen(false);
-              if (confirm(`Delete “${t.name}” and all its research? This can't be undone.`)) deleteTrip(t.id);
+              if (confirm(`Exit “${t.name}”? This removes the Venture and all its research from every synced device and can't be undone.`)) deleteTrip(t.id);
             }}
           >
-            Delete
+            Exit Venture
           </button>
         </div>
       )}
@@ -125,7 +125,7 @@ function TripCard({ t, featured, upcoming }: { t: Trip; featured?: boolean; upco
   return (
     <article className={`trip-row${featured ? ' featured' : ''}${upcoming ? ' upcoming' : ''}`}>
       <div className="trip-row-main">
-        {featured ? <span className="eyebrow">Next venture</span> : t.region && <span className="trip-row-region">{t.region}</span>}
+        {featured ? <span className="eyebrow">Next Venture</span> : t.region && <span className="trip-row-region">{t.region}</span>}
         <h3>
           <a className="stretched" href={href({ page: 'trip', id: t.id, tab: 'plan' })}>
             {t.name}
@@ -190,7 +190,7 @@ export function TripList() {
 
       {data.trips.length === 0 ? (
         <div className="empty home-empty">
-          <p>No ventures yet. Your ventures appear here and are saved automatically.</p>
+          <p>No Ventures yet. Your Ventures appear here and are saved automatically.</p>
         </div>
       ) : (
         <>
@@ -241,14 +241,14 @@ export function AllTrips() {
   return (
     <div className="page home">
       <div className="section-head">
-        <h1>All ventures</h1>
+        <h1>All Ventures</h1>
         <a className="btn btn-primary" href={href({ page: 'new' })}>
           Make A Plan <span aria-hidden="true">→</span>
         </a>
       </div>
       {data.trips.length === 0 ? (
         <div className="empty">
-          <p>No ventures yet.</p>
+          <p>No Ventures yet.</p>
         </div>
       ) : (
         <div className="trip-list">
