@@ -88,7 +88,7 @@ export function App() {
               <strong>Saved data in this browser couldn't be read.</strong> {store.loadError.error} Nothing has been overwritten.
             </p>
             <div className="actions">
-              <button type="button" className="btn btn-small" onClick={() => downloadJson({ raw: store.loadError!.raw }, 'atlas-unreadable-data.json')}>
+              <button type="button" className="btn btn-small" onClick={() => downloadJson({ raw: store.loadError!.raw }, 'orivoir-unreadable-data.json')}>
                 Download the unreadable data
               </button>
               <button
@@ -110,8 +110,8 @@ export function App() {
         {sync.state === 'conflict' && (
           <Banner tone="warn">
             <p>
-              <strong>Your trips changed on another device and here.</strong> This device: {store.data.trips.length} trips, last edited{' '}
-              {new Date(store.data.updatedAt).toLocaleString()}. Gist: {sync.remote.trips.length} trips, last edited{' '}
+              <strong>Your Ventures changed on another device and here.</strong> This device: {store.data.trips.length} Ventures, last edited{' '}
+              {new Date(store.data.updatedAt).toLocaleString()}. Gist: {sync.remote.trips.length} Ventures, last edited{' '}
               {new Date(sync.remote.updatedAt).toLocaleString()}.
             </p>
             <div className="actions">
@@ -121,7 +121,7 @@ export function App() {
               <button type="button" className="btn btn-small" onClick={() => void store.resolveConflict('local')}>
                 Keep this device's version
               </button>
-              <button type="button" className="btn btn-small btn-ghost" onClick={() => downloadJson(store.data, 'atlas-this-device.json')}>
+              <button type="button" className="btn btn-small btn-ghost" onClick={() => downloadJson(store.data, 'orivoir-this-device.json')}>
                 Download this device's copy first
               </button>
             </div>
@@ -139,7 +139,7 @@ export function App() {
       {route.page === 'notFound' && (
         <div className="page narrow">
           <h1>Page not found</h1>
-          <a href={href({ page: 'trips' })}>Back to ventures</a>
+          <a href={href({ page: 'trips' })}>Back to Ventures</a>
         </div>
       )}
       {!isPrint && (

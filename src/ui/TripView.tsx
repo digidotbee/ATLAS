@@ -28,10 +28,10 @@ export function TripView({ id, tab }: { id: string; tab: TripTab }) {
   if (!trip) {
     return (
       <div className="page narrow">
-        <h1>Trip not found</h1>
+        <h1>Venture not found</h1>
         <p>It may have been deleted, or it hasn't synced to this device yet.</p>
         <a className="btn" href={href({ page: 'trips' })}>
-          Back to trips
+          Back to Ventures
         </a>
       </div>
     );
@@ -44,7 +44,7 @@ export function TripView({ id, tab }: { id: string; tab: TripTab }) {
       <header className="trip-header">
         <div>
           <a className="crumb" href={href({ page: 'trips' })}>
-            ← All ventures
+            ← All Ventures
           </a>
           <h1>{trip.name}</h1>
           {/* Subtitle only when it adds something beyond the trip name */}
@@ -56,14 +56,14 @@ export function TripView({ id, tab }: { id: string; tab: TripTab }) {
         </div>
         <div className="trip-header-actions">
           <a className={`btn btn-ghost ${tab === 'setup' ? 'active' : ''}`} href={href({ page: 'trip', id: trip.id, tab: 'setup' })}>
-            ⚙ Trip settings
+            ⚙ Venture settings
           </a>
           <a className={`btn ${chosenDate(trip) ? 'btn-primary' : ''}`} href={href({ page: 'print', id: trip.id })}>
             Print one-sheet
           </a>
         </div>
       </header>
-      <nav className="tabs" aria-label="Trip planning steps">
+      <nav className="tabs" aria-label="Venture planning steps">
         {TABS.map((t) => (
           <a key={t.id} href={href({ page: 'trip', id: trip.id, tab: t.id })} className={`tab ${tab === t.id ? 'active' : ''}`} aria-current={tab === t.id ? 'page' : undefined}>
             <span className="tab-long">{t.label}</span>

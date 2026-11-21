@@ -180,7 +180,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setSync({ state: 'working', label: 'Checking token…' });
     try {
       await verifyToken(fetch, token);
-      setSync({ state: 'working', label: 'Looking for your ATLAS Gist…' });
+      setSync({ state: 'working', label: 'Looking for your ORIVOIR Gist…' });
       const existing = await findAtlasGist(fetch, token);
       if (!existing) {
         const created = await createAtlasGist(fetch, token, dataRef.current);

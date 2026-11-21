@@ -68,7 +68,7 @@ describe('flexible-date planning engine', () => {
     expect(r.windows.length).toBeLessThanOrEqual(5);
     for (let i = 0; i < r.windows.length; i++)
       for (let j = i + 1; j < r.windows.length; j++) expect(nearlyIdentical(r.windows[i], r.windows[j])).toBe(false);
-    expect(r.windows.flatMap((w) => w.labels)).toEqual(expect.arrayContaining(['Best Overall Fit', 'Best Value', 'Longest Affordable Trip', 'Best Weather Balance']));
+    expect(r.windows.flatMap((w) => w.labels)).toEqual(expect.arrayContaining(['Best Overall Fit', 'Best Value', 'Longest Affordable Venture', 'Best Weather Balance']));
   });
 
   it('3. every window satisfies availability and exclusions', () => {
