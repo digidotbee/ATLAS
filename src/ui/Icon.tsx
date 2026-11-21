@@ -14,7 +14,7 @@ export type { IconName };
  *     <Icon name="adventure" size={20} />
  *   </div>
  *
- * Icon tile CSS is defined in theme.css under `.icon-tile`.
+ * Icon tile CSS is specified in docs/design-system.md §7 but not yet built in theme.css.
  * Full icon registry lives in ./icons.ts.
  */
 

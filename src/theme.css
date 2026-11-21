@@ -3,7 +3,7 @@
    Token values are taken verbatim from the Wildstrom showcase
    (Storm + Daylight). Loaded after styles.css, which it re-skins.
    Mode: Storm by default; Daylight when the device prefers light or the
-   family picks it (html[data-theme]).
+   person picks it (html[data-theme]).
    ========================================================================== */
 
 /* ---------- Storm (default) ---------- */
@@ -13,9 +13,9 @@
   /* ink lifted whiter than the showcase's #f0f9c6 (family request) */
   --ink: #f7faee;
   --ink-soft: rgba(247, 250, 238, 0.75);
-  --accent: #dfb84b;         /* vivid chartreuse — used for text, links, and indicators */
+  --accent: #dfb84b;         /* gold — used for text, links, and indicators */
   --accent-vivid: #dfb84b;   /* graphic-use accent: borders, button fills, checkboxes (never text-on-dark-bg) */
-  --sunlit: #dfb84b;         /* chartreuse highlight */
+  --sunlit: #dfb84b;         /* gold highlight */
   /* flare lifted lighter/whiter than #e0f500 (family request) */
   --flare: #f0d882;
   /* fixed light ink for text over photography and the thicket band */
@@ -23,7 +23,7 @@
   --thicket: #387476;
   --thistle: #bcb4d1;
   --line: rgba(247, 250, 238, 0.1);
-  --focus-ring: #dfb84b;     /* vivid chartreuse focus ring */
+  --focus-ring: #dfb84b;     /* gold focus ring */
   --on-accent: #272c35;
   --button-hover-color: var(--accent);
   --button-shadow-highlight: rgba(255, 255, 255, 0.06);
@@ -1630,26 +1630,6 @@ fieldset.card {
   font-size: 20px;
   padding: 14px 16px;
 }
-.wizard-context {
-  align-self: flex-start;
-  margin: -8px 0 0;
-  padding: 5px 12px;
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-pill);
-  color: var(--ink-muted);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-}
-.wizard-contexts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: -8px 0 0;
-}
-.wizard-contexts .wizard-context {
-  margin: 0;
-}
 .budget-toggle {
   align-self: flex-start;
   max-width: 100%;
@@ -2380,7 +2360,40 @@ button:not(:disabled):not(.btn-primary):not(.btn-choose):not(.btn-cta-landscape)
   font-weight: 300;
 }
 
+/* Hero subtitle: the same soft ink as the venture card dates */
+.hero-subtitle {
+  color: var(--ink-soft);
+}
+
 /* Home hero title: same soft ink as the venture card dates, so the headline sits in the same tone */
 .hero-title {
   color: var(--ink-soft);
+}
+
+/* ==========================================================================
+   Budget step polish: helper spacing, flat skip link, matched action row,
+   and a readable amount placeholder.
+   ========================================================================== */
+.budget-helper {
+  margin: 10px 0 0;
+}
+.wizard-skip,
+.wizard-skip:hover,
+.wizard-skip:focus-visible {
+  box-shadow: none;
+  padding: 6px 0;
+}
+.wizard-actions .btn-ghost {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  box-shadow: none;
+  text-shadow: none;
+}
+.wizard-actions .btn-ghost:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  color: var(--accent);
+}
+.budget-entry input::placeholder {
+  opacity: 0.85;
 }

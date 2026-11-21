@@ -186,16 +186,17 @@ export function round2(n: number): number {
   return Math.round(n * 100) / 100;
 }
 
-export function formatMoney(amount: number, currency: string): string {
+export function formatMoney(amount: number, currency: string, maximumFractionDigits = 0): string {
   try {
     return new Intl.NumberFormat(undefined, {
       style: 'currency',
       currency,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: Number.isInteger(amount) ? 0 : maximumFractionDigits,
     }).format(amount);
   } catch {
     // Unknown currency code typed by the user: show the code explicitly rather than guessing a symbol.
-    return `${currency} ${Math.round(amount).toLocaleString()}`;
+    const value = maximumFractionDigits === 0 ? Math.round(amount) : amount;
+    return `${currency} ${value.toLocaleString(undefined, { maximumFractionDigits })}`;
   }
 }
 

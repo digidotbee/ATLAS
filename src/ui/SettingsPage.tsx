@@ -33,7 +33,7 @@ export function SettingsPage() {
       <section className="card stack-sm">
         <h2>Sync across devices</h2>
         <p className="muted small">
-          ORIVOIR always saves in this browser. To use it on your phone and laptop, connect a private GitHub Gist — ORIVOIR keeps all your trips
+          ORIVOIR always saves in this browser. To use it on your phone and laptop, connect a private GitHub Gist — ORIVOIR keeps all your Ventures
           in one private file there. The token stays on this device and is never stored in the Gist.
         </p>
         {syncSettings ? (
@@ -52,7 +52,7 @@ export function SettingsPage() {
                 type="button"
                 className="btn btn-ghost"
                 onClick={() => {
-                  if (confirm('Disconnect sync on this device? Your trips stay in this browser and in the Gist.')) store.disconnectSync();
+                  if (confirm('Disconnect sync on this device? Your Ventures stay in this browser and in the Gist.')) store.disconnectSync();
                 }}
               >
                 Disconnect this device
@@ -95,9 +95,9 @@ export function SettingsPage() {
 
       <section className="card stack-sm">
         <h2>Backup file</h2>
-        <p className="muted small">Download everything (trips, research, profile) as one file, or restore from one.</p>
+        <p className="muted small">Download everything (Ventures, research, profile) as one file, or restore from one.</p>
         <div className="actions">
-          <button type="button" className="btn" onClick={() => downloadJson(store.data, `atlas-backup-${new Date().toISOString().slice(0, 10)}.json`)}>
+          <button type="button" className="btn" onClick={() => downloadJson(store.data, `orivoir-backup-${new Date().toISOString().slice(0, 10)}.json`)}>
             Download backup
           </button>
           <button type="button" className="btn btn-ghost" onClick={() => fileRef.current?.click()}>
@@ -114,9 +114,9 @@ export function SettingsPage() {
               if (!f) return;
               try {
                 const parsed = parseAtlasData(JSON.parse(await f.text()), f.name);
-                if (!confirm(`Replace everything in ORIVOIR with “${f.name}” (${parsed.trips.length} trips)?`)) return;
+                if (!confirm(`Replace everything in ORIVOIR with “${f.name}” (${parsed.trips.length} Ventures)?`)) return;
                 store.replaceAll(parsed);
-                setImportMsg({ tone: 'info', text: `Restored ${parsed.trips.length} trips.` });
+                setImportMsg({ tone: 'info', text: `Restored ${parsed.trips.length} Ventures.` });
               } catch (err) {
                 setImportMsg({ tone: 'error', text: `Couldn't restore: ${(err as Error).message}` });
               }

@@ -13,8 +13,8 @@ export function PrintView({ id }: { id: string }) {
   if (!trip) {
     return (
       <div className="page narrow">
-        <h1>Trip not found</h1>
-        <a href={href({ page: 'trips' })}>Back to trips</a>
+        <h1>Venture not found</h1>
+        <a href={href({ page: 'trips' })}>Back to Ventures</a>
       </div>
     );
   }

@@ -30,7 +30,7 @@ export function DatesTab({ trip, update }: TabProps) {
       <div className="intro">
         <h2>When &amp; how long</h2>
         <p className="muted">
-          Tell ORIVOIR when you <em>could</em> travel. It finds the vacation windows — dates and trip length — that fit your budget. Nothing
+          Tell ORIVOIR when you <em>could</em> travel. It finds the vacation windows — dates and length — that fit your budget. Nothing
           is costed over your whole availability.
         </p>
       </div>
@@ -48,7 +48,7 @@ export function DatesTab({ trip, update }: TabProps) {
 
       {locked && (
         <div className="card locked-card">
-          <p className="eyebrow">Trip dates in use</p>
+          <p className="eyebrow">Venture dates in use</p>
           <h3>
             {formatDate(locked.start, { weekday: 'short', month: 'long', day: 'numeric' })}
             {locked.end !== locked.start &&
