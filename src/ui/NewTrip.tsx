@@ -102,6 +102,8 @@ export function NewTrip() {
       region: d.region,
       currency: d.currency,
       budgetTotal: budgetTotalForEntry(d.budget, budgetMode, d.adults!, d.children ?? 0),
+      budgetBasis: budgetMode,
+      budgetPerPerson: budgetMode === 'perPerson' ? d.budget : undefined,
       adults: d.adults!,
       children: d.children ?? 0,
       childAges: d.childAges,

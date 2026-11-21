@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { withBudgetTotal } from '../domain/budget';
 import { emptyData, nowIso } from '../domain/factory';
 import type { AtlasData, ClimateMonth, FamilyProfile, Trip } from '../domain/types';
 import {
@@ -145,12 +146,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addTrip = useCallback((trip: Trip) => {
-    mutate((d) => ({ ...d, trips: [trip, ...d.trips] }));
+    mutate((d) => ({ ...d, trips: [withBudgetTotal(trip), ...d.trips] }));
   }, [mutate]);
   const updateTrip = useCallback((id: string, fn: (t: Trip) => Trip) => {
     mutate((d) => ({
       ...d,
-      trips: d.trips.map((t) => (t.id === id ? { ...fn(t), updatedAt: nowIso() } : t)),
+      trips: d.trips.map((t) => (t.id === id ? { ...withBudgetTotal(fn(t)), updatedAt: nowIso() } : t)),
     }));
   }, [mutate]);
   const deleteTrip = useCallback((id: string) => {

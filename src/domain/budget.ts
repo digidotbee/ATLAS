@@ -1,5 +1,5 @@
 import { legLabel, travelLegs } from './moves';
-import type { Candidate, Category, DateOption, PriceStatus, Trip } from './types';
+import type { BudgetBasis, Candidate, Category, DateOption, PriceStatus, Trip } from './types';
 
 const DAY_MS = 86_400_000;
 
@@ -184,6 +184,44 @@ export function summarize(trip: Trip, date: DateOption | null = chosenDate(trip)
 
 export function round2(n: number): number {
   return Math.round(n * 100) / 100;
+}
+
+/** The basis the Planner chose; data saved before bases existed counts as 'total'. */
+export function budgetBasisOf(trip: Trip): BudgetBasis {
+  return trip.budgetBasis === 'perPerson' ? 'perPerson' : 'total';
+}
+
+/** The amount as the Planner entered it: per person or for the whole group. */
+export function enteredBudget(trip: Trip): number | null {
+  return budgetBasisOf(trip) === 'perPerson' ? (trip.budgetPerPerson ?? null) : trip.budgetTotal;
+}
+
+/**
+ * Keeps the saved group total in step with a per-person budget (per person × headcount).
+ * The store applies this on every save and on load, so a headcount change never leaves a stale total.
+ * Total budgets are returned unchanged.
+ */
+export function withBudgetTotal(trip: Trip): Trip {
+  if (budgetBasisOf(trip) !== 'perPerson') return trip;
+  const perPerson = trip.budgetPerPerson ?? null;
+  const total = perPerson === null ? null : round2(perPerson * travelerCount(trip));
+  return total === trip.budgetTotal ? trip : { ...trip, budgetTotal: total };
+}
+
+/** Sets the amount in the Venture's current basis. */
+export function setBudgetAmount(trip: Trip, amount: number | null): Trip {
+  return budgetBasisOf(trip) === 'perPerson'
+    ? withBudgetTotal({ ...trip, budgetPerPerson: amount })
+    : { ...trip, budgetTotal: amount };
+}
+
+/** Switches the basis and keeps the group total the Planner already set (to the cent). */
+export function setBudgetBasis(trip: Trip, basis: BudgetBasis): Trip {
+  if (basis === budgetBasisOf(trip)) return trip;
+  if (basis === 'total') return { ...trip, budgetBasis: 'total', budgetPerPerson: undefined };
+  const people = travelerCount(trip);
+  const perPerson = trip.budgetTotal === null || people === 0 ? null : round2(trip.budgetTotal / people);
+  return withBudgetTotal({ ...trip, budgetBasis: 'perPerson', budgetPerPerson: perPerson });
 }
 
 export function formatMoney(amount: number, currency: string, maximumFractionDigits = 0): string {

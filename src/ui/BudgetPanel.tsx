@@ -1,4 +1,4 @@
-import { chosenDate, summarize, type BudgetSummary } from '../domain/budget';
+import { budgetBasisOf, chosenDate, summarize, type BudgetSummary } from '../domain/budget';
 import { CATEGORIES, type Trip } from '../domain/types';
 import { formatDate, Money } from './common';
 
@@ -53,7 +53,15 @@ export function BudgetPanel({ trip }: { trip: Trip }) {
         <p className="eyebrow">Budget</p>
         <div className="budget-big">
           {trip.budgetTotal === null ? 'No target set' : <Money amount={trip.budgetTotal} currency={trip.currency} />}
-          {trip.budgetTotal !== null && <span>total, everything included</span>}
+          {trip.budgetTotal !== null && (
+            <span>
+              {budgetBasisOf(trip) === 'perPerson' && trip.budgetPerPerson != null ? (
+                <>total · <Money amount={trip.budgetPerPerson} currency={trip.currency} /> per person</>
+              ) : (
+                'total, everything included'
+              )}
+            </span>
+          )}
         </div>
         <p className="muted small">
           {trip.travelers.adults + trip.travelers.children} travelers
@@ -81,7 +89,11 @@ export function BudgetPanel({ trip }: { trip: Trip }) {
         <span>{s.remaining === null ? 'tracked spend · no target' : over ? 'over budget' : 'left to plan'}</span>
       </div>
       <p className="muted small">
-        {s.budget === null ? 'No budget target' : <>of <Money amount={s.budget} currency={trip.currency} /></>} · {s.shape.people} people · {s.shape.nights} nights
+        {s.budget === null ? 'No budget target' : <>of <Money amount={s.budget} currency={trip.currency} /></>}
+        {s.budget !== null && budgetBasisOf(trip) === 'perPerson' && trip.budgetPerPerson != null && (
+          <> (<Money amount={trip.budgetPerPerson} currency={trip.currency} /> per person)</>
+        )}{' '}
+        · {s.shape.people} people · {s.shape.nights} nights
       </p>
       <BudgetMeter summary={s} currency={trip.currency} />
       <table className="budget-table">

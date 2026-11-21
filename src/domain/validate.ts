@@ -26,6 +26,12 @@ export function parseAtlasData(raw: unknown, source: string): AtlasData {
       if (typeof tr[key] !== 'string') fail(`Venture ${i + 1} is missing "${key}".`);
     }
     if (tr.budgetTotal !== null && typeof tr.budgetTotal !== 'number') fail(`Venture "${String(tr.name)}" has no numeric budgetTotal or null budget target.`);
+    if (tr.budgetBasis !== undefined && tr.budgetBasis !== 'total' && tr.budgetBasis !== 'perPerson') {
+      fail(`Venture "${String(tr.name)}" has an unknown budget basis "${String(tr.budgetBasis)}".`);
+    }
+    if (tr.budgetBasis === 'perPerson' && tr.budgetPerPerson !== null && typeof tr.budgetPerPerson !== 'number') {
+      fail(`Venture "${String(tr.name)}" has a per-person budget basis but no numeric per-person amount or null.`);
+    }
     for (const key of ['dateOptions', 'candidates']) {
       if (!Array.isArray(tr[key])) fail(`Venture "${String(tr.name)}" has no ${key} list.`);
     }

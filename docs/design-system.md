@@ -521,6 +521,7 @@ Icons are sourced from the `lucide-react` npm package. No local SVG files or gen
 
 | Date       | Change |
 |------------|--------|
+| 2026-11-21 | Venture settings: budget basis toggle (Total / Per person) reuses `.segmented`; the per-person field hint shows the group total. Budget panel shows the per-person amount next to the total. No new tokens. |
 | 2026-11-21 | Doc brought in line with the code. Rebuilt the theme table from `theme.css` and removed tokens that were never implemented: `--surface-300/400/500`, `--ink-faint`, `--warm`, `--sky`, `--sea`, `--coral`, `--border`, `--shadow-sm/md/lg`, `--glow-accent`. Type scale, spacing, radius, shadows and components are now measured. Header and hero section rewritten. Reduced-motion gap recorded. |
 | 2026-11-19 | Budget step polish: flat Skip link, outlined ghost Back button, helper spacing |
 | 2026-11-19 | Hero title Fraunces 300; hero subtitle `--ink-soft` |

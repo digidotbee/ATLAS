@@ -1,4 +1,5 @@
 import { nightsBetween } from './budget';
+import type { BudgetBasis } from './types';
 
 /** Answers collected by the step-by-step new-trip flow. */
 export interface NewTripDraft {
@@ -25,7 +26,7 @@ export interface NewTripDraft {
   childAges: string;
 }
 
-export type BudgetMode = 'total' | 'perPerson';
+export type BudgetMode = BudgetBasis;
 export const CURRENCY_CODE = /^[A-Z]{3}$/;
 
 /** Resolve the entered amount only once the final traveler count is known. */
