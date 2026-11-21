@@ -22,7 +22,7 @@ const fmt = (iso: string) => formatDate(iso, { weekday: 'short', month: 'short',
 const WEIGHT_LABELS: { k: keyof ScoringWeights; label: string; hint: string }[] = [
   { k: 'cost', label: 'Money left over', hint: 'remaining budget' },
   { k: 'value', label: 'Value per night', hint: 'cost per vacation night' },
-  { k: 'duration', label: 'Trip length', hint: `closeness to your ideal length, or more nights up to ${FULL_VACATION_NIGHTS}` },
+  { k: 'duration', label: 'Length', hint: `closeness to your ideal length, or more nights up to ${FULL_VACATION_NIGHTS}` },
   { k: 'weather', label: 'Weather', hint: 'seasonal climate score' },
   { k: 'preferences', label: 'Preferred dates', hint: 'overlap with your preferred dates' },
 ];
@@ -296,7 +296,7 @@ export function WindowsCard({ trip, update }: TabProps) {
       <StageHead n={3} title="Find your vacation windows" done={windows.some((w) => w.status === 'locked')} />
 
       {missing.length > 0 ? (
-        <p className="muted small">Finish the steps above, then ORIVOIR compares dates and trip lengths for you.</p>
+        <p className="muted small">Finish the steps above, then ORIVOIR compares dates and lengths for you.</p>
       ) : (
         <>
           <div className="actions">

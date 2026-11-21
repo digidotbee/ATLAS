@@ -66,7 +66,7 @@ export function BudgetPanel({ trip }: { trip: Trip }) {
           )}
         </p>
         <p className="small">
-          No trip dates yet, so nothing is projected. Find and lock a vacation window in <strong>When & how long</strong>.
+          No Venture dates yet, so nothing is projected. Find and lock a vacation window in <strong>When & how long</strong>.
         </p>
       </aside>
     );

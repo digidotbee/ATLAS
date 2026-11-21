@@ -100,7 +100,7 @@ export function AvailabilityCard({ av, cons, setAv, setCons, span }: Availabilit
             <dd>{fmt(av.latestReturn)}</dd>
           </div>
           <div>
-            <dt>Trip length</dt>
+            <dt>Length</dt>
             <dd>{lengthText}</dd>
           </div>
           {av.idealDuration && (
@@ -120,7 +120,7 @@ export function AvailabilityCard({ av, cons, setAv, setCons, span }: Availabilit
             <dd>{cons.departureAirport || '—'}</dd>
           </div>
           <p className="summary-note">
-            {span} nights to choose from — ORIVOIR looks for the best trip <em>inside</em> this range.
+            {span} nights to choose from — ORIVOIR looks for the best dates <em>inside</em> this range.
           </p>
         </dl>
       ) : (
@@ -160,7 +160,7 @@ export function AvailabilityCard({ av, cons, setAv, setCons, span }: Availabilit
             />
           </Field>
           <details className="more" open={Boolean(cons.minNights || cons.maxNights || cons.preferredNights)}>
-            <summary>Trip length (optional)</summary>
+            <summary>Length (optional)</summary>
             <div className="grid-3">
               <Field label="Shortest" hint="nights">
                 <NumberInput value={cons.minNights} min={1} onChange={(v) => setCons({ minNights: v })} aria-label="Minimum nights" />

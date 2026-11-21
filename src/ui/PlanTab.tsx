@@ -8,7 +8,7 @@ export function PlanTab({ trip, update }: TabProps) {
   return (
     <div className="stack">
       <div className="intro">
-        <h2>Shape the trip</h2>
+        <h2>Shape the Venture</h2>
         <p className="muted">
           A few questions that sharpen the search. Answer what you know now and skip the rest. {answered}/{FOLLOW_UP_QUESTIONS.length} answered.
         </p>

@@ -28,7 +28,7 @@ test('a Planner can create a fixed-date Venture, choose a cabin, and print the s
   await expect(page).toHaveURL(/#\/trip\/[^/]+\/plan$/);
   await expect(page.getByRole('heading', { name: destination, exact: true })).toBeVisible();
 
-  await page.getByRole('navigation', { name: 'Trip planning steps' }).getByRole('link', { name: /Explore/ }).click();
+  await page.getByRole('navigation', { name: 'Venture planning steps' }).getByRole('link', { name: /Explore/ }).click();
   for (const cabin of [chosenCabin, otherCabin]) {
     await page.getByRole('button', { name: /Add option/ }).click();
     await page.getByRole('textbox', { name: 'Name', exact: true }).fill(cabin);

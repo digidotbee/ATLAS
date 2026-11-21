@@ -314,7 +314,7 @@ function CandidateEditor({
         </Field>
         <Field
           label={c.category === 'lodging' ? 'Nights here' : 'How many'}
-          hint={c.basis === 'total' ? 'Not needed for a total price' : c.category === 'lodging' ? 'Blank = the whole trip' : 'Blank = whole trip / everyone'}
+          hint={c.basis === 'total' ? 'Not needed for a total price' : c.category === 'lodging' ? 'Blank = the whole Venture' : 'Blank = the whole Venture / everyone'}
         >
           <NumberInput value={c.units} onChange={(v) => set({ units: v })} placeholder="auto" aria-label="Units" />
         </Field>
@@ -355,7 +355,7 @@ function ResearchHelper({ prompt, initialFocus, onImport }: { prompt: (f: Catego
     <section className="card research">
       <h3>Research helper</h3>
       <p className="muted small">
-        ORIVOIR writes a research brief from this trip and your family's preferences. Paste it into Claude or any assistant, then paste
+        ORIVOIR writes a research brief from this Venture and your family's preferences. Paste it into Claude or any assistant, then paste
         the reply back here — options import straight into your shortlist, with prices marked estimated or verified.
       </p>
       <div className="grid-2">
