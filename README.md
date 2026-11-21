@@ -2,17 +2,17 @@
 
 Start a Venture with a destination, spot, or vibe. Compare options, plan the itinerary, track costs, and print a one-page plan.
 
-For the agreed creation wizard and the four MVP roles, see [Venture launch](docs/venture-launch.md).
+For the agreed creation wizard and the four MVP roles, see [Venture launch](docs/venture-launch.md). Personal invitations, joining and Date Lock-In are specified in [Crew invitations](docs/crew-invitations.md) and are not built yet. UI tokens and components are in [the WILDSTROM design system](docs/design-system.md).
 
 Live: https://digidotbee.github.io/ATLAS/
 
 ## How it works
 - **Shape it** – follow-up questions (pace, bases, lodging style, must-dos…).
-- **Dates** – each date window with an airfare estimate; ATLAS recalculates the whole trip for every window and marks the best value.
-- **Explore** – add options by hand or use the **Research helper**: it writes a brief from your trip + family profile to paste into
+- **When & how long** – for a Venture with flexible dates, ORIVOIR costs every possible window inside your availability and marks the best value.
+- **Explore** – add options by hand or use the **Research helper**: it writes a brief from your Venture + family profile to paste into
   Claude (or any assistant), and imports the JSON reply straight into your shortlist. Choose, set aside, mark prices
   *estimated* or *verified*. Only chosen items count.
-- **Itinerary** – place experiences on days, set check-in days for multiple bases, add day notes. Gaps/double bookings are flagged.
+- **Itinerary** – place experiences on days, set check-in days for multiple bases, add day notes. Gaps, double bookings and base mismatches are flagged.
 - **One-sheet** – printable single page (Print → Save as PDF).
 - **Family profile** – your interests feed every research brief and highlight options that fit.
 
@@ -43,5 +43,5 @@ Code map: `src/domain` (types, budget math, itinerary, research brief/import, va
 `src/storage` (browser + Gist), `src/state/store.tsx`, `src/ui`.
 
 ## Roadmap
-- Optional AI research through a small secure backend (API key server-side, per-day request caps, cached results reused across trips).
-- Destination knowledge base reused across trips; trip history and learned preferences.
+- Optional AI research through a small secure backend (API key server-side, per-day request caps, cached results reused across Ventures).
+- Destination knowledge base reused across Ventures; Venture history and learned preferences.

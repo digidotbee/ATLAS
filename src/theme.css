@@ -3,7 +3,7 @@
    Token values are taken verbatim from the Wildstrom showcase
    (Storm + Daylight). Loaded after styles.css, which it re-skins.
    Mode: Storm by default; Daylight when the device prefers light or the
-   family picks it (html[data-theme]).
+   person picks it (html[data-theme]).
    ========================================================================== */
 
 /* ---------- Storm (default) ---------- */
@@ -13,9 +13,9 @@
   /* ink lifted whiter than the showcase's #f0f9c6 (family request) */
   --ink: #f7faee;
   --ink-soft: rgba(247, 250, 238, 0.75);
-  --accent: #dfb84b;         /* vivid chartreuse — used for text, links, and indicators */
+  --accent: #dfb84b;         /* gold — used for text, links, and indicators */
   --accent-vivid: #dfb84b;   /* graphic-use accent: borders, button fills, checkboxes (never text-on-dark-bg) */
-  --sunlit: #dfb84b;         /* chartreuse highlight */
+  --sunlit: #dfb84b;         /* gold highlight */
   /* flare lifted lighter/whiter than #e0f500 (family request) */
   --flare: #f0d882;
   /* fixed light ink for text over photography and the thicket band */
@@ -23,7 +23,7 @@
   --thicket: #387476;
   --thistle: #bcb4d1;
   --line: rgba(247, 250, 238, 0.1);
-  --focus-ring: #dfb84b;     /* vivid chartreuse focus ring */
+  --focus-ring: #dfb84b;     /* gold focus ring */
   --on-accent: #272c35;
   --button-hover-color: var(--accent);
   --button-shadow-highlight: rgba(255, 255, 255, 0.06);
