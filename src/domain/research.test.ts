@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createTrip, defaultProfile } from './factory';
 import { FOLLOW_UP_QUESTIONS } from './questions';
-import { buildAssumptionsPrompt, buildResearchPrompt } from './research';
+import { buildAssumptionsPrompt, buildResearchPrompt, buildWindowFarePrompt } from './research';
 import type { Trip } from './types';
 
 // A Venture saved before the kids question was removed still carries its answer.
@@ -37,6 +37,24 @@ describe('Shape it questions', () => {
       expect(prompt).not.toContain('Maya is 7');
       expect(prompt).not.toContain('What will make it great for the kids?');
       expect(prompt).toContain('A slow snowy weekend');
+    }
+  });
+});
+
+describe('Children in research prompts', () => {
+  it('include how many children are coming but never their ages', () => {
+    const base = savedTrip();
+    const t: Trip = { ...base, travelers: { ...base.travelers, childAges: '7, 10' } };
+    const profile = defaultProfile();
+    const window = { departureDate: '2027-01-15', destinationDepartureDate: '2027-01-17', returnDate: '2027-01-17' };
+    for (const prompt of [
+      buildResearchPrompt(t, profile, 'all'),
+      buildAssumptionsPrompt(t, profile),
+      buildWindowFarePrompt(t, profile, window),
+    ]) {
+      expect(prompt).toContain('2 adults, 2 children');
+      expect(prompt).not.toContain('7, 10');
+      expect(prompt).not.toMatch(/\bages?\b/i);
     }
   });
 });
