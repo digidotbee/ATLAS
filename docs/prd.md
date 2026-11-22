@@ -99,7 +99,7 @@ The Viewer’s action is **Request to follow**. A private email might read “Do
 | Group link, already signed in | The group card identifies the Venture. One tap on **Request to follow** on its landing page submits the request from the current account. |
 | Group link, signed out | The visitor selects **Request to follow** and enters their own email address. ORIVOIR emails them the private button above. Tapping it completes the original request without reentering their email or finding the Venture again. |
 
-The Planner sees the pending request and can approve or decline it. Approval grants the signed-in account Viewer access. The Venture appears under **My Ventures → Following** on any signed-in device. The Viewer can read the shared plan. Home addresses and minors’ details are redacted before the data reaches their device. The Planner can revoke access, which removes the Venture from **Following** and denies future reads. Requesting to follow uses no Crew spot and records no RSVP.
+The Planner sees the pending request and can approve or decline it. Approval grants the signed-in account Viewer access. The Venture appears under **My Ventures → Following** on any signed-in device. The Viewer can read the shared plan. Home addresses and minors’ details are redacted before the data reaches their device. A redacted home address loses its coordinates too, and the Viewer sees no map for it. The Planner can revoke access, which removes the Venture from **Following** and denies future reads. Requesting to follow uses no Crew spot and records no RSVP.
 
 **How the button works.** The invite card JSON supplies a title, a button label, and an `actionUrl`. For a private Viewer email, the server issues a random, expiring, single-use token tied to the recipient’s email, this Venture, and the follow request. ORIVOIR delivers the token inside the button’s HTTPS link. Tapping the button returns it to ORIVOIR for verification. Repeated taps create at most one pending request per account and Venture. If the link has expired, offer **Send a new link** for the same request.
 
@@ -130,11 +130,13 @@ Locking a choice moves it to the first position in the same carousel and gives i
 ### Itinerary, time, and booking
 
 - Show the exact time when known. Otherwise show the existing time window, such as **6–9 p.m.**, or **Time TBD** if no time has been set. The Planner can add or edit the exact time on the same card.
-- Show the known location and its Mapbox pin automatically when coordinates are available.
+- Show the known location as text with an **Open in Maps** link, built from a Google Maps URL that needs no API key. When coordinates are known, a **Show map** control opens a map with the pin. Nothing map-related loads until someone taps **Show map** or **Drop a pin**.
+- Take coordinates from the provider’s link or data when present, then from a pin the Planner drops or confirms (**Drop a pin** opens the map for this), and only then from a geocoder (implementation plan D11). The option records which of the three supplied its coordinates. Coordinates count as the address wherever an address is redacted.
+- Invite cards, group cards, link previews, emails and texts never show a map. The print one-sheet shows the address and the **Open in Maps** link, with no map image in MVP v1.0.
 - The Planner can optionally mark the locked option **Booked** on the same card. The Planner handles reservations and cancellations with the provider.
 - If the Planner locks a different option, update the itinerary immediately and move the new choice to the front of the carousel. If the previous choice was marked **Booked**, show the Planner one reminder to check that reservation. Booking status stays with the option it describes.
 
-**Acceptance check.** Maya, a Collaborator, adds a restaurant link under Saturday Dinner. Jules, an Attendee, gives a 👍 to two open options. The Planner locks one and it appears first. Jules can still swipe to another option and change their support. The locked option stays first and Jules’s RSVP stays as it was. The same Dinner card immediately appears in Saturday’s itinerary with the existing 6–9 p.m. window and a map pin when available. The Planner can optionally enter 7 p.m. or mark the restaurant **Booked**. If the Planner switches away from a booked restaurant, the itinerary updates and the Planner sees one reminder to check the old reservation.
+**Acceptance check.** Maya, a Collaborator, adds a restaurant link under Saturday Dinner. Jules, an Attendee, gives a 👍 to two open options. The Planner locks one and it appears first. Jules can still swipe to another option and change their support. The locked option stays first and Jules’s RSVP stays as it was. The same Dinner card immediately appears in Saturday’s itinerary with the existing 6–9 p.m. window, the restaurant’s address with **Open in Maps**, and **Show map** when its coordinates are known. The Planner can optionally enter 7 p.m. or mark the restaurant **Booked**. If the Planner switches away from a booked restaurant, the itinerary updates and the Planner sees one reminder to check the old reservation.
 
 ## Paid booking links
 
@@ -171,7 +173,7 @@ A Collaborator can start a child Venture from the Plan Board to organize a plan 
 When a Venture enters planning, the Plan Board shows what is settled and which decisions are still open. For an open venue decision, offer **Find dinner ideas** alongside manual entry. The same interaction can later support lodging or activities. The goal is to make it easier for the crew to plan a real-world Venture together.
 
 1. The Planner can start from the Plan Board after connecting Gemini. A signed-in Collaborator can generate ideas if the Planner enables it for that Venture, including while their RSVP is pending.
-2. ORIVOIR builds and sends the prompt in-app using the locked date and time, broad area, budget if known, and any preferences the requester adds. Exclude crew names, contact details, private addresses, minors’ details, and invite links from automatically included context.
+2. ORIVOIR builds and sends the prompt in-app using the locked date and time, broad area, budget if known, and any preferences the requester adds. Exclude crew names, contact details, private addresses and their coordinates, minors’ details, and invite links from automatically included context.
 3. The backend calls the provider using the Planner’s connection and requests JSON matching a schema. Validate the response and render private draft cards with a name, location, reason it fits, and details that need checking. If the provider is unavailable, quota is exhausted, or the response is invalid, show an actionable message and keep manual suggestions available.
 4. The requester can edit a draft and choose **Suggest to crew**. Only explicitly shared cards appear on the board. They use the same support toggles and lock-to-itinerary flow as manual suggestions. Generating or sharing ideas does not change RSVP status.
 
@@ -181,7 +183,7 @@ When a Venture enters planning, the Plan Board shows what is settled and which d
 
 ## Routing and data
 
-These are proposed routes and data contracts. The implementation should map them onto the existing Vite, React, TypeScript, Tailwind CSS, Mapbox GL, and Supabase stack. GitHub Pages uses hash routing today. A future move to orivoir.com, hosted on Cloudflare (implementation plan D1), supports share previews.
+These are proposed routes and data contracts. The implementation should map them onto the existing Vite, React, TypeScript, Tailwind CSS, MapLibre GL JS with OpenFreeMap tiles (implementation plan D11), and Supabase stack. GitHub Pages uses hash routing today. A future move to orivoir.com supports share previews.
 
 | Surface | Proposed route | Access |
 |---|---|---|
@@ -292,4 +294,4 @@ The Planner signed off on this journey on November 18, 2026.
 | 0.16 | November 20, 2026 | Date Lock-In resends the standard fixed-date RSVP invitation through the Planner’s usual sharing flow using the original group link. |
 | 0.17 | November 21, 2026 | Added one-tap **Request to follow** from a private email, the signed-in and signed-out group-link journeys, and account-free personal RSVPs. |
 | 0.18 | November 21, 2026 | Made one-tap, contact-based Crew invitations the primary flow. Specified private SMS/email cards, the group-link alternative, Planner-only contact details, delivery recovery, and the fixed-date resend to eligible Crew. |
-| 0.19 | November 21, 2026 | Added paid booking links as the planned revenue path, with placement, disclosure, ranking and privacy rules, and click-out measurement in M5. |
+| 0.19 | November 22, 2026 | Replaced Mapbox with MapLibre and OpenStreetMap tiles; maps load only on tap; coordinates come from the provider or a Planner pin before any geocoder; coordinates follow address redaction. |
