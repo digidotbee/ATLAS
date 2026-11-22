@@ -1,6 +1,6 @@
 # ORIVOIR implementation plan · MVP v1.0
 
-**Draft 0.1 · November 21, 2026 · for the [living PRD v0.18](prd.md) and its [40 user stories](user-stories.md)**
+**Draft 0.1 · November 21, 2026 · for the [living PRD v0.19](prd.md) and its [40 user stories](user-stories.md)**
 
 This plan turns the PRD into an ordered build. Every user story is assigned to exactly one milestone, every milestone lists what it depends on, and every decision the PRD leaves open is named with a recommendation and the milestone it blocks.
 
@@ -19,7 +19,7 @@ Measured on `main` at `4f297fc`:
   - the budget engine
   - the Budget pill and Budget view
   - 82 unit tests and 4 browser flows
-- **What doesn't exist:** a backend, accounts, invitations, Crew, voting, a Plan Board, or Viewers. The stack is Vite, React, TypeScript and hand-written WILDSTROM CSS. Tailwind, Supabase and Mapbox are not in the code yet.
+- **What doesn't exist:** a backend, accounts, invitations, Crew, voting, a Plan Board, or Viewers. The stack is Vite, React, TypeScript and hand-written WILDSTROM CSS. Tailwind, Supabase and a map library are not in the code yet.
 - **Stories already done:** [LAUNCH-01](user-stories.md#launch-01) and [BUDGET-01](user-stories.md#budget-01).
 
 ## 2. The plan at a glance
@@ -31,7 +31,7 @@ Measured on `main` at `4f297fc`:
 | **M2** · Crew and joining | Choose people, personal and group links, account-free answers, capacity, **Who** | LAUNCH-03, LAUNCH-04, LAUNCH-06, CREW-01, CREW-02, CREW-04, CREW-05, CREW-07, CREW-09 | M1, D5, D12 | XL |
 | **M3** · Direct delivery | One tap sends each person their own email or text; retries and receipts | LAUNCH-05, CREW-08 | M2, D3, D4, D14 | L |
 | **M4** · Date Decision and Lock-In | Partial availability, overlap heatmap, cutoff, **Lock this time**, RSVP | CREW-06, DATE-01, DATE-02, DATE-03, DATE-04 | M3, D6, D7 | L |
-| **M5** · Plan Board | Decisions, ideas, 👍 support, lock to itinerary, Mapbox pin, Collaborators | LAUNCH-02, CREW-03, BOARD-01–06 | M4, D8, D11 | XL |
+| **M5** · Plan Board | Decisions, ideas, 👍 support, lock to itinerary, map pin, Collaborators | LAUNCH-02, CREW-03, BOARD-01–06 | M4, D8, D11 | XL |
 | **M6** · Shared Budget | Running cost, confirmed vs. estimated, quantities, scope, average | BUDGET-02, BUDGET-03, BUDGET-04, BUDGET-06 | M5 | M |
 | **M7** · Follow | **Request to follow**, approval, **Following**, redacted reads | VIEW-01–03 | M5 | M |
 | **M8** · Child Ventures | Side plans for part of the Crew, linked itinerary and cost | CHILD-01–03, BUDGET-05 | M6, M7 | M |
@@ -100,7 +100,7 @@ Every one of the 40 stories appears here exactly once.
 | [BOARD-03](user-stories.md#board-03) | M5 | Inherited dates and limits; OpenTable links |
 | [BOARD-04](user-stories.md#board-04) | M5 | 👍 support, including Attendees with no account |
 | [BOARD-05](user-stories.md#board-05) | M5 | **Lock this option**, **Locked in**, itinerary updates instantly |
-| [BOARD-06](user-stories.md#board-06) | M5 | Exact time / window / **Time TBD**, Mapbox pin, **Booked** with one reminder |
+| [BOARD-06](user-stories.md#board-06) | M5 | Exact time / window / **Time TBD**, location with **Open in Maps**, map pin on **Show map**, **Booked** with one reminder |
 | [BUDGET-01](user-stories.md#budget-01) | M0 | Done. The server moves in M1 and is regression-tested there. |
 | [BUDGET-02](user-stories.md#budget-02) | M6 | Price and basis on cards; **Adds $120 to the plan** |
 | [BUDGET-03](user-stories.md#budget-03) | M6 | Quantity override; **4 tickets confirmed** and the gap. The first bullet shipped in #31. |
@@ -153,10 +153,10 @@ These are the decisions only Dot can make, with Claude's recommendation for each
 | D8 | **What happens to the original single-user tabs** | Explore and Itinerary evolve into the Plan Board: options become ideas, **Choose** becomes **Lock this option**, and the itinerary is built from locked options. When & how long becomes an optional Planner helper inside Date Decision (D5). Shape it answers become optional Planner notes. Travel legs stay Planner-only until the Transit ideation. The copy-and-paste research helper is replaced by **Add Idea** with provider JSON and by the Gemini pilot. Keep the print one-sheet. | M5 |
 | D9 | **Ventures already saved in browsers, and Gist sync** | Launching requires sign-in, as the PRD says. On first sign-in, offer to import the Ventures saved in this browser; nothing is imported without the Planner confirming. After import, the cloud is the source of truth. Gist sync becomes export-only, then is removed after R1. Keep the JSON backup. Private contact data never goes to the Gist. | M1 |
 | D10 | **Venture time zone** | Default to the Planner's device time zone, editable under Set the Scene. Store it as an IANA name, with all instants as time-zone-aware timestamps (PRD *Routing and data*). | M1 |
-| D11 | **Mapbox** | A Mapbox account with a public token limited to ORIVOIR's domain. Coordinates come from provider fields, or from geocoding the place text through an Edge Function when an idea is saved. Pins appear on locked options. | M5 |
+| D11 | **Maps and coordinates** | **Decided November 22, 2026.** (1) **Library:** MapLibre GL JS (BSD-3), the open-source fork of Mapbox GL JS. No Mapbox account or token. (2) **Map images (tiles):** start with the OpenFreeMap public instance (free, no API key, no stated limits). Plan a later move to self-hosted Protomaps PMTiles on Cloudflare R2, served through the Protomaps Worker with edge caching, if OpenFreeMap has reliability problems or new limits, or a custom style is needed. The style URL is one config value behind a single `MapView` component, so the move is a config change. (3) **When a map loads:** never by default. A location shows as text with an **Open in Maps** link built from Google Maps URLs (no API key). **Show map** loads MapLibre with a dynamic import and draws the pin. No maps on invite cards, group cards, link previews, emails or texts. The print one-sheet shows the address and the Maps link, with no map image in MVP v1.0. (4) **Coordinates, in this order:** (a) from the provider's link or JSON when present; (b) a pin the Planner drops or confirms; (c) only then a geocoder called from an Edge Function, Geoapify's free tier. Store `lat`, `lng` and `coords_source` (`provider`, `planner_pin` or `geocoder`) on the option. No Mapbox geocoding: storing its results requires its paid permanent tier. (5) **Attribution:** MapLibre's attribution control stays on, so "© OpenStreetMap contributors" shows on every map, plus the credit Geoapify's free tier requires. (6) **Privacy:** coordinates count as the address. Wherever a home address is redacted (Viewers, previews, AI inputs), its coordinates are too, and no map shows. Place text goes to the geocoder only from the Edge Function, never with names or contact details. Tile requests show the tile host roughly which area is being viewed; OpenFreeMap sets no cookies and keeps no user database, and self-hosting removes that third party. Geoapify and the tile host are listed in the privacy policy (D14). | M5 |
 | D12 | **Visual and stack wording in the PRD** | The PRD asks for "lime primary actions", but Storm has used gold since Nov 19. It also lists Tailwind as part of the existing stack, which the code doesn't use. Decide the accent and update the PRD to match the code (WILDSTROM CSS, no Tailwind). | M2 (new UI) |
 | D13 | **Gemini pilot scope and key storage** | Keep it in MVP v1.0 as the last milestone. Store the Planner's key encrypted server-side (Supabase Vault). Only an Edge Function reads it. | M9 |
-| D14 | **Privacy policy and terms** | Needed before invitations go to people outside the household. SMS registration requires public privacy and opt-in disclosures. Claude can draft them for Dot's review; they are not legal advice. | M3, R1 |
+| D14 | **Privacy policy and terms** | Needed before invitations go to people outside the household. SMS registration requires public privacy and opt-in disclosures. Claude can draft them for Dot's review; they are not legal advice. The policy lists Geoapify and the map tile host (D11). | M3, R1 |
 | D15 | **Pilot measurement** | A first-party event table in Supabase, with no third-party analytics. Events carry IDs and timestamps only: no names, contact details or Planner address-book data. | R1 |
 | D16 | **Order after R1** | M5 → M6 → M7 → M8 → M9, as above. Confirm or reorder. | M5 |
 
@@ -168,6 +168,7 @@ These are the decisions only Dot can make, with Claude's recommendation for each
 | November 21, 2026 | D2 | Free Supabase projects for development and staging. Production moves to Pro before the first real invitation. |
 | November 21, 2026 | D3 | Open. Claude compares current pricing and deliverability for two or three providers; Dot chooses. |
 | November 21, 2026 | D9, D10 | The recommended defaults stand unless Dot objects: an import offer on first sign-in, which needs her confirmation, and a time zone that defaults to the Planner's device. |
+| November 22, 2026 | D11 | Replaced the earlier Mapbox plan (a Mapbox account and token, with Mapbox geocoding) with MapLibre GL JS and OpenFreeMap tiles, moving later to Protomaps on Cloudflare R2 if needed. Maps load only on **Show map**. Coordinates come from the provider or a Planner pin before the Geoapify geocoder, and coordinates follow address redaction. The goal is a map setup that costs close to nothing at any scale. |
 
 ## 5. Architecture
 
@@ -212,7 +213,7 @@ These responsibilities come from [PRD *Routing and data*](prd.md#routing-and-dat
 | `send_operations`, `deliveries` | Operation key, purpose, schedule version; per delivery: channel, status (queued, accepted, delivered, failed, uncertain), attempts, provider message ID | Unique operation key and provider message ID make launches and callbacks replay-safe |
 | `messaging_permissions` | Destination, channel, sender, purpose, source and time, withdrawal or suppression | Checked again at dispatch |
 | `follower_access` | Venture, account, status (pending, approved, declined, revoked) | Unique per (Venture, account) |
-| `decisions`, `options`, `supports` | Day or Whole Trip, title, kind (general or stay), window, limit; option title, place, address, coordinates, source, proposed time, estimate (amount, currency, basis, quantity), cost state, confirmed amount and quantity, included, booked, private draft; support per member | One support row per (option, member). One locked option per decision. |
+| `decisions`, `options`, `supports` | Day or Whole Trip, title, kind (general or stay), window, limit; option title, place, address, coordinates (`lat`, `lng`, `coords_source`: `provider`, `planner_pin` or `geocoder`; D11), source, proposed time, estimate (amount, currency, basis, quantity), cost state, confirmed amount and quantity, included, booked, private draft; support per member | One support row per (option, member). One locked option per decision. |
 | `child_links` | Child Venture, main Venture, status (requested, approved), linked cost | Updates flow from the child |
 | `ai_connections`, `ai_requests` | Planner, encrypted key reference, per-Venture Collaborator access, limit, usage | Requests log counts and outcomes, never prompt text containing personal data |
 | `events` | Event name, Venture ID, member or account ID, timestamp | For D15 only. No names or contact details. |
@@ -230,12 +231,12 @@ These responsibilities come from [PRD *Routing and data*](prd.md#routing-and-dat
   - attach a personal invitation to an existing entry
 
   Each function checks the token's scope, the Venture's phase, the cutoff and capacity, and writes in one transaction, locking the Venture row so two people can't take the last spot.
-- **Viewers** read through a redacted projection. Home addresses, minors' details, invitations, contact data and tokens never leave the database for them.
+- **Viewers** read through a redacted projection. Home addresses and their coordinates, minors' details, invitations, contact data and tokens never leave the database for them.
 - **Edge Functions:**
   - the delivery worker and provider callbacks (signature-verified)
   - invite preview metadata, on the host
   - the Viewer follow action
-  - geocoding
+  - geocoding fallback (Geoapify), only when the provider gave no coordinates and the Planner set no pin
   - the Gemini proxy
 - **Realtime** pushes Crew changes to the Planner. Guests reload state when they open a link, and a stale submission shows the current phase.
 
@@ -345,14 +346,17 @@ M1 keeps today's local mode working for already-saved Ventures until the Planner
   - **Board and decisions:** expandable days in the Venture time zone, **Whole Trip**, decision cards (title required; window, limit and note optional), and **A place to stay** covering several nights ([BOARD-01](user-stories.md#board-01)).
   - **Ideas:** one **Add Idea** form for manual entry, links and provider JSON, mapped to the common option schema, with one carousel per decision ([BOARD-02](user-stories.md#board-02)). Dates and limits are inherited, with OpenTable links for dinner ([BOARD-03](user-stories.md#board-03)).
   - **Support and locking:** 👍 support through accounts or private access ([BOARD-04](user-stories.md#board-04)). **Lock this option**: **Locked in**, the locked option first, the itinerary updated in the same transaction ([BOARD-05](user-stories.md#board-05)).
-  - **Itinerary details:** exact time, window or **Time TBD**; the Mapbox pin; **Booked** with one reminder when switching away ([BOARD-06](user-stories.md#board-06)).
+  - **Itinerary details:** exact time, window or **Time TBD**; the location as text with **Open in Maps**; with coordinates, **Show map** loads MapLibre through a dynamic import in the single `MapView` component and draws the pin; coordinates from the provider, then a pin the Planner drops or confirms, then the geocoding fallback (D11); **Booked** with one reminder when switching away ([BOARD-06](user-stories.md#board-06)).
   - **Collaborators and launch:** Attendee-to-Collaborator linking with a verified account plus the member's private credential ([CREW-03](user-stories.md#crew-03)). Fixed-date launch now opens the Plan Board ([LAUNCH-02](user-stories.md#launch-02)).
   - **Migration:** existing Explore candidates and the itinerary move into decisions and options under D8.
 - **Closes:** LAUNCH-02, CREW-03, BOARD-01–06.
 - **Verify:**
-  - the PRD Saturday Dinner acceptance check (Maya adds a link, Jules supports two options, a lock with no votes, Jules's RSVP unchanged, the itinerary window and pin, switching away from a booked choice)
+  - the PRD Saturday Dinner acceptance check (Maya adds a link, Jules supports two options, a lock with no votes, Jules's RSVP unchanged, the itinerary window with the address, **Open in Maps** and **Show map**, switching away from a booked choice)
   - the lodging check (one stay covering Friday and Saturday nights; a $360 cabin counts once)
   - linking keeps the member's spot, answers and votes
+  - a Plan Board session that never taps **Show map** makes no map or tile requests
+  - the dynamic import keeps MapLibre out of the main bundle
+  - a Viewer of a Venture whose stay is a private home gets no coordinates for it
 - **Needs first:** M4, D8, D11.
 
 ### M6 · Shared Budget
@@ -406,7 +410,7 @@ M1 keeps today's local mode working for already-saved Ventures until the Planner
 
 - **Build:**
   - **Connection:** the Planner enters a Gemini Developer API key, stored encrypted and readable only by the Edge Function. Collaborator access is off by default and set per Venture, with a request limit and usage display ([PILOT-01](user-stories.md#pilot-01)).
-  - **Find dinner ideas:** the prompt context is built only from the locked date and time, the broad area, the budget and the requester's preferences. Names, contact details, addresses, minors' details and links are filtered out. Responses are validated against a schema and shown as private drafts ([PILOT-02](user-stories.md#pilot-02)).
+  - **Find dinner ideas:** the prompt context is built only from the locked date and time, the broad area, the budget and the requester's preferences. Names, contact details, addresses and their coordinates, minors' details and links are filtered out. Responses are validated against a schema and shown as private drafts ([PILOT-02](user-stories.md#pilot-02)).
   - **Sharing:** **Suggest to crew** puts a draft on the board. A failure gives an actionable message and creates no cards ([PILOT-03](user-stories.md#pilot-03)).
 - **Closes:** PILOT-01–03.
 - **Verify:**
@@ -446,7 +450,7 @@ These are recorded so they aren't built by accident:
 
 ## 9. Document updates this plan calls for
 
-- **PRD *Routing and data*:** describe the real stack: WILDSTROM CSS, no Tailwind, with Supabase and Mapbox introduced in M1 and M5 (D12).
+- **PRD *Routing and data*:** describe the real stack: WILDSTROM CSS, no Tailwind, with Supabase introduced in M1 and MapLibre GL JS with OpenFreeMap tiles in M5 (D11, D12).
 - **PRD *Remaining ideation*:** record decisions D5, D6, D7 and D4 once made, with dated revision-history entries.
 - **PRD:** fix "lime primary actions" to match the accent decision (D12).
 - **[Venture launch](venture-launch.md) and [AGENTS.md](../AGENTS.md):** point to this plan for build order. (Done in this change.)
@@ -456,3 +460,14 @@ These are recorded so they aren't built by accident:
 - [Supabase pricing](https://supabase.com/pricing) and [project pausing](https://supabase.com/docs/guides/platform/free-plan-pausing): free projects pause after a week of inactivity; Pro starts at $25 per month per organization.
 - [Supabase: custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp) and [production checklist](https://supabase.com/docs/guides/deployment/going-into-prod): the default email service is best-effort, for non-production use.
 - [Twilio A2P 10DLC](https://www.twilio.com/en-us/a2p-10dlc) and [US SMS rules for 2026](https://intercom.help/whippy/en/articles/13178812-u-s-sms-regulations-2023-2026-and-what-you-need-to-know): carrier registration is required, and new toll-free registrations need a business registration number such as an EIN.
+
+**Maps and coordinates (D11), checked November 22, 2026.**
+
+- [MapLibre GL JS](https://github.com/maplibre/maplibre-gl-js): licensed under the 3-Clause BSD license. It began as an open-source fork of mapbox-gl-js before Mapbox switched to a non-open-source license in December 2020.
+- [OpenFreeMap](https://openfreemap.org): the public instance is free with no limits on map views or requests; there is no registration, user database, API keys or cookies; commercial use is allowed. Attribution is required, and MapLibre adds it automatically.
+- [Protomaps on Cloudflare](https://docs.protomaps.com/deploy/cloudflare): PMTiles sit in an R2 bucket and a Worker serves them as tiles. Edge caching works only when the Worker is on a zone on your own domain, not `workers.dev`, and R2 costs apply only on cache misses. R2 can have higher latency (500 ms or more). [Protomaps cost example](https://docs.protomaps.com/deploy/cost): about $11.45 a month for 10 million Worker requests, 1,000 GB of bandwidth (no charge) and 110 GB stored at a 50% cache hit rate, before any free tiers.
+- [Cloudflare R2 pricing](https://developers.cloudflare.com/r2/pricing/): no egress charges for any storage class. The free tier each month is 10 GB-month of storage, 1 million Class A operations and 10 million Class B (read) operations; then $0.015 per GB-month and $0.36 per million reads.
+- [Google Maps URLs](https://developers.google.com/maps/documentation/urls/get-started): no Google API key is needed. Search links use `https://www.google.com/maps/search/?api=1&query=…` with a place name, an address or `lat%2Clng`.
+- [Mapbox Geocoding API](https://docs.mapbox.com/api/search/geocoding/): temporary results may not be cached. Permanent results may be stored, but require `permanent=true` and a credit card on file or an enterprise contract.
+- [Geoapify pricing](https://www.geoapify.com/pricing): the free plan is 3,000 credits a day, and a simple geocoding request costs 1 credit. It allows commercial use in production, needs no credit card, and requires Geoapify and data-source attribution (it suggests a "Powered by" link near the output). [Geoapify's site](https://geoapify.com/) says its license lets customers cache, store and redistribute results, with attribution. Geoapify's formal terms document was not found or read.
+- [OpenStreetMap Foundation geocoding guideline](https://osmfoundation.org/wiki/Licence/Community_Guidelines/Geocoding_-_Guideline): individual geocoding results based on OpenStreetMap are insubstantial extracts, so storing them doesn't trigger the ODbL's share-alike terms unless they are collected into a substantial copy of the database.

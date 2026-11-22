@@ -2,7 +2,7 @@
 
 **Journey 1 · MVP v1.0 · November 21, 2026**
 
-These 40 stories follow a Planner and their crew from a rough idea to a locked date, a shared itinerary, and a confirmed budget. They cover the free consumer core and the optional Gemini pilot. The bullets under each story are its acceptance criteria. [ORIVOIR Living PRD v0.18, November 21, 2026](prd.md) · [Crew invitations engineering guide](crew-invitations.md)
+These 40 stories follow a Planner and their crew from a rough idea to a locked date, a shared itinerary, and a confirmed budget. They cover the free consumer core and the optional Gemini pilot. The bullets under each story are its acceptance criteria. [ORIVOIR Living PRD v0.19, November 22, 2026](prd.md) · [Crew invitations engineering guide](crew-invitations.md)
 
 | Journey | Stories | Source sections in the PRD |
 |---|---|---|
@@ -239,7 +239,7 @@ As a Planner, I want to review and revoke Viewer access so I control who can rea
 As an approved Viewer, I want to find the Venture when I sign in on another device so I can follow along without asking for another invitation.
 
 - **My Ventures → Following** lists the approved Venture on any device signed in to my account.
-- I can read the shared plan. Home addresses and minors’ details are redacted before the data reaches my device. Viewer access is read-only and gives no permission to vote, generate ideas, or post suggestions.
+- I can read the shared plan. Home addresses, their coordinates and minors’ details are redacted before the data reaches my device, and I see no map for a redacted address. Viewer access is read-only and gives no permission to vote, generate ideas, or post suggestions.
 
 ## Build the shared itinerary
 
@@ -298,7 +298,8 @@ As a Planner, I want to lock an option right where the crew discussed it so the 
 As a Planner, I want the itinerary card to carry the details of the option I chose so the crew can find it and I can track any reservation.
 
 - The card shows the exact time if known, otherwise the existing window, then **Time TBD** if neither exists. I can add or edit the exact time on the card.
-- The known location appears automatically, with its Mapbox pin when coordinates are available.
+- The location appears as text with **Open in Maps**. With coordinates, **Show map** opens a map with the pin. Nothing map-related loads until someone taps it.
+- A Viewer sees no map or coordinates for a redacted home address.
 - I can mark the option **Booked** on the card. I handle reservations and cancellations with the provider. Switching away from a booked option gives me one reminder to check that reservation. The booking status stays with its original option.
 
 ## Track the shared budget
@@ -421,7 +422,7 @@ As a Planner, I want to control whether Collaborators can use my Gemini connecti
 As a Collaborator whom the Planner has enabled, I want dinner ideas that fit the plan so I can review them before suggesting anything to the crew.
 
 - On an open venue decision, **Find dinner ideas** works for the connected Planner or an enabled, signed-in Collaborator, including one whose RSVP is pending.
-- ORIVOIR sends the locked date and time, broad area, known budget, and preferences the requester adds. Automatically included context excludes Crew names, contact details, private addresses, minors’ details, and invite links.
+- ORIVOIR sends the locked date and time, broad area, known budget, and preferences the requester adds. Automatically included context excludes Crew names, contact details, private addresses and their coordinates, minors’ details, and invite links.
 - ORIVOIR validates the provider’s JSON against the expected schema before showing private draft cards to the requester. Each card gives the name, location, reason it fits, and details to check.
 
 <a id="pilot-03"></a>
@@ -435,7 +436,7 @@ As the person who requested ideas, I want to edit and share only the ones I woul
 
 ## Decisions still open
 
-| Area | Where v0.18 leaves the decision |
+| Area | Where v0.19 leaves the decision |
 |---|---|
 | Availability windows | Decide how to generate candidates from the Planner’s target range and ideal length, and how a guest enters part of an evening. Editable Friday–Sunday suggestions are an option under consideration. |
 | Post-lock guest visibility | Opted-in members can see the chosen time, RSVP, and support eligible options. The full set of details visible to an opted-in guest and how to confirm previously offered days are still open. |
