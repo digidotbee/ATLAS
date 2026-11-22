@@ -69,7 +69,6 @@ export interface NewTripInput {
   budgetPerPerson?: number | null;
   adults: number;
   children: number;
-  childAges: string;
   flexibility: string;
   dateOptions: Omit<DateOption, 'id'>[];
 }
@@ -88,7 +87,7 @@ export function createTrip(input: NewTripInput): Trip {
     budgetBasis: basis,
     ...(basis === 'perPerson' ? { budgetPerPerson: input.budgetPerPerson ?? null } : {}),
     contingencyPct: 10,
-    travelers: { adults: input.adults, children: input.children, childAges: input.childAges },
+    travelers: { adults: input.adults, children: input.children },
     flexibility: input.flexibility,
     dateOptions,
     chosenDateId: dateOptions.length === 1 ? dateOptions[0].id : null,

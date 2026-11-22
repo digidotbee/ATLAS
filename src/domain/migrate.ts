@@ -31,6 +31,22 @@ export function migrateTrip(t: Trip): Trip {
   };
 }
 
+/**
+ * Children's details are no longer collected: drop the old "Children's ages" value and the
+ * answer to the removed "What will make it great for the kids?" question from saved Ventures,
+ * so they stop being stored or synced. Counts of adults and children are kept.
+ * Idempotent; does not touch updatedAt (so it never causes a sync conflict).
+ */
+export function dropChildDetails(t: Trip): Trip {
+  const travelers = t.travelers as Trip['travelers'] & { childAges?: unknown };
+  const hasAges = 'childAges' in travelers;
+  const hasKids = Object.prototype.hasOwnProperty.call(t.answers ?? {}, 'kids');
+  if (!hasAges && !hasKids) return t;
+  const { childAges: _ages, ...keptTravelers } = travelers;
+  const { kids: _kids, ...keptAnswers } = t.answers ?? {};
+  return { ...t, travelers: keptTravelers, answers: keptAnswers };
+}
+
 export function migrateData(d: AtlasData): AtlasData {
-  return { ...d, trips: d.trips.map((t) => withBudgetTotal(migrateTrip(t))) };
+  return { ...d, trips: d.trips.map((t) => withBudgetTotal(dropChildDetails(migrateTrip(t)))) };
 }

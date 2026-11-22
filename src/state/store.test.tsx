@@ -61,7 +61,6 @@ describe('saving Ventures', () => {
       budgetPerPerson: 40,
       adults: 2,
       children: 0,
-      childAges: '',
       flexibility: '',
       dateOptions: [],
     });

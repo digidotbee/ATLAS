@@ -56,7 +56,6 @@ export function NewTrip() {
     flexibility: '',
     adults: p.defaultAdults,
     children: p.defaultChildren,
-    childAges: '',
   });
   const [step, setStep] = useState<NewTripStep>(NEW_TRIP_STEPS[0]);
   const [errors, setErrors] = useState<string[]>([]);
@@ -106,7 +105,6 @@ export function NewTrip() {
       budgetPerPerson: budgetMode === 'perPerson' ? d.budget : undefined,
       adults: d.adults!,
       children: d.children ?? 0,
-      childAges: d.childAges,
       flexibility: d.whenMode === 'decision' ? d.flexibility : '',
       dateOptions,
     });
@@ -303,15 +301,12 @@ export function NewTrip() {
                 Our usual {p.defaultAdults + p.defaultChildren}: {p.defaultAdults} adults, {p.defaultChildren} children
               </button>
             )}
-            <div className="grid-3">
+            <div className="grid-2">
               <Field label="Adults">
                 <NumberInput value={d.adults} min={1} onChange={(v) => set({ adults: v })} aria-label="Adults" />
               </Field>
               <Field label="Children">
                 <NumberInput value={d.children} onChange={(v) => set({ children: v })} aria-label="Children" />
-              </Field>
-              <Field label="Children's ages">
-                <input value={d.childAges} onChange={(e) => set({ childAges: e.target.value })} placeholder="e.g. 15, 17" />
               </Field>
             </div>
           </div>

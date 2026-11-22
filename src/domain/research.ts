@@ -60,7 +60,7 @@ export function buildResearchPrompt(trip: Trip, profile: FamilyProfile, focus: C
 
 TRIP
 - Destination: ${trip.destination}${trip.region ? ` (${trip.region})` : ''}
-- Travelers: ${trip.travelers.adults} adults, ${trip.travelers.children} children${trip.travelers.childAges ? ` (ages ${trip.travelers.childAges})` : ''} — ${travelerCount(trip)} people
+- Travelers: ${trip.travelers.adults} adults, ${trip.travelers.children} children — ${travelerCount(trip)} people
 - ${trip.budgetTotal === null ? 'No budget target set; find good options without a spending cap.' : `Total budget: ${trip.budgetTotal} ${trip.currency}, everything included`}
 - Date options:
 ${datesText}
@@ -277,7 +277,7 @@ export function buildAssumptionsPrompt(trip: Trip, profile: FamilyProfile): stri
 TRIP
 - Destination: ${trip.destination}${trip.region ? ` (${trip.region})` : ''}
 - Flying from: ${airport}
-- Travelers: ${trip.travelers.adults} adults, ${trip.travelers.children} children${trip.travelers.childAges ? ` (ages ${trip.travelers.childAges})` : ''}
+- Travelers: ${trip.travelers.adults} adults, ${trip.travelers.children} children
 - ${trip.budgetTotal === null ? 'No budget target set; do not treat the trip as having a zero-dollar cap.' : `Total budget: ${trip.budgetTotal} ${trip.currency}, everything included`}
 - Available to travel: leave home on or after ${av?.earliestDeparture ?? '?'}, back home by ${av?.latestReturn ?? '?'}. This is our availability, NOT the trip length.
 ${answers ? `\nWHAT WE WANT\n${answers}\n` : ''}

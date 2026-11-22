@@ -49,11 +49,6 @@ export const FOLLOW_UP_QUESTIONS: FollowUpQuestion[] = [
     hint: 'Crowded resort strips, long drives, early starts, certain foods…',
   },
   {
-    id: 'kids',
-    question: 'What will make it great for the kids?',
-    hint: 'Ages, interests, energy levels, swimming/surf ability.',
-  },
-  {
     id: 'food',
     question: 'How do you want to eat?',
     hint: 'Markets and local spots, cooking yourselves, a special dinner or two.',

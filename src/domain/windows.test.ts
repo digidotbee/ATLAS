@@ -37,7 +37,6 @@ function plannedTrip(overrides: Partial<Trip> = {}): Trip {
     budgetTotal: 9000,
     adults: 2,
     children: 2,
-    childAges: '',
     flexibility: '',
     dateOptions: [],
   });
@@ -111,7 +110,7 @@ describe('flexible-date planning engine', () => {
   it('7. airfare is multiplied by the number of travelers', () => {
     const e = evaluateWindow(plannedTrip(), '2027-05-21', 10)!;
     expect(e.airfareTotal).toBe(900 * 4);
-    const three = plannedTrip({ travelers: { adults: 2, children: 1, childAges: '' } });
+    const three = plannedTrip({ travelers: { adults: 2, children: 1 } });
     expect(evaluateWindow(three, '2027-05-21', 10)!.airfareTotal).toBe(2700);
   });
 
@@ -171,7 +170,6 @@ describe('flexible-date planning engine', () => {
       budgetTotal: 9000,
       adults: 2,
       children: 2,
-      childAges: '',
       flexibility: '',
       dateOptions: [{ label: 'Summer', start: '2027-05-21', end: '2027-07-30', flightPerPerson: 500, flightStatus: 'estimated', notes: '' }],
     });

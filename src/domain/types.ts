@@ -220,7 +220,6 @@ export type BudgetBasis = 'total' | 'perPerson';
 export interface Travelers {
   adults: number;
   children: number;
-  childAges: string;
 }
 
 export interface Trip {

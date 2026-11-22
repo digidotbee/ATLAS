@@ -25,15 +25,12 @@ export function SetupTab({ trip, update }: TabProps) {
         Budget target, currency and cushion are in <a href={href({ page: 'trip', id: trip.id, tab: 'budget' })}>Budget</a>.
       </p>
       <div className="card stack-sm">
-        <div className="grid-3">
+        <div className="grid-2">
           <Field label="Adults">
             <NumberInput value={trip.travelers.adults} min={1} onChange={(v) => update((t) => ({ ...t, travelers: { ...t.travelers, adults: Math.max(1, v ?? 1) } }))} aria-label="Adults" />
           </Field>
           <Field label="Children">
             <NumberInput value={trip.travelers.children} onChange={(v) => update((t) => ({ ...t, travelers: { ...t.travelers, children: v ?? 0 } }))} aria-label="Children" />
-          </Field>
-          <Field label="Children's ages">
-            <input value={trip.travelers.childAges} onChange={(e) => update((t) => ({ ...t, travelers: { ...t.travelers, childAges: e.target.value } }))} />
           </Field>
         </div>
         <Field label="Date flexibility">
