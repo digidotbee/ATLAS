@@ -1,6 +1,6 @@
 # ORIVOIR implementation plan · MVP v1.0
 
-**Draft 0.1 · November 21, 2026 · for the [living PRD v0.19](prd.md) and its [41 MVP user stories](user-stories.md)**
+**Draft 0.1 · November 21, 2026 · for the [living PRD v0.20](prd.md) and its [42 MVP user stories](user-stories.md)**
 
 This plan turns the PRD into an ordered build. Every user story is assigned to exactly one milestone, every milestone lists what it depends on, and every decision the PRD leaves open is named with a recommendation and the milestone it blocks.
 
@@ -31,7 +31,7 @@ Measured on `main` at `4f297fc`:
 | **M2** · Crew and joining | Choose people, personal and group links, account-free answers, capacity, **Who** | LAUNCH-03, LAUNCH-04, LAUNCH-06, CREW-01, CREW-02, CREW-04, CREW-05, CREW-07, CREW-09 | M1, D5, D12 | XL |
 | **M3** · Direct delivery | One tap sends each person their own email or text; retries and receipts | LAUNCH-05, CREW-08 | M2, D3, D4, D14 | L |
 | **M4** · Date Decision and Lock-In | Partial availability, overlap heatmap, cutoff, **Lock this time**, RSVP | CREW-06, DATE-01, DATE-02, DATE-03, DATE-04 | M3, D6, D7 | L |
-| **M5** · Plan Board | Decisions, ideas, 👍 support, lock to itinerary, map pin, booking click-out, Collaborators | LAUNCH-02, CREW-03, BOARD-01–07 | M4, D8, D11 | XL |
+| **M5** · Plan Board | Decisions, Venture brief, ideas, 👍 support, lock to itinerary, map pin, booking click-out, Collaborators | LAUNCH-02, CREW-03, BOARD-01–08 | M4, D8, D11 | XL |
 | **M6** · Shared Budget | Running cost, confirmed vs. estimated, quantities, scope, average | BUDGET-02, BUDGET-03, BUDGET-04, BUDGET-06 | M5 | M |
 | **M7** · Follow | **Request to follow**, approval, **Following**, redacted reads | VIEW-01–03 | M5 | M |
 | **M8** · Child Ventures | Side plans for part of the Crew, linked itinerary and cost | CHILD-01–03, BUDGET-05 | M6, M7 | M |
@@ -69,7 +69,7 @@ flowchart LR
 
 ## 3. Story traceability
 
-Every one of the 41 MVP stories appears here exactly once. The three PAID stories after MVP v1.0 are listed separately below the table.
+Every one of the 42 MVP stories appears here exactly once. The three PAID stories after MVP v1.0 are listed separately below the table.
 
 | Story | Milestone | What remains |
 | --- | --- | --- |
@@ -95,13 +95,14 @@ Every one of the 41 MVP stories appears here exactly once. The three PAID storie
 | [VIEW-01](user-stories.md#view-01) | M7 | **Request to follow** from the departure screen, a group link and private email |
 | [VIEW-02](user-stories.md#view-02) | M7 | Approve, decline, revoke |
 | [VIEW-03](user-stories.md#view-03) | M7 | **My Ventures → Following**; redacted, read-only plan |
-| [BOARD-01](user-stories.md#board-01) | M5 | Expandable days, decision cards, **Whole Trip** |
+| [BOARD-01](user-stories.md#board-01) | M5 | Expandable days, decision cards, **Whole Trip**, starters on an empty board, must-dos as decisions |
 | [BOARD-02](user-stories.md#board-02) | M5 | **Add Idea** form: manual entry, link, or provider JSON; carousel |
 | [BOARD-03](user-stories.md#board-03) | M5 | Inherited dates and limits; OpenTable links |
 | [BOARD-04](user-stories.md#board-04) | M5 | 👍 support, including Attendees with no account |
 | [BOARD-05](user-stories.md#board-05) | M5 | **Lock this option**, **Locked in**, itinerary updates instantly |
 | [BOARD-06](user-stories.md#board-06) | M5 | Exact time / window / **Time TBD**, location with **Open in Maps**, map pin on **Show map**, **Drop a pin** before any geocoder, **Booked** with one reminder |
 | [BOARD-07](user-stories.md#board-07) | M5 | Open a locked option’s provider page; record the D15 click-out event and change nothing else |
+| [BOARD-08](user-stories.md#board-08) | M5 | Venture brief the Planner edits and the crew sees; kept from Viewers and every message; print shows the feel line; imported answers as a Planner-only draft |
 | [BUDGET-01](user-stories.md#budget-01) | M0 | Done. The server moves in M1 and is regression-tested there. |
 | [BUDGET-02](user-stories.md#budget-02) | M6 | Price and basis on cards; **Adds $120 to the plan** |
 | [BUDGET-03](user-stories.md#budget-03) | M6 | Quantity override; **4 tickets confirmed** and the gap. The first bullet shipped in #31. |
@@ -115,7 +116,7 @@ Every one of the 41 MVP stories appears here exactly once. The three PAID storie
 | [PILOT-02](user-stories.md#pilot-02) | M9 | **Find dinner ideas**; privacy-filtered context; schema-validated drafts |
 | [PILOT-03](user-stories.md#pilot-03) | M9 | **Suggest to crew**; failures create no cards |
 
-**After MVP v1.0, gated by D17.** These stories aren't scheduled and aren't counted in the 41.
+**After MVP v1.0, gated by D17.** These stories aren't scheduled and aren't counted in the 42.
 
 | Story | Milestone | What remains |
 | --- | --- | --- |
@@ -142,6 +143,7 @@ Every one of the 41 MVP stories appears here exactly once. The three PAID storie
 | June 11–13: **4 for the whole weekend · 1 for Saturday only** | M4 |
 | RSVP on the same link; availability leaves attendance pending | M4 |
 | Fixed-date launch and Lock-In produce the same card; resend and group share rules | M4 |
+| Venture brief reaches the crew, never Viewers or messages; imported answers stay a Planner-only draft | M5 (Viewer part re-verified in M7) |
 | Viewer email preview takes nothing; one tap shows **Request sent** | M7 |
 | Group-link follow, signed in and signed out; approval; revocation | M7 |
 | Viewers can't change anything or see redacted fields | M7 |
@@ -159,7 +161,7 @@ These are the decisions only Dot can make, with Claude's recommendation for each
 | D5 | **Candidate windows** (PRD *Remaining ideation*) | ORIVOIR proposes windows from the range and ideal length, and the Planner edits them in **Schedule** before launch. **Weekend** gives each Friday–Sunday in the range. "N nights" gives windows starting each Friday and Saturday. A single evening gives each date in the range. Cap the list at about 8 windows. No partial availability inside a single evening in MVP. The existing cost-ranking engine in When & how long can become an optional Planner helper. | M2 |
 | D6 | **Attendance after lock and guest visibility** (PRD *Remaining ideation*) | MVP has one RSVP for the whole Venture. Days a person offered stay visible to the Planner as context. Partial-day attendance is deferred. Opted-in Crew members see the full Plan Board and itinerary, minus the Planner's private contact data. Viewers get the redacted plan (M7). | M4 |
 | D7 | **Changing a locked date** (PRD *Remaining ideation*) | The Planner can change a locked date. Memberships and availability are kept, every RSVP resets to pending, and **Send date to N** offers the new date with "date changed" wording. Child Ventures follow the existing CHILD-03 review rule. | M4 |
-| D8 | **What happens to the original single-user tabs** | Explore and Itinerary evolve into the Plan Board: options become ideas, **Choose** becomes **Lock this option**, and the itinerary is built from locked options. When & how long becomes an optional Planner helper inside Date Decision (D5). Shape it answers become optional Planner notes. Travel legs stay Planner-only until the Transit ideation. The copy-and-paste research helper is replaced by **Add Idea** with provider JSON and by the Gemini pilot. Keep the print one-sheet. | M5 |
+| D8 | **What happens to the original single-user tabs** | **Decided November 22, 2026.** The Plan Board is the only planning view. A Venture opens to Date Decision while the crew votes and to the Plan Board once dates are set, and the numbered tabs retire. Explore and Itinerary become the Plan Board: options become ideas, **Choose** becomes **Lock this option**, and the itinerary is built from locked options. When & how long becomes an optional Planner helper inside Date Decision (D5). **Shape it retires:** its feel, avoid and notes answers become the [Venture brief](user-stories.md#board-08), which the Planner edits and the whole crew sees; must-dos become decision cards; lodging and food become starter decisions ([BOARD-01](user-stories.md#board-01)); pace, bases, transport and season are dropped. The kids question and children's ages were removed on November 22. Travel legs stay Planner-only until the Transit ideation. The copy-and-paste research helper is replaced by **Add Idea** with provider JSON and by the Gemini pilot. Keep the print one-sheet; it shows the brief's feel line where it showed *The idea*. | M5 |
 | D9 | **Ventures already saved in browsers, and Gist sync** | Launching requires sign-in, as the PRD says. On first sign-in, offer to import the Ventures saved in this browser; nothing is imported without the Planner confirming. After import, the cloud is the source of truth. Gist sync becomes export-only, then is removed after R1. Keep the JSON backup. Private contact data never goes to the Gist. | M1 |
 | D10 | **Venture time zone** | Default to the Planner's device time zone, editable under Set the Scene. Store it as an IANA name, with all instants as time-zone-aware timestamps (PRD *Routing and data*). | M1 |
 | D11 | **Maps and coordinates** | **Decided November 22, 2026.** (1) **Library:** MapLibre GL JS (BSD-3), the open-source fork of Mapbox GL JS. No Mapbox account or token. (2) **Map images (tiles):** start with the OpenFreeMap public instance (free, no API key, no stated limits). Plan a later move to self-hosted Protomaps PMTiles on Cloudflare R2, served through the Protomaps Worker with edge caching, if OpenFreeMap has reliability problems or new limits, or a custom style is needed. The style URL is one config value behind a single `MapView` component, so the move is a config change. (3) **When a map loads:** never by default. A location shows as text with an **Open in Maps** link built from Google Maps URLs (no API key). **Show map** loads MapLibre with a dynamic import and draws the pin; **Drop a pin** loads it the same way so the Planner can place or confirm a pin. No maps on invite cards, group cards, link previews, emails or texts. The print one-sheet shows the address and the Maps link, with no map image in MVP v1.0. (4) **Coordinates, in this order:** (a) from the provider's link or JSON when present; (b) a pin the Planner drops or confirms; (c) only then a geocoder called from an Edge Function, Geoapify's free tier. Store `lat`, `lng` and `coords_source` (`provider`, `planner_pin` or `geocoder`) on the option. No Mapbox geocoding: storing its results requires its paid permanent tier. (5) **Attribution:** MapLibre's attribution control stays on, so "© OpenStreetMap contributors" shows on every map, plus the credit Geoapify's free tier requires. (6) **Privacy:** coordinates count as the address. Wherever a home address is redacted (Viewers, previews, AI inputs), its coordinates are too, and no map shows. Place text goes to the geocoder only from the Edge Function, never with names or contact details. Tile requests show the tile host roughly which area is being viewed; OpenFreeMap sets no cookies and keeps no user database, and self-hosting removes that third party. Geoapify and the tile host are listed in the privacy policy (D14). | M5 |
@@ -183,6 +185,7 @@ These are the decisions only Dot can make, with Claude's recommendation for each
 | November 21, 2026 | D9, D10 | The recommended defaults stand unless Dot objects: an import offer on first sign-in, which needs her confirmation, and a time zone that defaults to the Planner's device. |
 | November 21, 2026 | Revenue path | Commission from booking sites through paid links, under the placement, disclosure, ranking, privacy and measurement rules in PRD [Paid booking links](prd.md#paid-booking-links). The consumer core stays free. Click-out measurement ships in M5. Turning paid links on waits for D17, with D18–D20 open. |
 | November 22, 2026 | D11 | Replaced the earlier Mapbox plan (a Mapbox account and token, with Mapbox geocoding) with MapLibre GL JS and OpenFreeMap tiles, moving later to Protomaps on Cloudflare R2 if needed. Maps load only on **Show map**. Coordinates come from the provider or a Planner pin before the Geoapify geocoder, and coordinates follow address redaction. The goal is a map setup that costs close to nothing at any scale. |
+| November 22, 2026 | D8 | Dot found Shape it and the Plan Board duplicated each other. Shape it retires and the Plan Board is the only planning view. Its answers become a Venture brief that the whole crew sees (Dot's choice over Planner-only notes), with must-dos as decision cards and starter decisions on an empty board. Separately, a hotfix removed the kids question and stopped collecting children's ages. |
 
 ## 5. Architecture
 
@@ -217,7 +220,7 @@ These responsibilities come from [PRD *Routing and data*](prd.md#routing-and-dat
 
 | Table | Key fields | Rules |
 | --- | --- | --- |
-| `ventures` | Planner, title, destination, region, `time_zone`, `schedule_mode` (fixed or decision), `status` (voting or planning), fixed or locked schedule, `opt_in_by`, target window, ideal length, `max_opt_ins`, planning headcount, budget amount, currency and basis, cushion, `parent_venture_id`, `legacy_local_id` | One nesting level. `legacy_local_id` makes the browser import idempotent. |
+| `ventures` | Planner, title, destination, region, `time_zone`, `schedule_mode` (fixed or decision), `status` (voting or planning), fixed or locked schedule, `opt_in_by`, target window, ideal length, `max_opt_ins`, planning headcount, budget amount, currency and basis, cushion, `parent_venture_id`, `legacy_local_id`, brief (`brief_feel`, `brief_avoid`, `brief_notes`, `brief_shared`) | One nesting level. `legacy_local_id` makes the browser import idempotent. |
 | `candidate_windows` | Venture, stable slot key, start and end dates and times, revision | Revising windows bumps the revision and prompts fresh answers (DATE-02) |
 | `invitations` | Venture, issuer, private recipient label, private avatar reference, channel, destination, normalized `destination_key`, state (pending, claimed, revoked), membership | One intended invitation per recipient per Venture, unique on (Venture, `destination_key`). Planner-only. |
 | `memberships` | Venture, account (required for Collaborators), role, shared display name and photo choice, status (active, removed), `opted_in_at` | One active membership per claimed invitation. Removal revokes access. |
@@ -245,7 +248,8 @@ These responsibilities come from [PRD *Routing and data*](prd.md#routing-and-dat
   - attach a personal invitation to an existing entry
 
   Each function checks the token's scope, the Venture's phase, the cutoff and capacity, and writes in one transaction, locking the Venture row so two people can't take the last spot.
-- **Viewers** read through a redacted projection. Home addresses and their coordinates, minors' details, invitations, contact data and tokens never leave the database for them.
+- **Viewers** read through a redacted projection. Home addresses and their coordinates, minors' details, the Venture brief, invitations, contact data and tokens never leave the database for them.
+- **Venture brief:** the Planner writes it. Collaborators read it through membership and Attendees through the card function. While `brief_shared` is false (an imported draft), only the Planner reads it.
 - **Edge Functions:**
   - the delivery worker and provider callbacks (signature-verified)
   - invite preview metadata, on the host
@@ -256,7 +260,7 @@ These responsibilities come from [PRD *Routing and data*](prd.md#routing-and-dat
 
 ### 5.5 Moving off browser storage
 
-M1 keeps today's local mode working for already-saved Ventures until the Planner imports them (D9). New Ventures launch only after sign-in. The import maps each local Venture to `ventures` plus its existing budget fields and keeps the original ID in `legacy_local_id`, so running it twice changes nothing. The browser copy is kept until the import is confirmed.
+M1 keeps today's local mode working for already-saved Ventures until the Planner imports them (D9). New Ventures launch only after sign-in. The import maps each local Venture to `ventures` plus its existing budget fields and keeps the original ID in `legacy_local_id`, so running it twice changes nothing. Shape it answers become a draft brief with `brief_shared` false: the purpose answer becomes the feel line, the avoid answer the avoid line, and the notes plus the pace, bases, lodging, transport, must-do, food and season answers become labeled lines in the notes. A kids answer is never imported. The browser copy is kept until the import is confirmed.
 
 ## 6. Milestones
 
@@ -362,9 +366,10 @@ M1 keeps today's local mode working for already-saved Ventures until the Planner
   - **Support and locking:** 👍 support through accounts or private access ([BOARD-04](user-stories.md#board-04)). **Lock this option**: **Locked in**, the locked option first, the itinerary updated in the same transaction ([BOARD-05](user-stories.md#board-05)).
   - **Itinerary details:** exact time, window or **Time TBD**; the location as text with **Open in Maps**; with coordinates, **Show map** loads MapLibre through a dynamic import in the single `MapView` component and draws the pin; coordinates from the provider, then a pin the Planner drops or confirms with **Drop a pin**, then the geocoding fallback (D11), saved with `coords_source`; **Booked** with one reminder when switching away ([BOARD-06](user-stories.md#board-06)).
   - **Booking click-out:** the Planner, Collaborators and Attendees can open a locked option's source link. Opening it records the D15 click-out event and changes nothing else ([BOARD-07](user-stories.md#board-07)). No paid links (D17).
+  - **Venture brief and starters:** the brief at the top of the board, edited by the Planner and readable by the crew; kept out of the Viewer projection and every card, preview and message; the imported draft shown only to the Planner until **Share with crew** ([BOARD-08](user-stories.md#board-08)). Starters on an empty board by Venture length ([BOARD-01](user-stories.md#board-01)).
   - **Collaborators and launch:** Attendee-to-Collaborator linking with a verified account plus the member's private credential ([CREW-03](user-stories.md#crew-03)). Fixed-date launch now opens the Plan Board ([LAUNCH-02](user-stories.md#launch-02)).
-  - **Migration:** existing Explore candidates and the itinerary move into decisions and options under D8.
-- **Closes:** LAUNCH-02, CREW-03, BOARD-01–07.
+  - **Migration:** existing Explore candidates and the itinerary move into decisions and options under D8. Shape it answers imported in M1 appear as the Planner-only draft brief.
+- **Closes:** LAUNCH-02, CREW-03, BOARD-01–08.
 - **Verify:**
   - the PRD Saturday Dinner acceptance check (Maya adds a link, Jules supports two options, a lock with no votes, Jules's RSVP unchanged, the itinerary window with the address, **Open in Maps** and **Show map**, switching away from a booked choice)
   - the lodging check (one stay covering Friday and Saturday nights; a $360 cabin counts once)
@@ -375,6 +380,8 @@ M1 keeps today's local mode working for already-saved Ventures until the Planner
   - a Viewer of a Venture whose stay is a private home gets no coordinates for it
   - the PRD [Paid booking links](prd.md#paid-booking-links) acceptance check: opening a locked option's link records exactly one event with only the option ID, decision kind, member or account ID and timestamp, and leaves RSVP, support and **Booked** unchanged, for a Planner, a Collaborator and an account-free Attendee
   - the opened URL is exactly the saved source URL
+  - the PRD brief acceptance check: the crew sees the brief; a Viewer's data, invite cards, previews, emails and texts don't include it; a one-evening Venture with no decisions offers no **A place to stay** starter
+  - an imported draft brief is invisible to Collaborators and Attendees until the Planner taps **Share with crew**, and holds no kids answer
 - **Needs first:** M4, D8, D11.
 
 ### M6 · Shared Budget
@@ -429,7 +436,7 @@ M1 keeps today's local mode working for already-saved Ventures until the Planner
 
 - **Build:**
   - **Connection:** the Planner enters a Gemini Developer API key, stored encrypted and readable only by the Edge Function. Collaborator access is off by default and set per Venture, with a request limit and usage display ([PILOT-01](user-stories.md#pilot-01)).
-  - **Find dinner ideas:** the prompt context is built only from the locked date and time, the broad area, the budget and the requester's preferences. Names, contact details, addresses and their coordinates, minors' details and links are filtered out. Responses are validated against a schema and shown as private drafts ([PILOT-02](user-stories.md#pilot-02)).
+  - **Find dinner ideas:** the prompt context is built only from the locked date and time, the broad area, the budget and the requester's preferences, which start with the brief's feel and avoid lines and stay editable. Names, contact details, addresses and their coordinates, minors' details and links are filtered out. Responses are validated against a schema and shown as private drafts ([PILOT-02](user-stories.md#pilot-02)).
   - **Sharing:** **Suggest to crew** puts a draft on the board. A failure gives an actionable message and creates no cards ([PILOT-03](user-stories.md#pilot-03)).
 - **Closes:** PILOT-01–03.
 - **Verify:**

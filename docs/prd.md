@@ -1,6 +1,6 @@
 # ORIVOIR Living PRD
 
-**Version 0.19 · November 22, 2026 · MVP v1.0**
+**Version 0.20 · November 22, 2026 · MVP v1.0**
 
 [User stories and acceptance criteria](user-stories.md)
 
@@ -99,7 +99,7 @@ The Viewer’s action is **Request to follow**. A private email might read “Do
 | Group link, already signed in | The group card identifies the Venture. One tap on **Request to follow** on its landing page submits the request from the current account. |
 | Group link, signed out | The visitor selects **Request to follow** and enters their own email address. ORIVOIR emails them the private button above. Tapping it completes the original request without reentering their email or finding the Venture again. |
 
-The Planner sees the pending request and can approve or decline it. Approval grants the signed-in account Viewer access. The Venture appears under **My Ventures → Following** on any signed-in device. The Viewer can read the shared plan. Home addresses and minors’ details are redacted before the data reaches their device. A redacted home address loses its coordinates too, and the Viewer sees no map for it. The Planner can revoke access, which removes the Venture from **Following** and denies future reads. Requesting to follow uses no Crew spot and records no RSVP.
+The Planner sees the pending request and can approve or decline it. Approval grants the signed-in account Viewer access. The Venture appears under **My Ventures → Following** on any signed-in device. The Viewer can read the shared plan. The Venture brief is for the crew and isn’t shown to Viewers. Home addresses and minors’ details are redacted before the data reaches their device. A redacted home address loses its coordinates too, and the Viewer sees no map for it. The Planner can revoke access, which removes the Venture from **Following** and denies future reads. Requesting to follow uses no Crew spot and records no RSVP.
 
 **How the button works.** The invite card JSON supplies a title, a button label, and an `actionUrl`. For a private Viewer email, the server issues a random, expiring, single-use token tied to the recipient’s email, this Venture, and the follow request. ORIVOIR delivers the token inside the button’s HTTPS link. Tapping the button returns it to ORIVOIR for verification. Repeated taps create at most one pending request per account and Venture. If the link has expired, offer **Send a new link** for the same request.
 
@@ -112,6 +112,24 @@ Fixed-date launch and Date Lock-In both open the Plan Board. Generate expandable
 The Planner adds a **decision card** to a day or to Whole Trip. A title such as “Dinner” is enough to start. An optional time window, spending limit, or note gives the crew context. Show **Suggest an idea** on the decision card for the Planner and Collaborators.
 
 The **Add to plan** category list includes **A place to stay**. Choosing it opens a decision card with the editable title **Where are we staying?** The Planner and Collaborators can suggest a hotel, a cabin, a campsite, or a stay with friends on the same card. One card can cover several nights. The Planner adds it only when the Venture needs it.
+
+### Venture brief
+
+The Plan Board is the Venture’s only planning view. There is no separate questionnaire: what the Planner knows up front goes into a short brief or onto decision cards.
+
+The brief sits at the top of the Plan Board so everyone suggesting ideas knows what the Venture is for. All three fields are optional:
+
+- **What should it feel like?** One line, such as “Slow and cozy, lots of board games.”
+- **Anything to avoid?** Such as “No seafood” or “Nothing over $40 each.”
+- **Notes for the crew.**
+
+Only the Planner edits the brief, and the form says the crew will see it. The Planner, Collaborators and Attendees see it. Viewers don’t, and it never appears on invite cards, group cards, link previews, emails or texts. When the brief is empty, the Planner sees **Add a brief** and nobody else sees anything. The print one-sheet shows the feel line. A Venture imported from browser storage brings its earlier planning answers as a draft brief that only the Planner sees until they tap **Share with crew**.
+
+Must-dos go on the board as decision cards, not into the brief. “See a waterfall” is a decision with no options yet.
+
+**Starter decisions.** A Plan Board with no decisions offers one-tap starters from the **Add to plan** list: **A place to stay** when the Venture includes at least one night, **Where to eat**, and **Something to do**. A starter opens the same decision card as the matching **Add to plan** choice, with an editable title. Nothing is added until the Planner taps one, and the starters disappear once the board has a decision.
+
+**Brief acceptance check.** Dot writes “No seafood” under **Anything to avoid?** for Big Bear Weekend. Maya, a Collaborator, and Jules, an Attendee, see it at the top of the Plan Board. Sam, an approved Viewer, doesn’t receive it, and no invite card, preview, email or text includes it. A one-evening Venture with no decisions offers **Where to eat** and **Something to do**, but not **A place to stay**.
 
 ### Suggestions and provider searches
 
@@ -173,7 +191,7 @@ A Collaborator can start a child Venture from the Plan Board to organize a plan 
 When a Venture enters planning, the Plan Board shows what is settled and which decisions are still open. For an open venue decision, offer **Find dinner ideas** alongside manual entry. The same interaction can later support lodging or activities. The goal is to make it easier for the crew to plan a real-world Venture together.
 
 1. The Planner can start from the Plan Board after connecting Gemini. A signed-in Collaborator can generate ideas if the Planner enables it for that Venture, including while their RSVP is pending.
-2. ORIVOIR builds and sends the prompt in-app using the locked date and time, broad area, budget if known, and any preferences the requester adds. Exclude crew names, contact details, private addresses and their coordinates, minors’ details, and invite links from automatically included context.
+2. ORIVOIR builds and sends the prompt in-app using the locked date and time, broad area, budget if known, and any preferences the requester adds. The preferences field starts with the Venture brief’s feel and avoid lines, which the requester can edit or clear before sending. Exclude crew names, contact details, private addresses and their coordinates, minors’ details, and invite links from automatically included context.
 3. The backend calls the provider using the Planner’s connection and requests JSON matching a schema. Validate the response and render private draft cards with a name, location, reason it fits, and details that need checking. If the provider is unavailable, quota is exhausted, or the response is invalid, show an actionable message and keep manual suggestions available.
 4. The requester can edit a draft and choose **Suggest to crew**. Only explicitly shared cards appear on the board. They use the same support toggles and lock-to-itinerary flow as manual suggestions. Generating or sharing ideas does not change RSVP status.
 
@@ -188,7 +206,7 @@ These are proposed routes and data contracts. The implementation should map them
 | Surface | Proposed route | Access |
 |---|---|---|
 | Date Decision | `/ventures/:ventureId/dates` | Authenticated Planner |
-| Plan Board | `/ventures/:ventureId/plan` | Planner and Collaborator access through signed-in membership. Attendees use their private response credential for eligible plan options and support votes. Approved Viewers have redacted read access. |
+| Plan Board | `/ventures/:ventureId/plan` | Planner and Collaborator access through signed-in membership. Attendees use their private response credential for eligible plan options and support votes. Approved Viewers have redacted read access, without the Venture brief. |
 | Group invite | `/invite/:token` | Shared Venture link for joining while open or requesting to follow |
 | Personal Crew invite | Proposed `/i/:token` | Private invitation to one Venture, scoped to the intended recipient’s availability and RSVP. Opening or previewing a card has no side effects on joining or answering. |
 | Private Viewer invitation | Recipient-specific email action URL | Signs the recipient in and submits one follow request for the named Venture. The Planner approves access. |
@@ -197,7 +215,7 @@ These are proposed routes and data contracts. The implementation should map them
 
 | Data | Required fields and behavior |
 |---|---|
-| Venture | Planner account ID, schedule mode, status, time zone, cutoff, target window, optional opt-in limit, optional ideal length, and locked start and end or slot reference. Store instants with timezone-aware timestamps. |
+| Venture | Planner account ID, schedule mode, status, time zone, cutoff, target window, optional opt-in limit, optional ideal length, and locked start and end or slot reference. Venture brief (feel, avoid and notes) and whether the crew can see it yet. Store instants with timezone-aware timestamps. |
 | Candidate window | Venture ID, stable slot ID, start and end. |
 | Crew invitation | Venture ID, stable recipient invitation ID, issuing Planner, private contact label, optional photo, selected SMS/email destination, pending/claimed/revoked state, nullable Crew membership ID and scoped token digest. Personal details are visible to the Planner. |
 | Invitation delivery | Invitation or opted-in membership, send operation, message purpose, schedule version, channel, status, attempts and provider reference. Record applicable SMS permission and suppression. Retrying one failed delivery preserves the other recipients and their responses. |
@@ -228,6 +246,7 @@ Launch records the Venture, invitations and queued deliveries atomically. Supaba
 - For June 11–13, 2027, four whole-weekend replies and one Saturday-only reply display as **4 for the whole weekend · 1 for Saturday only**. Five people are available on Saturday. If the Saturday-only guest changes to the whole weekend while voting is open, the result becomes five whole and zero partial. Answering for another weekend uses the same Crew entry.
 - Eligible invitees can RSVP on the same link. Both whole-window and partial availability leave attendance pending until the person RSVPs to the locked dates.
 - Given the same Venture and settled schedule, fixed-date launch and Date Lock-In produce the same card and recipient-facing notification wording for each channel. The direct resend preserves each eligible person’s identity, and the group share preserves the original group URL. A group-only guest may opt into a date text. An unjoined invitee sees the departure screen after lock. A failed or dismissed send leaves the schedule locked.
+- The Venture brief reaches the Planner, Collaborators and Attendees on the Plan Board and never a Viewer, an invite card, a preview, an email or a text. An imported Venture’s earlier answers stay a Planner-only draft until the Planner taps **Share with crew**.
 - A preview of a private Viewer email leaves the request unsubmitted. In the ordinary one-tap flow, selecting the email button shows **Request sent** without code entry. Tapping it twice creates one pending request and takes no Crew spot.
 - A signed-in visitor can request to follow from a forwarded group link in one tap. A signed-out visitor completes the same request from a private link sent to their own inbox. A pending request grants no plan access. Approval makes the Venture visible under **Following** on another signed-in device. Revocation blocks direct access as well as removing the listing.
 - A Viewer cannot mutate a plan or receive redacted fields. Existing repository tests remain passing as the feature is implemented.
@@ -295,3 +314,4 @@ The Planner signed off on this journey on November 18, 2026.
 | 0.17 | November 21, 2026 | Added one-tap **Request to follow** from a private email, the signed-in and signed-out group-link journeys, and account-free personal RSVPs. |
 | 0.18 | November 21, 2026 | Made one-tap, contact-based Crew invitations the primary flow. Specified private SMS/email cards, the group-link alternative, Planner-only contact details, delivery recovery, and the fixed-date resend to eligible Crew. |
 | 0.19 | November 22, 2026 | Added paid booking links as the planned revenue path, with placement, disclosure, ranking and privacy rules, and click-out measurement in M5. Replaced Mapbox with MapLibre and OpenStreetMap tiles; maps load only on tap; coordinates come from the provider or a Planner pin before any geocoder; coordinates follow address redaction. |
+| 0.20 | November 22, 2026 | Made the Plan Board the only planning view. Added a Venture brief (feel, avoid, notes) that the Planner edits and the whole crew sees, never Viewers or messages; starter decisions on an empty board; must-dos as decision cards; Gemini preferences pre-filled from the brief. |
