@@ -23,7 +23,6 @@ export interface NewTripDraft {
   flexibility: string;
   adults: number | null;
   children: number | null;
-  childAges: string;
 }
 
 export type BudgetMode = BudgetBasis;

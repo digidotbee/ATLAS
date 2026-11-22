@@ -14,7 +14,6 @@ function trip(overrides: Partial<Trip> = {}): Trip {
     budgetTotal: 9000,
     adults: 2,
     children: 2,
-    childAges: '',
     flexibility: '',
     dateOptions: [
       {

@@ -13,7 +13,6 @@ function venture(input: Partial<NewTripInput> = {}): Trip {
     budgetTotal: 1200,
     adults: 3,
     children: 1,
-    childAges: '',
     flexibility: '',
     dateOptions: [],
     ...input,
@@ -87,7 +86,7 @@ describe('loading saved budgets', () => {
   it('re-derives a stale per-person total on load', () => {
     const stale = {
       ...venture({ budgetBasis: 'perPerson', budgetPerPerson: 100, budgetTotal: null }),
-      travelers: { adults: 5, children: 0, childAges: '' },
+      travelers: { adults: 5, children: 0 },
       budgetTotal: 400,
     };
     expect(parseAtlasData(saved(stale), 'test').trips[0].budgetTotal).toBe(500);

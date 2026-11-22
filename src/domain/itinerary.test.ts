@@ -11,7 +11,6 @@ const base = createTrip({
   budgetTotal: 5000,
   adults: 2,
   children: 2,
-  childAges: '',
   flexibility: '',
   dateOptions: [{ label: 'A', start: '2027-03-13', end: '2027-03-17', flightPerPerson: null, flightStatus: 'estimated', notes: '' }],
 });

@@ -14,7 +14,6 @@ function savedTrip(): Trip {
     budgetTotal: null,
     adults: 2,
     children: 2,
-    childAges: '',
     flexibility: '',
     dateOptions: [{ label: 'Weekend', start: '2027-01-15', end: '2027-01-17', flightPerPerson: null, flightStatus: 'estimated', notes: '' }],
   });
@@ -44,7 +43,7 @@ describe('Shape it questions', () => {
 describe('Children in research prompts', () => {
   it('include how many children are coming but never their ages', () => {
     const base = savedTrip();
-    const t: Trip = { ...base, travelers: { ...base.travelers, childAges: '7, 10' } };
+    const t: Trip = { ...base, travelers: { ...base.travelers, childAges: '7, 10' } as Trip['travelers'] };
     const profile = defaultProfile();
     const window = { departureDate: '2027-01-15', destinationDepartureDate: '2027-01-17', returnDate: '2027-01-17' };
     for (const prompt of [

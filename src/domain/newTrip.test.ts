@@ -22,7 +22,6 @@ const base: NewTripDraft = {
   flexibility: '',
   adults: 2,
   children: 2,
-  childAges: '',
 };
 
 describe('new trip steps', () => {
