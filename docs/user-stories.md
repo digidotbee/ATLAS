@@ -2,7 +2,7 @@
 
 **Journey 1 · MVP v1.0 · November 21, 2026**
 
-These 40 stories follow a Planner and their crew from a rough idea to a locked date, a shared itinerary, and a confirmed budget. They cover the free consumer core and the optional Gemini pilot. The bullets under each story are its acceptance criteria. [ORIVOIR Living PRD v0.18, November 21, 2026](prd.md) · [Crew invitations engineering guide](crew-invitations.md)
+These 41 MVP stories follow a Planner and their crew from a rough idea to a locked date, a shared itinerary, and a confirmed budget. They cover the free consumer core and the optional Gemini pilot. Three more stories, PAID-01 to PAID-03, record the paid-link rules for after MVP v1.0 and are counted separately. The bullets under each story are its acceptance criteria. [ORIVOIR Living PRD v0.19, November 21, 2026](prd.md) · [Crew invitations engineering guide](crew-invitations.md)
 
 | Journey | Stories | Source sections in the PRD |
 |---|---|---|
@@ -10,10 +10,11 @@ These 40 stories follow a Planner and their crew from a rough idea to a locked d
 | [Join and manage the Crew](#join-and-manage-the-crew) | CREW-01 to 09 | Crew opt-in and sharing · Roles and accounts · Date Lock-In · MVP acceptance checks |
 | [Choose a date and confirm attendance](#choose-a-date-and-confirm-attendance) | DATE-01 to 04 | Date Lock-In · Routing and data · MVP acceptance checks |
 | [Follow a Venture](#follow-a-venture) | VIEW-01 to 03 | View-only access · Roles and accounts |
-| [Build the shared itinerary](#build-the-shared-itinerary) | BOARD-01 to 06 | Plan Board · Suggestions and provider searches · Support and decision lock · Itinerary, time, and booking |
+| [Build the shared itinerary](#build-the-shared-itinerary) | BOARD-01 to 07 | Plan Board · Suggestions and provider searches · Support and decision lock · Itinerary, time, and booking · Paid booking links |
 | [Track the shared budget](#track-the-shared-budget) | BUDGET-01 to 06 | Budget amount and basis · Shared Budget journey · Budget acceptance checks · Ownership and lifecycle |
 | [Organize a child Venture](#organize-a-child-venture) | CHILD-01 to 03 | Delegated planning · Child Ventures |
 | [Find dinner ideas with Gemini](#find-dinner-ideas-with-gemini) | PILOT-01 to 03 | Plan Board · AI-assisted suggestions · Pilot connection |
+| [After MVP v1.0 · gated by D17](#after-mvp-v1-0) | PAID-01 to 03 (not counted in the 41) | Paid booking links |
 
 ## Launch a Venture
 
@@ -301,6 +302,16 @@ As a Planner, I want the itinerary card to carry the details of the option I cho
 - The known location appears automatically, with its Mapbox pin when coordinates are available.
 - I can mark the option **Booked** on the card. I handle reservations and cancellations with the provider. Switching away from a booked option gives me one reminder to check that reservation. The booking status stays with its original option.
 
+<a id="board-07"></a>
+
+### BOARD-07 · Open the booking page from the plan
+
+As a Planner, I want to open a locked option’s provider page from the plan so I can book it.
+
+- The locked option’s source link opens the provider’s page.
+- Opening it records one click-out event for pilot measurement (D15) with only the option ID, the decision kind, my member or account ID, and the time. Nothing else changes: RSVP, support and **Booked** stay as they were.
+- Collaborators and Attendees can open it too.
+
 ## Track the shared budget
 
 <a id="budget-01"></a>
@@ -435,7 +446,7 @@ As the person who requested ideas, I want to edit and share only the ones I woul
 
 ## Decisions still open
 
-| Area | Where v0.18 leaves the decision |
+| Area | Where v0.19 leaves the decision |
 |---|---|
 | Availability windows | Decide how to generate candidates from the Planner’s target range and ideal length, and how a guest enters part of an evening. Editable Friday–Sunday suggestions are an option under consideration. |
 | Post-lock guest visibility | Opted-in members can see the chosen time, RSVP, and support eligible options. The full set of details visible to an opted-in guest and how to confirm previously offered days are still open. |
@@ -443,5 +454,42 @@ As the person who requested ideas, I want to edit and share only the ones I woul
 | Direct delivery | Select providers and supported destinations. Enable the first SMS invitation and date updates only where ORIVOIR meets the chosen sender and permission requirements. |
 | Transit | Chained Plane, Car, Ship/Cruise, and Train/Bus legs and the 90-minute Shared Transfer Window remain in ideation. |
 | Provider expansion | Deeper provider integrations depend on supported access. Easier AI setup, additional providers, and extending suggestions to lodging or activities are future work. |
+| Paid links | When to turn them on (D17), the route (D18), links people paste (D19) and the payee (D20) are open in the [implementation plan](implementation-plan.md#4-decisions-needed). |
 
 **Icebox.** The PRD parks *Roll the dice for a date* for later consideration.
+
+<a id="after-mvp-v1-0"></a>
+
+## After MVP v1.0 · gated by D17
+
+These stories record the rules in [Paid booking links](prd.md#paid-booking-links). They are outside MVP v1.0 and outside the count of 41. Build them only after Dot turns paid links on (D17). PAID-03 follows the D19 recommendation. If Dot decides D19 differently, update it in the same change.
+
+<a id="paid-01"></a>
+
+### PAID-01 · Know when a link pays ORIVOIR
+
+As a crew member, I want to know when ORIVOIR earns a commission from a link so I can decide how to book with that in mind.
+
+- A paid link appears only as the booking link on an option in a Plan Board decision for lodging (**A place to stay**) or an activity. Invite cards, group cards, Date Decision, Viewer emails and every message ORIVOIR sends carry no paid link.
+- Every option card with a paid link shows a plain label next to the link, such as “Paid link · ORIVOIR earns a commission if you book through it.” The label never says “affiliate link” on its own. The print one-sheet shows the same label beside the same link.
+- A paid link’s tracking parameters carry only an opaque click ID, with no names, emails, phone numbers, Venture titles, dates or destination text. The privacy policy names every commission partner.
+
+<a id="paid-02"></a>
+
+### PAID-02 · Trust the order of ideas
+
+As a crew member, I want ideas ordered by what the crew chooses, not by what pays ORIVOIR, so the plan reflects our decisions.
+
+- A paid link never changes the carousel order, support counts, the locked choice, or budget math.
+- A paid link never changes which provider a search button opens.
+- Gemini draft cards ([PILOT-02](#pilot-02)) come out the same whether or not a commission is available. The Gemini prompt never includes commission data.
+
+<a id="paid-03"></a>
+
+### PAID-03 · Keep the link I pasted as I pasted it
+
+As a Planner or Collaborator, I want a link I paste to stay exactly as I pasted it so ORIVOIR never swaps in its own tracking.
+
+- ORIVOIR never rewrites a link a Planner or Collaborator pasted. It opens exactly the URL that was saved, with no parameters added or changed.
+- Paid links appear only where ORIVOIR builds the link itself, such as a **Find stays** button on a lodging decision.
+- A pasted link never shows the paid-link label, because it never pays ORIVOIR.

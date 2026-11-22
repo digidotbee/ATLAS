@@ -1,6 +1,6 @@
 # ORIVOIR implementation plan · MVP v1.0
 
-**Draft 0.1 · November 21, 2026 · for the [living PRD v0.18](prd.md) and its [40 user stories](user-stories.md)**
+**Draft 0.1 · November 21, 2026 · for the [living PRD v0.19](prd.md) and its [41 MVP user stories](user-stories.md)**
 
 This plan turns the PRD into an ordered build. Every user story is assigned to exactly one milestone, every milestone lists what it depends on, and every decision the PRD leaves open is named with a recommendation and the milestone it blocks.
 
@@ -31,7 +31,7 @@ Measured on `main` at `4f297fc`:
 | **M2** · Crew and joining | Choose people, personal and group links, account-free answers, capacity, **Who** | LAUNCH-03, LAUNCH-04, LAUNCH-06, CREW-01, CREW-02, CREW-04, CREW-05, CREW-07, CREW-09 | M1, D5, D12 | XL |
 | **M3** · Direct delivery | One tap sends each person their own email or text; retries and receipts | LAUNCH-05, CREW-08 | M2, D3, D4, D14 | L |
 | **M4** · Date Decision and Lock-In | Partial availability, overlap heatmap, cutoff, **Lock this time**, RSVP | CREW-06, DATE-01, DATE-02, DATE-03, DATE-04 | M3, D6, D7 | L |
-| **M5** · Plan Board | Decisions, ideas, 👍 support, lock to itinerary, Mapbox pin, Collaborators | LAUNCH-02, CREW-03, BOARD-01–06 | M4, D8, D11 | XL |
+| **M5** · Plan Board | Decisions, ideas, 👍 support, lock to itinerary, Mapbox pin, booking click-out, Collaborators | LAUNCH-02, CREW-03, BOARD-01–07 | M4, D8, D11 | XL |
 | **M6** · Shared Budget | Running cost, confirmed vs. estimated, quantities, scope, average | BUDGET-02, BUDGET-03, BUDGET-04, BUDGET-06 | M5 | M |
 | **M7** · Follow | **Request to follow**, approval, **Following**, redacted reads | VIEW-01–03 | M5 | M |
 | **M8** · Child Ventures | Side plans for part of the Crew, linked itinerary and cost | CHILD-01–03, BUDGET-05 | M6, M7 | M |
@@ -44,7 +44,7 @@ The size labels are relative (S, M, L, XL) and are not time estimates. Each mile
 | Release | Milestones | What a group can do | Pilot measure |
 | --- | --- | --- | --- |
 | **R1 · Gather and pick a date** | M1–M4 | Invite people by email, text or link; collect availability; lock a date; RSVP | Share of invitees who vote through their link (target 55%) |
-| **R2 · Plan together** | M5–M6 | Suggest and decide where to eat and stay; see the shared budget | Planners who start another Venture within 45 days (target 35%) |
+| **R2 · Plan together** | M5–M6 | Suggest and decide where to eat and stay; see the shared budget | Planners who start another Venture within 45 days (target 35%). Also reported: how often a locked option’s booking link is opened, read alongside **Booked** marks ([BOARD-07](user-stories.md#board-07); evidence for D17). |
 | **R3 · MVP v1.0 complete** | M7–M9 | Followers, side plans, AI dinner ideas | Completed Shared Ventures per Active Household |
 
 ```mermaid
@@ -69,7 +69,7 @@ flowchart LR
 
 ## 3. Story traceability
 
-Every one of the 40 stories appears here exactly once.
+Every one of the 41 MVP stories appears here exactly once. The three PAID stories after MVP v1.0 are listed separately below the table.
 
 | Story | Milestone | What remains |
 | --- | --- | --- |
@@ -101,6 +101,7 @@ Every one of the 40 stories appears here exactly once.
 | [BOARD-04](user-stories.md#board-04) | M5 | 👍 support, including Attendees with no account |
 | [BOARD-05](user-stories.md#board-05) | M5 | **Lock this option**, **Locked in**, itinerary updates instantly |
 | [BOARD-06](user-stories.md#board-06) | M5 | Exact time / window / **Time TBD**, Mapbox pin, **Booked** with one reminder |
+| [BOARD-07](user-stories.md#board-07) | M5 | Open a locked option’s provider page; record the D15 click-out event and change nothing else |
 | [BUDGET-01](user-stories.md#budget-01) | M0 | Done. The server moves in M1 and is regression-tested there. |
 | [BUDGET-02](user-stories.md#budget-02) | M6 | Price and basis on cards; **Adds $120 to the plan** |
 | [BUDGET-03](user-stories.md#budget-03) | M6 | Quantity override; **4 tickets confirmed** and the gap. The first bullet shipped in #31. |
@@ -113,6 +114,14 @@ Every one of the 40 stories appears here exactly once.
 | [PILOT-01](user-stories.md#pilot-01) | M9 | Planner key, per-Venture Collaborator access, limit, usage |
 | [PILOT-02](user-stories.md#pilot-02) | M9 | **Find dinner ideas**; privacy-filtered context; schema-validated drafts |
 | [PILOT-03](user-stories.md#pilot-03) | M9 | **Suggest to crew**; failures create no cards |
+
+**After MVP v1.0, gated by D17.** These stories aren't scheduled and aren't counted in the 41.
+
+| Story | Milestone | What remains |
+| --- | --- | --- |
+| [PAID-01](user-stories.md#paid-01) | None (D17) | Placement only on lodging and activity booking links; the **Paid link** label on cards and the print one-sheet; click-ID-only tracking; partners named in the privacy policy |
+| [PAID-02](user-stories.md#paid-02) | None (D17) | Order, support, locked choice, budget, search buttons and Gemini drafts unchanged by commission |
+| [PAID-03](user-stories.md#paid-03) | None (D17, D19) | Pasted links never rewritten; paid links only on links ORIVOIR builds |
 
 **PRD MVP acceptance checks** ([PRD](prd.md#mvp-acceptance-checks)) and where each one first passes:
 
@@ -156,9 +165,13 @@ These are the decisions only Dot can make, with Claude's recommendation for each
 | D11 | **Mapbox** | A Mapbox account with a public token limited to ORIVOIR's domain. Coordinates come from provider fields, or from geocoding the place text through an Edge Function when an idea is saved. Pins appear on locked options. | M5 |
 | D12 | **Visual and stack wording in the PRD** | The PRD asks for "lime primary actions", but Storm has used gold since Nov 19. It also lists Tailwind as part of the existing stack, which the code doesn't use. Decide the accent and update the PRD to match the code (WILDSTROM CSS, no Tailwind). | M2 (new UI) |
 | D13 | **Gemini pilot scope and key storage** | Keep it in MVP v1.0 as the last milestone. Store the Planner's key encrypted server-side (Supabase Vault). Only an Edge Function reads it. | M9 |
-| D14 | **Privacy policy and terms** | Needed before invitations go to people outside the household. SMS registration requires public privacy and opt-in disclosures. Claude can draft them for Dot's review; they are not legal advice. | M3, R1 |
-| D15 | **Pilot measurement** | A first-party event table in Supabase, with no third-party analytics. Events carry IDs and timestamps only: no names, contact details or Planner address-book data. | R1 |
+| D14 | **Privacy policy and terms** | Needed before invitations go to people outside the household. SMS registration requires public privacy and opt-in disclosures. Claude can draft them for Dot's review; they are not legal advice. Once paid links are on (D17), the policy must name every commission partner (PRD [Paid booking links](prd.md#paid-booking-links), rule 4). | M3, R1 |
+| D15 | **Pilot measurement** | A first-party event table in Supabase, with no third-party analytics. Events carry IDs and timestamps only: no names, contact details or Planner address-book data. The booking click-out event ([BOARD-07](user-stories.md#board-07)) carries only the option ID, decision kind, member or account ID and timestamp. | R1 |
 | D16 | **Order after R1** | M5 → M6 → M7 → M8 → M9, as above. Confirm or reorder. | M5 |
+| D17 | **When to turn on paid links** (PRD [Paid booking links](prd.md#paid-booking-links)) | After the R2 pilot shows people opening booking links from locked options (the [BOARD-07](user-stories.md#board-07) click-out, read alongside **Booked** marks). Dot sets the threshold. Until then paid links stay off, and [PAID-01](user-stories.md#paid-01) to [PAID-03](user-stories.md#paid-03) stay unscheduled. Programs such as Tripadvisor's pay nothing on the account holder's own click-outs, so Dot's own household bookings won't earn. | PAID-01–03 (after MVP v1.0) |
+| D18 | **Route:** direct programs (Booking.com via CJ, Expedia Group including Vrbo, Viator) or an aggregator such as Stay22 | Start with one aggregator to cut integration and approval work. The trade-off is a smaller share and one more dependency: when Airbnb closed its affiliate program in March 2021, Stay22 lost 80% of its booking inventory. Airbnb has no program today, so Airbnb stays never pay. Commission is paid only after the stay or experience, and some programs exclude multi-room group bookings, so check each program's terms. Current published rates are under *Sources checked*. | After D17 |
+| D19 | **Links people paste** | Never rewrite a link a Planner or Collaborator pasted. Paid links appear only where ORIVOIR builds the link itself, such as a **Find stays** button on a lodging decision ([PAID-03](user-stories.md#paid-03)). | After D17 |
+| D20 | **Payee** | Programs pay a business. Decide it with D4 (EIN and registered business), and apply to programs in that business's name. | After D17; ties to D4 |
 
 ### Decisions made
 
@@ -168,6 +181,7 @@ These are the decisions only Dot can make, with Claude's recommendation for each
 | November 21, 2026 | D2 | Free Supabase projects for development and staging. Production moves to Pro before the first real invitation. |
 | November 21, 2026 | D3 | Open. Claude compares current pricing and deliverability for two or three providers; Dot chooses. |
 | November 21, 2026 | D9, D10 | The recommended defaults stand unless Dot objects: an import offer on first sign-in, which needs her confirmation, and a time zone that defaults to the Planner's device. |
+| November 21, 2026 | Revenue path | Commission from booking sites through paid links, under the placement, disclosure, ranking, privacy and measurement rules in PRD [Paid booking links](prd.md#paid-booking-links). The consumer core stays free. Click-out measurement ships in M5. Turning paid links on waits for D17, with D18–D20 open. |
 
 ## 5. Architecture
 
@@ -215,7 +229,7 @@ These responsibilities come from [PRD *Routing and data*](prd.md#routing-and-dat
 | `decisions`, `options`, `supports` | Day or Whole Trip, title, kind (general or stay), window, limit; option title, place, address, coordinates, source, proposed time, estimate (amount, currency, basis, quantity), cost state, confirmed amount and quantity, included, booked, private draft; support per member | One support row per (option, member). One locked option per decision. |
 | `child_links` | Child Venture, main Venture, status (requested, approved), linked cost | Updates flow from the child |
 | `ai_connections`, `ai_requests` | Planner, encrypted key reference, per-Venture Collaborator access, limit, usage | Requests log counts and outcomes, never prompt text containing personal data |
-| `events` | Event name, Venture ID, member or account ID, timestamp | For D15 only. No names or contact details. |
+| `events` | Event name, Venture ID, member or account ID, timestamp | For D15 only. No names or contact details. The booking click-out event (BOARD-07) records only the option ID, decision kind, member or account ID and timestamp. |
 
 **Budget rule on the server.** The client's `withBudgetTotal` won't run on server-side writes. The PRD says a group estimate is "derived when needed … without overwriting the saved entry", so the database stores the entry (amount, currency, basis) and computes the group target when it's read, in a view or function. It doesn't store the derived total. The same applies to estimates that use the default quantity (M6).
 
@@ -346,13 +360,16 @@ M1 keeps today's local mode working for already-saved Ventures until the Planner
   - **Ideas:** one **Add Idea** form for manual entry, links and provider JSON, mapped to the common option schema, with one carousel per decision ([BOARD-02](user-stories.md#board-02)). Dates and limits are inherited, with OpenTable links for dinner ([BOARD-03](user-stories.md#board-03)).
   - **Support and locking:** 👍 support through accounts or private access ([BOARD-04](user-stories.md#board-04)). **Lock this option**: **Locked in**, the locked option first, the itinerary updated in the same transaction ([BOARD-05](user-stories.md#board-05)).
   - **Itinerary details:** exact time, window or **Time TBD**; the Mapbox pin; **Booked** with one reminder when switching away ([BOARD-06](user-stories.md#board-06)).
+  - **Booking click-out:** the Planner, Collaborators and Attendees can open a locked option's source link. Opening it records the D15 click-out event and changes nothing else ([BOARD-07](user-stories.md#board-07)). No paid links (D17).
   - **Collaborators and launch:** Attendee-to-Collaborator linking with a verified account plus the member's private credential ([CREW-03](user-stories.md#crew-03)). Fixed-date launch now opens the Plan Board ([LAUNCH-02](user-stories.md#launch-02)).
   - **Migration:** existing Explore candidates and the itinerary move into decisions and options under D8.
-- **Closes:** LAUNCH-02, CREW-03, BOARD-01–06.
+- **Closes:** LAUNCH-02, CREW-03, BOARD-01–07.
 - **Verify:**
   - the PRD Saturday Dinner acceptance check (Maya adds a link, Jules supports two options, a lock with no votes, Jules's RSVP unchanged, the itinerary window and pin, switching away from a booked choice)
   - the lodging check (one stay covering Friday and Saturday nights; a $360 cabin counts once)
   - linking keeps the member's spot, answers and votes
+  - the PRD [Paid booking links](prd.md#paid-booking-links) acceptance check: opening a locked option's link records exactly one event with only the option ID, decision kind, member or account ID and timestamp, and leaves RSVP, support and **Booked** unchanged, for a Planner, a Collaborator and an account-free Attendee
+  - the opened URL is exactly the saved source URL
 - **Needs first:** M4, D8, D11.
 
 ### M6 · Shared Budget
@@ -368,6 +385,7 @@ M1 keeps today's local mode working for already-saved Ventures until the Planner
   - the budget engine moves its calculation to the server view (5.3)
 - **Closes:** BUDGET-02, BUDGET-03, BUDGET-04, BUDGET-06.
 - **Verify:** the cabin weekend table in [user stories](user-stories.md#budget-06): $460 → $510 → $720 confirmed, a $120 average for six, with the pill at $150 per person throughout.
+- **R2 gate:** at the end of M6, run the pilot and report the R2 measure together with how often locked options' booking links were opened, read alongside **Booked** marks. That report is the evidence for D17.
 
 ### M7 · Follow
 
@@ -443,6 +461,7 @@ These are recorded so they aren't built by accident:
 - AI for lodging and activities, and other AI providers
 - partial-day attendance after lock (D6)
 - Side-by-Side Venture Showdown
+- Paid links (gated by D17; [PAID-01](user-stories.md#paid-01) to [PAID-03](user-stories.md#paid-03)). Click-out measurement ([BOARD-07](user-stories.md#board-07)) is in MVP.
 
 ## 9. Document updates this plan calls for
 
@@ -456,3 +475,16 @@ These are recorded so they aren't built by accident:
 - [Supabase pricing](https://supabase.com/pricing) and [project pausing](https://supabase.com/docs/guides/platform/free-plan-pausing): free projects pause after a week of inactivity; Pro starts at $25 per month per organization.
 - [Supabase: custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp) and [production checklist](https://supabase.com/docs/guides/deployment/going-into-prod): the default email service is best-effort, for non-production use.
 - [Twilio A2P 10DLC](https://www.twilio.com/en-us/a2p-10dlc) and [US SMS rules for 2026](https://intercom.help/whippy/en/articles/13178812-u-s-sms-regulations-2023-2026-and-what-you-need-to-know): carrier registration is required, and new toll-free registrations need a business registration number such as an EIN.
+
+**Paid booking links (D17–D20), checked November 21, 2026.** Rates change; recheck before applying to any program.
+
+- [Make Influence on Booking.com's program](https://www.makeinfluence.com/en/academy/booking-coms-affiliate-program-how-travel-creators-earn-commission) (secondary, undated): since June 2025 Booking.com routes affiliate sign-up to CJ, and CJ lists 4% on completed stays. Not yet confirmed on Booking.com's own affiliate page.
+- [Expedia Group affiliate program](https://partner.expediagroup.com/en-gb/solutions/explore-our-affiliate-program): up to 4% on every eligible booking, promoting Expedia, Vrbo and Hotels.com from one account; commissions are subject to change. An undated secondary page ([UpPromote](https://uppromote.com/?p=22323)) claims up to 6% through the same program; this plan uses Expedia Group's own figure.
+- [Viator creator program](https://partnerresources.viator.com/creator/): 8% on any experience booked within 30 days, paid once the experience is completed; canceled bookings earn nothing. Viator's [Awin listing](https://ui.awin.com/merchant-profile/11018) shows a 4% default commission and a 30-day cookie.
+- [Travelpayouts on Booking.com](https://www.travelpayouts.com/en/offers/bookingcom-affiliate-program): accommodation commission is paid after the guest leaves the hotel and confirmed 60–90 days after checkout. The page lists both 5% and a 4% maximum without reconciling them.
+- [CNBC, March 1, 2021](https://www.cnbc.com/2021/03/01/airbnb-ends-affiliate-program-as-it-ramps-up-host-recruitment-campaign.html): Airbnb closed its Associates affiliate program effective March 31, 2021.
+- [Travel Tech Essentialist on Stay22](https://traveltechessentialist.substack.com/p/stay22-the-bridge-between-content): Airbnb's shutdown eliminated 80% of Stay22's booking inventory.
+- [TicketSocket and Stay22, August 13, 2020](https://prnewswire.com/news-releases/ticketsocket-and-stay22-partner-to-empower-event-organizers-301112258.html): event organizers are paid as affiliates for lodging, parking and restaurant sales. No rates given.
+- [Tripadvisor affiliate FAQ](https://www.tripadvisor.in/affiliates?tab=faqs): an affiliate can't earn commission on their own click-outs.
+- [Marriott affiliate FAQ, 2019](https://www.marriott.com/marriottassets/Multimedia/PDF/Corporate/Marriott_Affiliate_FAQs_2019.pdf) (old): no commission on group bookings of 10–12 rooms; commission applies to completed stays of nine rooms or fewer.
+- [FTC Endorsement Guides FAQ, May 2015](https://www.ftc.gov/system/files/documents/plain-language/pdf-0205-endorsement-guides-faqs_0.pdf): consumers might not understand that "affiliate link" means the person placing it is paid; the disclosure must be clear and conspicuous, and the closer to the recommendation the better. [Gordon Law, updated April 21, 2025](https://gordonlaw.com/learn/ftc-endorsement-guidelines/): "paid link" wording is given as an example that works, while "affiliate link" may not be as effective.
