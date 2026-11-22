@@ -1,6 +1,6 @@
 # ORIVOIR Living PRD
 
-**Version 0.19 · November 22, 2026 · MVP v1.0**
+**Version 0.19 · November 21, 2026 · MVP v1.0**
 
 [User stories and acceptance criteria](user-stories.md)
 
@@ -10,7 +10,7 @@
 
 “Good things await. Gather your people. Pick a date. Plan something worth looking forward to together.”
 
-ORIVOIR helps groups coordinate Ventures ranging from a few hours to several weeks. The Planner journey takes a group from a rough idea to a locked date, coordinated plans and transit, and a shared budget. Human decisions drive the flow. The consumer core is free.
+ORIVOIR helps groups coordinate Ventures ranging from a few hours to several weeks. The Planner journey takes a group from a rough idea to a locked date, coordinated plans and transit, and a shared budget. Human decisions drive the flow. The consumer core is free. ORIVOIR plans to earn commission from booking sites through clearly labeled paid links, under the rules in [Paid booking links](#paid-booking-links).
 
 This version defines creation, Date Lock-In, account requirements, and access for Viewers. It also defines the Plan Board, shared budget, and optional in-app AI suggestions and records the remaining Journey 1 milestones for later ideation. Update this document as decisions change and add a dated entry to the revision history.
 
@@ -137,6 +137,18 @@ Locking a choice moves it to the first position in the same carousel and gives i
 - If the Planner locks a different option, update the itinerary immediately and move the new choice to the front of the carousel. If the previous choice was marked **Booked**, show the Planner one reminder to check that reservation. Booking status stays with the option it describes.
 
 **Acceptance check.** Maya, a Collaborator, adds a restaurant link under Saturday Dinner. Jules, an Attendee, gives a 👍 to two open options. The Planner locks one and it appears first. Jules can still swipe to another option and change their support. The locked option stays first and Jules’s RSVP stays as it was. The same Dinner card immediately appears in Saturday’s itinerary with the existing 6–9 p.m. window, the restaurant’s address with **Open in Maps**, and **Show map** when its coordinates are known. The Planner can optionally enter 7 p.m. or mark the restaurant **Booked**. If the Planner switches away from a booked restaurant, the itinerary updates and the Planner sees one reminder to check the old reservation.
+
+## Paid booking links
+
+ORIVOIR’s planned revenue path is commission from booking sites through **paid links**. The consumer core stays free. Paid links stay out of MVP v1.0 until Dot decides when to turn them on (D17 in the [implementation plan](implementation-plan.md#4-decisions-needed)). The route, links people paste, and the payee are open as D18–D20. The click-out measurement in rule 5 ships with the Plan Board in MVP v1.0 ([BOARD-07](user-stories.md#board-07)). [PAID-01 to PAID-03](user-stories.md#after-mvp-v1-0) hold the acceptance criteria for rules 1–4.
+
+1. **Where paid links can appear.** Only as the booking link on an option in a Plan Board decision: lodging (**A place to stay**) and activities. Never on invite cards, group cards, Date Decision, Viewer emails, or any message ORIVOIR sends.
+2. **Disclosure.** Every option card with a paid link shows a plain label next to the link, for example: “Paid link · ORIVOIR earns a commission if you book through it.” Don’t use “affiliate link” on its own. Show the same label on the print one-sheet. *This wording is a draft for Dot’s review, not legal advice.*
+3. **Ranking stays neutral.** A paid link never changes the carousel order, support counts, the locked choice, Gemini draft cards ([PILOT-02](user-stories.md#pilot-02)), budget math, or which provider a search button opens. The Gemini prompt never includes commission data.
+4. **Privacy.** Tracking parameters carry an opaque click ID only. No names, emails, phone numbers, Venture titles, dates or destination text. The privacy policy (D14) must name every commission partner.
+5. **Measure before monetizing.** Opening a locked option’s source link records a D15 event (option ID, decision kind, member or account ID, timestamp; nothing else). Read it alongside the existing **Booked** mark ([BOARD-06](user-stories.md#board-06)) to see how often locked choices get booked.
+
+**Acceptance check.** Maya, a Collaborator, opens the locked cabin’s source link from the itinerary. The provider’s page opens. ORIVOIR records one event with the cabin option’s ID, the **A place to stay** decision kind, Maya’s account ID and the time, and nothing else. Her RSVP, her support and the cabin’s **Booked** mark stay as they were.
 
 ## Delegated planning · Child Ventures
 

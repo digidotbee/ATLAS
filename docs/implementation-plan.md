@@ -1,6 +1,6 @@
 # ORIVOIR implementation plan · MVP v1.0
 
-**Draft 0.1 · November 21, 2026 · for the [living PRD v0.19](prd.md) and its [40 user stories](user-stories.md)**
+**Draft 0.1 · November 21, 2026 · for the [living PRD v0.19](prd.md) and its [41 MVP user stories](user-stories.md)**
 
 This plan turns the PRD into an ordered build. Every user story is assigned to exactly one milestone, every milestone lists what it depends on, and every decision the PRD leaves open is named with a recommendation and the milestone it blocks.
 
@@ -31,7 +31,7 @@ Measured on `main` at `4f297fc`:
 | **M2** · Crew and joining | Choose people, personal and group links, account-free answers, capacity, **Who** | LAUNCH-03, LAUNCH-04, LAUNCH-06, CREW-01, CREW-02, CREW-04, CREW-05, CREW-07, CREW-09 | M1, D5, D12 | XL |
 | **M3** · Direct delivery | One tap sends each person their own email or text; retries and receipts | LAUNCH-05, CREW-08 | M2, D3, D4, D14 | L |
 | **M4** · Date Decision and Lock-In | Partial availability, overlap heatmap, cutoff, **Lock this time**, RSVP | CREW-06, DATE-01, DATE-02, DATE-03, DATE-04 | M3, D6, D7 | L |
-| **M5** · Plan Board | Decisions, ideas, 👍 support, lock to itinerary, map pin, Collaborators | LAUNCH-02, CREW-03, BOARD-01–06 | M4, D8, D11 | XL |
+| **M5** · Plan Board | Decisions, ideas, 👍 support, lock to itinerary, Mapbox pin, booking click-out, Collaborators | LAUNCH-02, CREW-03, BOARD-01–07 | M4, D8, D11 | XL |
 | **M6** · Shared Budget | Running cost, confirmed vs. estimated, quantities, scope, average | BUDGET-02, BUDGET-03, BUDGET-04, BUDGET-06 | M5 | M |
 | **M7** · Follow | **Request to follow**, approval, **Following**, redacted reads | VIEW-01–03 | M5 | M |
 | **M8** · Child Ventures | Side plans for part of the Crew, linked itinerary and cost | CHILD-01–03, BUDGET-05 | M6, M7 | M |
@@ -44,7 +44,7 @@ The size labels are relative (S, M, L, XL) and are not time estimates. Each mile
 | Release | Milestones | What a group can do | Pilot measure |
 | --- | --- | --- | --- |
 | **R1 · Gather and pick a date** | M1–M4 | Invite people by email, text or link; collect availability; lock a date; RSVP | Share of invitees who vote through their link (target 55%) |
-| **R2 · Plan together** | M5–M6 | Suggest and decide where to eat and stay; see the shared budget | Planners who start another Venture within 45 days (target 35%) |
+| **R2 · Plan together** | M5–M6 | Suggest and decide where to eat and stay; see the shared budget | Planners who start another Venture within 45 days (target 35%). Also reported: how often a locked option’s booking link is opened, read alongside **Booked** marks ([BOARD-07](user-stories.md#board-07); evidence for D17). |
 | **R3 · MVP v1.0 complete** | M7–M9 | Followers, side plans, AI dinner ideas | Completed Shared Ventures per Active Household |
 
 ```mermaid
@@ -69,7 +69,7 @@ flowchart LR
 
 ## 3. Story traceability
 
-Every one of the 40 stories appears here exactly once.
+Every one of the 41 MVP stories appears here exactly once. The three PAID stories after MVP v1.0 are listed separately below the table.
 
 | Story | Milestone | What remains |
 | --- | --- | --- |
@@ -114,6 +114,14 @@ Every one of the 40 stories appears here exactly once.
 | [PILOT-02](user-stories.md#pilot-02) | M9 | **Find dinner ideas**; privacy-filtered context; schema-validated drafts |
 | [PILOT-03](user-stories.md#pilot-03) | M9 | **Suggest to crew**; failures create no cards |
 
+**After MVP v1.0, gated by D17.** These stories aren't scheduled and aren't counted in the 41.
+
+| Story | Milestone | What remains |
+| --- | --- | --- |
+| [PAID-01](user-stories.md#paid-01) | None (D17) | Placement only on lodging and activity booking links; the **Paid link** label on cards and the print one-sheet; click-ID-only tracking; partners named in the privacy policy |
+| [PAID-02](user-stories.md#paid-02) | None (D17) | Order, support, locked choice, budget, search buttons and Gemini drafts unchanged by commission |
+| [PAID-03](user-stories.md#paid-03) | None (D17, D19) | Pasted links never rewritten; paid links only on links ORIVOIR builds |
+
 **PRD MVP acceptance checks** ([PRD](prd.md#mvp-acceptance-checks)) and where each one first passes:
 
 | Check (short) | Milestone |
@@ -143,7 +151,7 @@ These are the decisions only Dot can make, with Claude's recommendation for each
 
 | # | Decision | Recommendation | Blocks |
 | --- | --- | --- | --- |
-| D1 | **Domain and hosting.** Personal and group invite links need path URLs (`/i/:token`, `/invite/:token`) on HTTPS. Message previews also need per-Venture card metadata served before the React app loads, which GitHub Pages can't do. | Use a domain ORIVOIR owns, such as `orivoir.com` (the PRD already anticipates it). Host the app on a static host with edge functions, such as Cloudflare Pages or Vercel. Keep GitHub Pages until the move. | M1 |
+| D1 | **Domain and hosting.** Personal and group invite links need path URLs (`/i/:token`, `/invite/:token`) on HTTPS. Message previews also need per-Venture card metadata served before the React app loads, which GitHub Pages can't do. | **Decided November 21, 2026:** `orivoir.com` (registered at GoDaddy), hosted on Cloudflare. Cloudflare serves the app's static files free at any traffic level, and a Worker serves the invite previews. DNS moves to Cloudflare's nameservers; GoDaddy stays the registrar. Move to Workers Paid ($5 per month) before the first real invitation, so preview requests are never refused at the free limit. Keep GitHub Pages until the move. | M1 |
 | D2 | **Supabase plan and environments** | Free projects for development and staging during M1–M2. Production on the Pro plan ($25 per month per organization) before the first real invitation, because free projects pause after a week of inactivity, which would break live invite links. Tests run against a local Supabase in CI. | M1 |
 | D3 | **Email provider** for sign-in codes and invitations | One transactional provider for both: SMTP for Supabase Auth, its API for invitations. Supabase's built-in email is for testing only and sends only to the project team's addresses. Choose one that supports a verified sending domain (SPF, DKIM, DMARC). | M1 (sign-in for anyone but Dot), M3 |
 | D4 | **SMS route and sending identity** | Start carrier registration during M1 so texting can be ready by M3. New toll-free number registrations need a business registration number such as an EIN, an unverified toll-free number can't text US phones, and approval takes days to weeks. Decide whether ORIVOIR sends under a registered business. Until texting is approved, R1 uses email plus **Share personal invite** (the Planner sends the link from their own phone), which the PRD allows. | M3 (texting only) |
@@ -159,12 +167,16 @@ These are the decisions only Dot can make, with Claude's recommendation for each
 | D14 | **Privacy policy and terms** | Needed before invitations go to people outside the household. SMS registration requires public privacy and opt-in disclosures. Claude can draft them for Dot's review; they are not legal advice. The policy lists Geoapify and the map tile host (D11). | M3, R1 |
 | D15 | **Pilot measurement** | A first-party event table in Supabase, with no third-party analytics. Events carry IDs and timestamps only: no names, contact details or Planner address-book data. | R1 |
 | D16 | **Order after R1** | M5 → M6 → M7 → M8 → M9, as above. Confirm or reorder. | M5 |
+| D17 | **When to turn on paid links** (PRD [Paid booking links](prd.md#paid-booking-links)) | After the R2 pilot shows people opening booking links from locked options (the [BOARD-07](user-stories.md#board-07) click-out, read alongside **Booked** marks). Dot sets the threshold. Until then paid links stay off, and [PAID-01](user-stories.md#paid-01) to [PAID-03](user-stories.md#paid-03) stay unscheduled. Programs such as Tripadvisor's pay nothing on the account holder's own click-outs, so Dot's own household bookings won't earn. | PAID-01–03 (after MVP v1.0) |
+| D18 | **Route:** direct programs (Booking.com via CJ, Expedia Group including Vrbo, Viator) or an aggregator such as Stay22 | Start with one aggregator to cut integration and approval work. The trade-off is a smaller share and one more dependency: when Airbnb closed its affiliate program in March 2021, Stay22 lost 80% of its booking inventory. Airbnb has no program today, so Airbnb stays never pay. Commission is paid only after the stay or experience, and some programs exclude multi-room group bookings, so check each program's terms. Current published rates are under *Sources checked*. | After D17 |
+| D19 | **Links people paste** | Never rewrite a link a Planner or Collaborator pasted. Paid links appear only where ORIVOIR builds the link itself, such as a **Find stays** button on a lodging decision ([PAID-03](user-stories.md#paid-03)). | After D17 |
+| D20 | **Payee** | Programs pay a business. Decide it with D4 (EIN and registered business), and apply to programs in that business's name. | After D17; ties to D4 |
 
 ### Decisions made
 
 | Date | Decision | Outcome |
 | --- | --- | --- |
-| November 21, 2026 | D1, in part | The domain will be `orivoir.com`, which Dot is buying. The host is still to be chosen. |
+| November 21, 2026 | D1 | Domain `orivoir.com`, registered at GoDaddy. Host: Cloudflare, chosen over Vercel, Amazon CloudFront, Netlify, Firebase Hosting, Azure Static Web Apps and Render because serving the app's files costs nothing at any traffic level, so a surge of visitors can't produce a hosting bill. DNS moves to Cloudflare's nameservers; GoDaddy stays the registrar. Workers Paid ($5 per month) before the first real invitation. |
 | November 21, 2026 | D2 | Free Supabase projects for development and staging. Production moves to Pro before the first real invitation. |
 | November 21, 2026 | D3 | Open. Claude compares current pricing and deliverability for two or three providers; Dot chooses. |
 | November 21, 2026 | D9, D10 | The recommended defaults stand unless Dot objects: an import offer on first sign-in, which needs her confirmation, and a time zone that defaults to the Planner's device. |
@@ -185,7 +197,7 @@ These are the decisions only Dot can make, with Claude's recommendation for each
 | Manage my response | `/me/:token` | Private member link |
 | Following | `/my-ventures/following` | Signed-in Viewers |
 
-An edge function on the host serves `/i/:token` and `/invite/:token` with only the preview-approved card fields (title, dates, Planner first name, generic image). It never includes a phone number, private avatar, response or token in the metadata or image URLs ([Crew invitations](crew-invitations.md)). Link-only SMS and thumbnail clients are both tested.
+A Cloudflare Worker (D1) serves `/i/:token` and `/invite/:token` with only the preview-approved card fields (title, dates, Planner first name, generic image). Only these two routes run the Worker; every other request is served as a static file. The Worker never includes a phone number, private avatar, response or token in the metadata or image URLs ([Crew invitations](crew-invitations.md)). Link-only SMS and thumbnail clients are both tested.
 
 ### 5.2 Supabase
 
@@ -216,7 +228,7 @@ These responsibilities come from [PRD *Routing and data*](prd.md#routing-and-dat
 | `decisions`, `options`, `supports` | Day or Whole Trip, title, kind (general or stay), window, limit; option title, place, address, coordinates (`lat`, `lng`, `coords_source`: `provider`, `planner_pin` or `geocoder`; D11), source, proposed time, estimate (amount, currency, basis, quantity), cost state, confirmed amount and quantity, included, booked, private draft; support per member | One support row per (option, member). One locked option per decision. |
 | `child_links` | Child Venture, main Venture, status (requested, approved), linked cost | Updates flow from the child |
 | `ai_connections`, `ai_requests` | Planner, encrypted key reference, per-Venture Collaborator access, limit, usage | Requests log counts and outcomes, never prompt text containing personal data |
-| `events` | Event name, Venture ID, member or account ID, timestamp | For D15 only. No names or contact details. |
+| `events` | Event name, Venture ID, member or account ID, timestamp | For D15 only. No names or contact details. The booking click-out event (BOARD-07) records only the option ID, decision kind, member or account ID and timestamp. |
 
 **Budget rule on the server.** The client's `withBudgetTotal` won't run on server-side writes. The PRD says a group estimate is "derived when needed … without overwriting the saved entry", so the database stores the entry (amount, currency, basis) and computes the group target when it's read, in a view or function. It doesn't store the derived total. The same applies to estimates that use the default quantity (M6).
 
@@ -346,10 +358,11 @@ M1 keeps today's local mode working for already-saved Ventures until the Planner
   - **Board and decisions:** expandable days in the Venture time zone, **Whole Trip**, decision cards (title required; window, limit and note optional), and **A place to stay** covering several nights ([BOARD-01](user-stories.md#board-01)).
   - **Ideas:** one **Add Idea** form for manual entry, links and provider JSON, mapped to the common option schema, with one carousel per decision ([BOARD-02](user-stories.md#board-02)). Dates and limits are inherited, with OpenTable links for dinner ([BOARD-03](user-stories.md#board-03)).
   - **Support and locking:** 👍 support through accounts or private access ([BOARD-04](user-stories.md#board-04)). **Lock this option**: **Locked in**, the locked option first, the itinerary updated in the same transaction ([BOARD-05](user-stories.md#board-05)).
-  - **Itinerary details:** exact time, window or **Time TBD**; the location as text with **Open in Maps**; with coordinates, **Show map** loads MapLibre through a dynamic import in the single `MapView` component and draws the pin; coordinates from the provider, then a pin the Planner drops or confirms with **Drop a pin**, then the geocoding fallback (D11), saved with `coords_source`; **Booked** with one reminder when switching away ([BOARD-06](user-stories.md#board-06)).
+  - **Itinerary details:** exact time, window or **Time TBD**; the Mapbox pin; **Booked** with one reminder when switching away ([BOARD-06](user-stories.md#board-06)).
+  - **Booking click-out:** the Planner, Collaborators and Attendees can open a locked option's source link. Opening it records the D15 click-out event and changes nothing else ([BOARD-07](user-stories.md#board-07)). No paid links (D17).
   - **Collaborators and launch:** Attendee-to-Collaborator linking with a verified account plus the member's private credential ([CREW-03](user-stories.md#crew-03)). Fixed-date launch now opens the Plan Board ([LAUNCH-02](user-stories.md#launch-02)).
   - **Migration:** existing Explore candidates and the itinerary move into decisions and options under D8.
-- **Closes:** LAUNCH-02, CREW-03, BOARD-01–06.
+- **Closes:** LAUNCH-02, CREW-03, BOARD-01–07.
 - **Verify:**
   - the PRD Saturday Dinner acceptance check (Maya adds a link, Jules supports two options, a lock with no votes, Jules's RSVP unchanged, the itinerary window with the address, **Open in Maps** and **Show map**, switching away from a booked choice)
   - the lodging check (one stay covering Friday and Saturday nights; a $360 cabin counts once)
@@ -373,6 +386,7 @@ M1 keeps today's local mode working for already-saved Ventures until the Planner
   - the budget engine moves its calculation to the server view (5.3)
 - **Closes:** BUDGET-02, BUDGET-03, BUDGET-04, BUDGET-06.
 - **Verify:** the cabin weekend table in [user stories](user-stories.md#budget-06): $460 → $510 → $720 confirmed, a $120 average for six, with the pill at $150 per person throughout.
+- **R2 gate:** at the end of M6, run the pilot and report the R2 measure together with how often locked options' booking links were opened, read alongside **Booked** marks. That report is the evidence for D17.
 
 ### M7 · Follow
 
@@ -448,6 +462,7 @@ These are recorded so they aren't built by accident:
 - AI for lodging and activities, and other AI providers
 - partial-day attendance after lock (D6)
 - Side-by-Side Venture Showdown
+- Paid links (gated by D17; [PAID-01](user-stories.md#paid-01) to [PAID-03](user-stories.md#paid-03)). Click-out measurement ([BOARD-07](user-stories.md#board-07)) is in MVP.
 
 ## 9. Document updates this plan calls for
 
