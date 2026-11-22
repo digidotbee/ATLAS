@@ -4,7 +4,7 @@
 
 A Planner chooses people in **Crew** and taps **Launch & invite 6** once. ORIVOIR sends each person a separate text or email on the Planner’s behalf. The message names the Planner and opens the Venture in a browser. The guest can answer immediately. When the date is locked, the same person can RSVP on the Crew entry that holds their availability. Build this in ORIVOIR with React, TypeScript and Supabase. Paperless Post is a reference for the experience discussed in connection with Zapier. ORIVOIR’s backend calls the delivery providers directly and owns the cards, links, permissions, records and responses.
 
-This is the implementation contract for the [living PRD v0.19](prd.md). The [user stories](user-stories.md) define acceptance criteria for each story ID. The current wizard previews the invitation and saves the Venture locally, with optional Gist sync. Cloud delivery, shared joining and server-enforced capacity are implementation work. Start with [the wizard](../src/ui/NewTrip.tsx), [the store](../src/state/store.tsx) and [the launch guide](venture-launch.md).
+This is the implementation contract for the [living PRD v0.20](prd.md). The [user stories](user-stories.md) define acceptance criteria for each story ID. The current wizard previews the invitation and saves the Venture locally, with optional Gist sync. Cloud delivery, shared joining and server-enforced capacity are implementation work. Start with [the wizard](../src/ui/NewTrip.tsx), [the store](../src/state/store.tsx) and [the launch guide](venture-launch.md).
 
 ## Planner and guest experience
 

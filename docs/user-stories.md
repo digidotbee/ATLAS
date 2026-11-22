@@ -2,7 +2,7 @@
 
 **Journey 1 · MVP v1.0 · November 21, 2026**
 
-These 41 MVP stories follow a Planner and their crew from a rough idea to a locked date, a shared itinerary, and a confirmed budget. They cover the free consumer core and the optional Gemini pilot. Three more stories, PAID-01 to PAID-03, record the paid-link rules for after MVP v1.0 and are counted separately. The bullets under each story are its acceptance criteria. [ORIVOIR Living PRD v0.19, November 21, 2026](prd.md) · [Crew invitations engineering guide](crew-invitations.md)
+These 42 MVP stories follow a Planner and their crew from a rough idea to a locked date, a shared itinerary, and a confirmed budget. They cover the free consumer core and the optional Gemini pilot. Three more stories, PAID-01 to PAID-03, record the paid-link rules for after MVP v1.0 and are counted separately. The bullets under each story are its acceptance criteria. [ORIVOIR Living PRD v0.20, November 22, 2026](prd.md) · [Crew invitations engineering guide](crew-invitations.md)
 
 | Journey | Stories | Source sections in the PRD |
 |---|---|---|
@@ -10,11 +10,11 @@ These 41 MVP stories follow a Planner and their crew from a rough idea to a lock
 | [Join and manage the Crew](#join-and-manage-the-crew) | CREW-01 to 09 | Crew opt-in and sharing · Roles and accounts · Date Lock-In · MVP acceptance checks |
 | [Choose a date and confirm attendance](#choose-a-date-and-confirm-attendance) | DATE-01 to 04 | Date Lock-In · Routing and data · MVP acceptance checks |
 | [Follow a Venture](#follow-a-venture) | VIEW-01 to 03 | View-only access · Roles and accounts |
-| [Build the shared itinerary](#build-the-shared-itinerary) | BOARD-01 to 07 | Plan Board · Suggestions and provider searches · Support and decision lock · Itinerary, time, and booking · Paid booking links |
+| [Build the shared itinerary](#build-the-shared-itinerary) | BOARD-01 to 08 | Plan Board · Venture brief · Suggestions and provider searches · Support and decision lock · Itinerary, time, and booking · Paid booking links |
 | [Track the shared budget](#track-the-shared-budget) | BUDGET-01 to 06 | Budget amount and basis · Shared Budget journey · Budget acceptance checks · Ownership and lifecycle |
 | [Organize a child Venture](#organize-a-child-venture) | CHILD-01 to 03 | Delegated planning · Child Ventures |
 | [Find dinner ideas with Gemini](#find-dinner-ideas-with-gemini) | PILOT-01 to 03 | Plan Board · AI-assisted suggestions · Pilot connection |
-| [After MVP v1.0 · gated by D17](#after-mvp-v1-0) | PAID-01 to 03 (not counted in the 41) | Paid booking links |
+| [After MVP v1.0 · gated by D17](#after-mvp-v1-0) | PAID-01 to 03 (not counted in the 42) | Paid booking links |
 
 ## Launch a Venture
 
@@ -240,7 +240,7 @@ As a Planner, I want to review and revoke Viewer access so I control who can rea
 As an approved Viewer, I want to find the Venture when I sign in on another device so I can follow along without asking for another invitation.
 
 - **My Ventures → Following** lists the approved Venture on any device signed in to my account.
-- I can read the shared plan. Home addresses, their coordinates and minors’ details are redacted before the data reaches my device, and I see no map for a redacted address. Viewer access is read-only and gives no permission to vote, generate ideas, or post suggestions.
+- I can read the shared plan. Home addresses, their coordinates and minors’ details are redacted before the data reaches my device, and I see no map for a redacted address. The crew’s Venture brief isn’t included. Viewer access is read-only and gives no permission to vote, generate ideas, or post suggestions.
 
 ## Build the shared itinerary
 
@@ -253,6 +253,8 @@ As a Planner, I want to open a decision such as Saturday dinner so the crew has 
 - The Plan Board builds expandable days from the locked dates in the Venture time zone. A one-day Venture opens its day by default. Collapsed days show open and decided counts.
 - I can add a decision to a day or to **Whole Trip**, the PRD’s label for decisions spanning days. A title is enough. A time window, spending limit, and note are optional.
 - The decision shows **Suggest an idea** to the Planner and signed-in Collaborators.
+- A board with no decisions offers starters chosen by the Venture’s length: **A place to stay** when it includes at least one night, **Where to eat** and **Something to do**. Tapping one opens the matching decision card with an editable title. Nothing is added until I tap, and the starters disappear once the board has a decision.
+- A must-do I already know goes on the board as a decision card, even before it has options.
 
 <a id="board-02"></a>
 
@@ -313,6 +315,18 @@ As a Planner, I want to open a locked option’s provider page from the plan so 
 - The locked option’s source link opens the provider’s page.
 - Opening it records one click-out event for pilot measurement (D15) with only the option ID, the decision kind, my member or account ID, and the time. Nothing else changes: RSVP, support and **Booked** stay as they were.
 - Collaborators and Attendees can open it too.
+
+<a id="board-08"></a>
+
+### BOARD-08 · Tell the crew what this Venture is about
+
+As a Planner, I want a short brief at the top of the Plan Board so everyone suggesting ideas knows the feel and what to avoid.
+
+- The brief has three optional fields: **What should it feel like?**, **Anything to avoid?** and **Notes for the crew**. The form tells me the crew will see what I write.
+- Only I can edit it. Collaborators and Attendees see it at the top of the Plan Board. Viewers never receive it, and it never appears on invite cards, group cards, link previews, emails or texts.
+- When the brief is empty, I see **Add a brief** and the crew sees nothing.
+- The print one-sheet shows the feel line.
+- If I import a Venture planned in this browser before the Plan Board existed, its earlier answers fill a draft brief that only I see until I tap **Share with crew**.
 
 ## Track the shared budget
 
@@ -434,7 +448,7 @@ As a Planner, I want to control whether Collaborators can use my Gemini connecti
 As a Collaborator whom the Planner has enabled, I want dinner ideas that fit the plan so I can review them before suggesting anything to the crew.
 
 - On an open venue decision, **Find dinner ideas** works for the connected Planner or an enabled, signed-in Collaborator, including one whose RSVP is pending.
-- ORIVOIR sends the locked date and time, broad area, known budget, and preferences the requester adds. Automatically included context excludes Crew names, contact details, private addresses and their coordinates, minors’ details, and invite links.
+- ORIVOIR sends the locked date and time, broad area, known budget, and preferences the requester adds. The preferences field starts with the [Venture brief](#board-08)’s feel and avoid lines, and the requester can edit or clear it before sending. Automatically included context excludes Crew names, contact details, private addresses and their coordinates, minors’ details, and invite links.
 - ORIVOIR validates the provider’s JSON against the expected schema before showing private draft cards to the requester. Each card gives the name, location, reason it fits, and details to check.
 
 <a id="pilot-03"></a>
@@ -448,7 +462,7 @@ As the person who requested ideas, I want to edit and share only the ones I woul
 
 ## Decisions still open
 
-| Area | Where v0.19 leaves the decision |
+| Area | Where v0.20 leaves the decision |
 |---|---|
 | Availability windows | Decide how to generate candidates from the Planner’s target range and ideal length, and how a guest enters part of an evening. Editable Friday–Sunday suggestions are an option under consideration. |
 | Post-lock guest visibility | Opted-in members can see the chosen time, RSVP, and support eligible options. The full set of details visible to an opted-in guest and how to confirm previously offered days are still open. |
@@ -464,7 +478,7 @@ As the person who requested ideas, I want to edit and share only the ones I woul
 
 ## After MVP v1.0 · gated by D17
 
-These stories record the rules in [Paid booking links](prd.md#paid-booking-links). They are outside MVP v1.0 and outside the count of 41. Build them only after Dot turns paid links on (D17). PAID-03 follows the D19 recommendation. If Dot decides D19 differently, update it in the same change.
+These stories record the rules in [Paid booking links](prd.md#paid-booking-links). They are outside MVP v1.0 and outside the count of 42. Build them only after Dot turns paid links on (D17). PAID-03 follows the D19 recommendation. If Dot decides D19 differently, update it in the same change.
 
 <a id="paid-01"></a>
 
