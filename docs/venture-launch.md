@@ -28,6 +28,8 @@ An Attendee who becomes a Collaborator links their verified account to the exist
 
 ## Implementation milestones
 
+The full build order for all 40 stories, with decisions and dependencies, is in the [implementation plan](implementation-plan.md). The notes below cover launch.
+
 - **Wizard** uses local persistence and the existing planning and Date Decision workspaces. The invite preview is available for both schedule modes.
 - **Budget persistence** saves the entered amount, currency, and basis. A per-person budget keeps the amount the Planner entered, and the group total follows every headcount change. Every budget calculation still reads the saved group total, so Ventures saved earlier load as total budgets without migration. The Budget pill under the Venture title shows the target as entered, such as **$150 per person** or **$600 total**, or **+Set budget**. Every state opens the Budget view, where the Planner sets or edits the target and sees the planning headcount from **Who**. Switching the basis keeps the group total. See [BUDGET-01](user-stories.md#budget-01).
 - **Shared launch and joining** will use direct personal SMS/email invitations and retain one forwardable group link per Venture. The first successful availability or RSVP response takes one spot. Sending, opening and previewing use none. Planner contact photos and delivery details stay private.
