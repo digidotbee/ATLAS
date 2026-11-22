@@ -298,7 +298,8 @@ As a Planner, I want to lock an option right where the crew discussed it so the 
 As a Planner, I want the itinerary card to carry the details of the option I chose so the crew can find it and I can track any reservation.
 
 - The card shows the exact time if known, otherwise the existing window, then **Time TBD** if neither exists. I can add or edit the exact time on the card.
-- The location appears as text with **Open in Maps**. With coordinates, **Show map** opens a map with the pin. Nothing map-related loads until someone taps it.
+- The location appears as text with **Open in Maps**. With coordinates, **Show map** opens a map with the pin. Nothing map-related loads until someone taps **Show map** or **Drop a pin**.
+- When the provider gave no coordinates, **Drop a pin** opens the map so I can place the pin or confirm where it sits. ORIVOIR calls a geocoder only if neither the provider nor I set a location, and the option records whether its coordinates came from the provider, my pin or the geocoder.
 - A Viewer sees no map or coordinates for a redacted home address.
 - I can mark the option **Booked** on the card. I handle reservations and cancellations with the provider. Switching away from a booked option gives me one reminder to check that reservation. The booking status stays with its original option.
 

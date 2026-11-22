@@ -130,8 +130,8 @@ Locking a choice moves it to the first position in the same carousel and gives i
 ### Itinerary, time, and booking
 
 - Show the exact time when known. Otherwise show the existing time window, such as **6–9 p.m.**, or **Time TBD** if no time has been set. The Planner can add or edit the exact time on the same card.
-- Show the known location as text with an **Open in Maps** link, built from a Google Maps URL that needs no API key. When coordinates are known, a **Show map** control opens a map with the pin. Nothing map-related loads until someone taps **Show map**.
-- Take coordinates from the provider’s link or data when present, then from a pin the Planner drops or confirms, and only then from a geocoder (implementation plan D11). Coordinates count as the address wherever an address is redacted.
+- Show the known location as text with an **Open in Maps** link, built from a Google Maps URL that needs no API key. When coordinates are known, a **Show map** control opens a map with the pin. Nothing map-related loads until someone taps **Show map** or **Drop a pin**.
+- Take coordinates from the provider’s link or data when present, then from a pin the Planner drops or confirms (**Drop a pin** opens the map for this), and only then from a geocoder (implementation plan D11). The option records which of the three supplied its coordinates. Coordinates count as the address wherever an address is redacted.
 - Invite cards, group cards, link previews, emails and texts never show a map. The print one-sheet shows the address and the **Open in Maps** link, with no map image in MVP v1.0.
 - The Planner can optionally mark the locked option **Booked** on the same card. The Planner handles reservations and cancellations with the provider.
 - If the Planner locks a different option, update the itinerary immediately and move the new choice to the front of the carousel. If the previous choice was marked **Booked**, show the Planner one reminder to check that reservation. Booking status stays with the option it describes.
