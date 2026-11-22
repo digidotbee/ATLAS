@@ -169,7 +169,7 @@ When a Venture enters planning, the Plan Board shows what is settled and which d
 
 ## Routing and data
 
-These are proposed routes and data contracts. The implementation should map them onto the existing Vite, React, TypeScript, Tailwind CSS, Mapbox GL, and Supabase stack. GitHub Pages uses hash routing today. A future move to orivoir.com supports share previews.
+These are proposed routes and data contracts. The implementation should map them onto the existing Vite, React, TypeScript, Tailwind CSS, Mapbox GL, and Supabase stack. GitHub Pages uses hash routing today. A future move to orivoir.com, hosted on Cloudflare (implementation plan D1), supports share previews.
 
 | Surface | Proposed route | Access |
 |---|---|---|

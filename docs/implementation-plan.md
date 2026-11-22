@@ -143,7 +143,7 @@ These are the decisions only Dot can make, with Claude's recommendation for each
 
 | # | Decision | Recommendation | Blocks |
 | --- | --- | --- | --- |
-| D1 | **Domain and hosting.** Personal and group invite links need path URLs (`/i/:token`, `/invite/:token`) on HTTPS. Message previews also need per-Venture card metadata served before the React app loads, which GitHub Pages can't do. | Use a domain ORIVOIR owns, such as `orivoir.com` (the PRD already anticipates it). Host the app on a static host with edge functions, such as Cloudflare Pages or Vercel. Keep GitHub Pages until the move. | M1 |
+| D1 | **Domain and hosting.** Personal and group invite links need path URLs (`/i/:token`, `/invite/:token`) on HTTPS. Message previews also need per-Venture card metadata served before the React app loads, which GitHub Pages can't do. | **Decided November 21, 2026:** `orivoir.com` (registered at GoDaddy), hosted on Cloudflare. Cloudflare serves the app's static files free at any traffic level, and a Worker serves the invite previews. DNS moves to Cloudflare's nameservers; GoDaddy stays the registrar. Move to Workers Paid ($5 per month) before the first real invitation, so preview requests are never refused at the free limit. Keep GitHub Pages until the move. | M1 |
 | D2 | **Supabase plan and environments** | Free projects for development and staging during M1–M2. Production on the Pro plan ($25 per month per organization) before the first real invitation, because free projects pause after a week of inactivity, which would break live invite links. Tests run against a local Supabase in CI. | M1 |
 | D3 | **Email provider** for sign-in codes and invitations | One transactional provider for both: SMTP for Supabase Auth, its API for invitations. Supabase's built-in email is for testing only and sends only to the project team's addresses. Choose one that supports a verified sending domain (SPF, DKIM, DMARC). | M1 (sign-in for anyone but Dot), M3 |
 | D4 | **SMS route and sending identity** | Start carrier registration during M1 so texting can be ready by M3. New toll-free number registrations need a business registration number such as an EIN, an unverified toll-free number can't text US phones, and approval takes days to weeks. Decide whether ORIVOIR sends under a registered business. Until texting is approved, R1 uses email plus **Share personal invite** (the Planner sends the link from their own phone), which the PRD allows. | M3 (texting only) |
@@ -164,7 +164,7 @@ These are the decisions only Dot can make, with Claude's recommendation for each
 
 | Date | Decision | Outcome |
 | --- | --- | --- |
-| November 21, 2026 | D1, in part | The domain will be `orivoir.com`, which Dot is buying. The host is still to be chosen. |
+| November 21, 2026 | D1 | Domain `orivoir.com`, registered at GoDaddy. Host: Cloudflare, chosen over Vercel, Amazon CloudFront, Netlify, Firebase Hosting, Azure Static Web Apps and Render because serving the app's files costs nothing at any traffic level, so a surge of visitors can't produce a hosting bill. DNS moves to Cloudflare's nameservers; GoDaddy stays the registrar. Workers Paid ($5 per month) before the first real invitation. |
 | November 21, 2026 | D2 | Free Supabase projects for development and staging. Production moves to Pro before the first real invitation. |
 | November 21, 2026 | D3 | Open. Claude compares current pricing and deliverability for two or three providers; Dot chooses. |
 | November 21, 2026 | D9, D10 | The recommended defaults stand unless Dot objects: an import offer on first sign-in, which needs her confirmation, and a time zone that defaults to the Planner's device. |
@@ -184,7 +184,7 @@ These are the decisions only Dot can make, with Claude's recommendation for each
 | Manage my response | `/me/:token` | Private member link |
 | Following | `/my-ventures/following` | Signed-in Viewers |
 
-An edge function on the host serves `/i/:token` and `/invite/:token` with only the preview-approved card fields (title, dates, Planner first name, generic image). It never includes a phone number, private avatar, response or token in the metadata or image URLs ([Crew invitations](crew-invitations.md)). Link-only SMS and thumbnail clients are both tested.
+A Cloudflare Worker (D1) serves `/i/:token` and `/invite/:token` with only the preview-approved card fields (title, dates, Planner first name, generic image). Only these two routes run the Worker; every other request is served as a static file. The Worker never includes a phone number, private avatar, response or token in the metadata or image URLs ([Crew invitations](crew-invitations.md)). Link-only SMS and thumbnail clients are both tested.
 
 ### 5.2 Supabase
 
