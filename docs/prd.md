@@ -1,6 +1,6 @@
 # ORIVOIR Living PRD
 
-**Version 0.19 · November 21, 2026 · MVP v1.0**
+**Version 0.19 · November 22, 2026 · MVP v1.0**
 
 [User stories and acceptance criteria](user-stories.md)
 
@@ -294,4 +294,4 @@ The Planner signed off on this journey on November 18, 2026.
 | 0.16 | November 20, 2026 | Date Lock-In resends the standard fixed-date RSVP invitation through the Planner’s usual sharing flow using the original group link. |
 | 0.17 | November 21, 2026 | Added one-tap **Request to follow** from a private email, the signed-in and signed-out group-link journeys, and account-free personal RSVPs. |
 | 0.18 | November 21, 2026 | Made one-tap, contact-based Crew invitations the primary flow. Specified private SMS/email cards, the group-link alternative, Planner-only contact details, delivery recovery, and the fixed-date resend to eligible Crew. |
-| 0.19 | November 22, 2026 | Replaced Mapbox with MapLibre and OpenStreetMap tiles; maps load only on tap; coordinates come from the provider or a Planner pin before any geocoder; coordinates follow address redaction. |
+| 0.19 | November 22, 2026 | Added paid booking links as the planned revenue path, with placement, disclosure, ranking and privacy rules, and click-out measurement in M5. Replaced Mapbox with MapLibre and OpenStreetMap tiles; maps load only on tap; coordinates come from the provider or a Planner pin before any geocoder; coordinates follow address redaction. |
