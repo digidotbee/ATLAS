@@ -47,7 +47,7 @@ Button shadow tokens and Daylight's hero oranges (`--hero-sun-orange` `#c97700`,
 
 Older `styles.css` names (`--bg`, `--paper`, `--teal`, `--verified`, `--estimated` and others) are mapped onto these tokens near the top of `theme.css`. Don't use them in new code.
 
-**Applying a theme:** set `data-theme="storm"` or `data-theme="daylight"` on `<html>`. With no attribute, Auto follows `prefers-color-scheme`. The choice is saved per device in `localStorage` under `atlas:theme`.
+**Applying a theme:** set `data-theme="storm"` or `data-theme="daylight"` on `<html>`. Use `data-theme="auto"` to follow `prefers-color-scheme`. A missing preference uses Storm. The choice is saved per device in `localStorage` under `atlas:theme`.
 
 ---
 
@@ -496,7 +496,7 @@ Do not animate layout (width, height, top, left) in the critical path. Use `tran
 - **Focus:** buttons and links use `outline: 2px solid var(--focus-ring); outline-offset: 2px` on `:focus-visible`. Menus and wizard answers use an accent tint or border instead.
 - **Icons:** add `aria-hidden="true"` when decorative. Use `aria-label` or an `.sr-only` label when the icon carries meaning.
 - **Form fields:** always associate a `<label>` with its input.
-- **Motion:** `prefers-reduced-motion` is **not respected yet**. No rule in `theme.css` or `styles.css` checks it. Wrap new non-essential animation in `@media (prefers-reduced-motion: no-preference)`, including the planned departure-screen clouds, and add the guard to existing transitions.
+- **Motion:** The sync pulse and Budget pill transitions run only with `prefers-reduced-motion: no-preference`. The sync label and status dot remain visible with reduced motion. Wrap new non-essential animation in `@media (prefers-reduced-motion: no-preference)`, including the planned departure-screen clouds, and add the guard to existing transitions.
 
 ---
 
@@ -522,6 +522,7 @@ Icons are sourced from the `lucide-react` npm package. No local SVG files or gen
 
 | Date       | Change |
 |------------|--------|
+| 2026-11-22 | Storm is the first-visit default. Choosing Auto saves the device-following preference. The sync indicator stays steady with reduced motion. |
 | 2026-11-21 | Budget pill (`.budget-pill`) under the Venture title shows the target as entered or **+Set budget**, and opens the new Budget view; the budget target controls moved there from Venture settings. Borders use `--accent`, not `--accent-vivid`, so the dashed outline stays visible on Daylight cream. First rule guarded by `prefers-reduced-motion`. |
 | 2026-11-21 | Venture settings: budget basis toggle (Total / Per person) reuses `.segmented`; the per-person field hint shows the group total. Budget panel shows the per-person amount next to the total. No new tokens. |
 | 2026-11-21 | Doc brought in line with the code. Rebuilt the theme table from `theme.css` and removed tokens that were never implemented: `--surface-300/400/500`, `--ink-faint`, `--warm`, `--sky`, `--sea`, `--coral`, `--border`, `--shadow-sm/md/lg`, `--glow-accent`. Type scale, spacing, radius, shadows and components are now measured. Header and hero section rewritten. Reduced-motion gap recorded. |

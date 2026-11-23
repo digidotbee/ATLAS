@@ -165,7 +165,11 @@ textarea {
 }
 .sync-busy i {
   background: var(--estimated);
-  animation: pulse 1s infinite alternate;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sync-busy i {
+    animation: pulse 1s infinite alternate;
+  }
 }
 .sync-err {
   color: var(--danger);
