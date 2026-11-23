@@ -67,6 +67,10 @@ export function stepErrors(step: NewTripStep, d: NewTripDraft): string[] {
       if (!d.date) e.push('Choose a date.');
       if (!d.singleDay && !d.endDate) e.push('Add an end date, or choose Single day / evening.');
       else if (d.date && d.endDate && d.endDate < d.date) e.push('The end date must be on or after the start date.');
+      const endsOnStartDate = d.singleDay || d.endDate === d.date;
+      if (d.date && endsOnStartDate && d.startTime && d.endTime && d.endTime < d.startTime) {
+        e.push('The end time must be at or after the start time on the same day.');
+      }
     } else {
       if (!d.earliest || !d.latest) e.push('Add both possible window dates.');
       else {
