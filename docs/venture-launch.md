@@ -1,6 +1,6 @@
 # Venture launch
 
-Use this document for the creation wizard and the four MVP roles in the [ORIVOIR living PRD v0.22](prd.md), dated November 23, 2026. The backend, delivery rules and test cases for both invitation paths are in [Crew invitations](crew-invitations.md).
+Use this document for the creation wizard and the four MVP roles in the [ORIVOIR living PRD v0.23](prd.md), dated November 23, 2026. The backend, delivery rules and test cases for both invitation paths are in [Crew invitations](crew-invitations.md).
 
 ## Creation wizard
 
@@ -30,7 +30,7 @@ An Attendee who becomes a Collaborator links their verified account to the exist
 
 ## Implementation milestones
 
-The full build order for all 42 MVP stories, with decisions and dependencies, is in the [implementation plan](implementation-plan.md). The notes below cover launch.
+The full build order for all 46 MVP stories, with decisions and dependencies, is in the [implementation plan](implementation-plan.md). The notes below cover launch.
 
 - **Wizard** uses local persistence and the existing planning and Date Decision workspaces. The invite preview is available for both schedule modes.
 - **Budget persistence** saves the entered amount, currency, and basis. A per-person budget keeps the amount the Planner entered, and the group total follows every headcount change. Every budget calculation still reads the saved group total, so Ventures saved earlier load as total budgets without migration. The Budget pill under the Venture title shows the target as entered, such as **$150 per person** or **$600 total**, or **+Set budget**. Every state opens the Budget view, where the Planner sets or edits the target and sees the planning headcount from **Who**. Switching the basis keeps the group total. See [BUDGET-01](user-stories.md#budget-01).

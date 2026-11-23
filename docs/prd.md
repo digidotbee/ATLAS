@@ -1,6 +1,6 @@
 # ORIVOIR Living PRD
 
-**Version 0.22 · November 23, 2026 · MVP v1.0**
+**Version 0.23 · November 23, 2026 · MVP v1.0**
 
 [User stories and acceptance criteria](user-stories.md)
 
@@ -15,6 +15,8 @@ ORIVOIR helps groups coordinate Ventures ranging from a few hours to several wee
 This version defines creation, Date Lock-In, account requirements, and access for Viewers. It also defines the Plan Board, shared budget, and optional in-app AI suggestions and records the remaining Journey 1 milestones for later ideation. Update this document as decisions change and add a dated entry to the revision history.
 
 ## Planning together
+
+MVP v1.0 includes FLOW-01, FLOW-02, FLOW-03 and CREW-10. Release acceptance covers all four stories.
 
 The aim is to make real adventures with other people easy to start and repeat. A Venture can be a potluck, a walk or a holiday. A plan is one version of the Venture. An idea belongs to a plan or decision. A child Venture is an optional activity with its own host and participants.
 
@@ -333,3 +335,4 @@ The Planner signed off on this journey on November 18, 2026.
 | 0.20 | November 22, 2026 | Made the Plan Board the only planning view. Added a Venture brief (feel, avoid, notes) that the Planner edits and the whole crew sees, never Viewers or messages; starter decisions on an empty board; must-dos as decision cards; Gemini preferences pre-filled from the brief. |
 | 0.21 | November 22, 2026 | Recorded the stack and accent as built (D12): WILDSTROM CSS with no Tailwind, and gold primary actions in the Storm theme. |
 | 0.22 | November 23, 2026 | Approved early planning, alternative plans, duration-first scheduling, contextual accounts and consent-based Past Crew invitations. |
+| 0.23 | November 23, 2026 | Committed all four planning and Past Crew stories to MVP v1.0. |

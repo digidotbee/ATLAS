@@ -2,7 +2,7 @@
 
 **Journey 1 · MVP v1.0 · November 23, 2026**
 
-The original 42 MVP stories follow a Planner and their crew from a rough idea to a locked date, a shared itinerary, and a confirmed budget. They cover the free consumer core and the optional Gemini pilot. Four approved additions are listed in Planning together; their release milestone is open. Three more stories, PAID-01 to PAID-03, record the paid-link rules for after MVP v1.0 and are counted separately. The bullets under each story are its acceptance criteria. [ORIVOIR Living PRD v0.22, November 23, 2026](prd.md) · [Crew invitations engineering guide](crew-invitations.md)
+The 46 MVP stories follow a Planner and their crew from a rough idea to a locked date, a shared itinerary, and a confirmed budget. They cover the free consumer core and the optional Gemini pilot. Planning together includes FLOW-01 through FLOW-03 and CREW-10 in MVP v1.0. Three more stories, PAID-01 to PAID-03, record the paid-link rules for after MVP v1.0 and are counted separately. The bullets under each story are its acceptance criteria. [ORIVOIR Living PRD v0.23, November 23, 2026](prd.md) · [Crew invitations engineering guide](crew-invitations.md)
 
 | Journey | Stories | Source sections in the PRD |
 |---|---|---|
@@ -15,7 +15,7 @@ The original 42 MVP stories follow a Planner and their crew from a rough idea to
 | [Organize a child Venture](#organize-a-child-venture) | CHILD-01 to 03 | Delegated planning · Child Ventures |
 | [Find dinner ideas with Gemini](#find-dinner-ideas-with-gemini) | PILOT-01 to 03 | Plan Board · AI-assisted suggestions · Pilot connection |
 | [Planning together](#planning-together) | FLOW-01 to 03, CREW-10 | Planning together · Roles and accounts · Child Ventures |
-| [After MVP v1.0 · gated by D17](#after-mvp-v1-0) | PAID-01 to 03 (not counted in the 42) | Paid booking links |
+| [After MVP v1.0 · gated by D17](#after-mvp-v1-0) | PAID-01 to 03 (not counted in the 46) | Paid booking links |
 
 ## Launch a Venture
 
@@ -463,7 +463,7 @@ As the person who requested ideas, I want to edit and share only the ones I woul
 
 ## Planning together
 
-Approved November 23, 2026. Release placement is open.
+Required for MVP v1.0. FLOW-02 closes in M5, FLOW-01 in M6, and FLOW-03 and CREW-10 in M8.
 
 <a id="flow-01"></a>
 
@@ -525,7 +525,7 @@ As a participant, I want to invite people I met on a particular Venture to anoth
 
 ## After MVP v1.0 · gated by D17
 
-These stories record the rules in [Paid booking links](prd.md#paid-booking-links). They are outside MVP v1.0 and outside the count of 42. Build them only after Dot turns paid links on (D17). PAID-03 follows the D19 recommendation. If Dot decides D19 differently, update it in the same change.
+These stories record the rules in [Paid booking links](prd.md#paid-booking-links). They are outside MVP v1.0 and outside the count of 46. Build them only after Dot turns paid links on (D17). PAID-03 follows the D19 recommendation. If Dot decides D19 differently, update it in the same change.
 
 <a id="paid-01"></a>
 

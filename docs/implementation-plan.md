@@ -1,6 +1,6 @@
 # ORIVOIR implementation plan · MVP v1.0
 
-**Draft 0.2 · November 23, 2026 · for the [living PRD v0.22](prd.md) and its [42 MVP user stories](user-stories.md)**
+**Draft 0.2 · November 23, 2026 · for the [living PRD v0.23](prd.md) and its [46 MVP user stories](user-stories.md)**
 
 This plan turns the PRD into an ordered build. Every user story is assigned to exactly one milestone, every milestone lists what it depends on, and every decision the PRD leaves open is named with a recommendation and the milestone it blocks.
 
@@ -31,10 +31,10 @@ Measured on `main` at `4f297fc`:
 | **M2** · Crew and joining | Choose people, personal and group links, account-free answers, capacity, **Who** | LAUNCH-03, LAUNCH-04, LAUNCH-06, CREW-01, CREW-02, CREW-04, CREW-05, CREW-07, CREW-09 | M1, D5, D12 | XL |
 | **M3** · Direct delivery | One tap sends each person their own email or text; retries and receipts | LAUNCH-05, CREW-08 | M2, D3, D4, D14 | L |
 | **M4** · Date Decision and Lock-In | Partial availability, overlap heatmap, cutoff, **Lock this time**, RSVP | CREW-06, DATE-01, DATE-02, DATE-03, DATE-04 | M3, D6, D7 | L |
-| **M5** · Plan Board | Decisions, Venture brief, ideas, 👍 support, lock to itinerary, map pin, booking click-out, Collaborators | LAUNCH-02, CREW-03, BOARD-01–08 | M4, D8, D11 | XL |
-| **M6** · Shared Budget | Running cost, confirmed vs. estimated, quantities, scope, average | BUDGET-02, BUDGET-03, BUDGET-04, BUDGET-06 | M5 | M |
+| **M5** · Plan Board | Decisions, Venture brief, ideas, 👍 support, lock to itinerary, map pin, booking click-out, Collaborators | LAUNCH-02, CREW-03, BOARD-01–08, FLOW-02 | M4, D8, D11 | XL |
+| **M6** · Shared Budget | Running cost, confirmed vs. estimated, quantities, scope, average | BUDGET-02, BUDGET-03, BUDGET-04, BUDGET-06, FLOW-01 | M5 | M |
 | **M7** · Follow | **Request to follow**, approval, **Following**, redacted reads | VIEW-01–03 | M5 | M |
-| **M8** · Child Ventures | Side plans for part of the Crew, linked itinerary and cost | CHILD-01–03, BUDGET-05 | M6, M7 | M |
+| **M8** · Child Ventures | Side plans for part of the Crew, linked itinerary and cost | CHILD-01–03, BUDGET-05, FLOW-03, CREW-10 | M6, M7 | M |
 | **M9** · Gemini pilot | Private AI dinner ideas inside the Plan Board | PILOT-01–03 | M5, D13 | M |
 
 The size labels are relative (S, M, L, XL) and are not time estimates. Each milestone ships as several small pull requests, each one verified and deployable.
@@ -69,7 +69,7 @@ flowchart LR
 
 ## 3. Story traceability
 
-Every one of the 42 MVP stories appears here exactly once. The three PAID stories after MVP v1.0 are listed separately below the table.
+Every one of the 46 MVP stories appears here exactly once. The three PAID stories after MVP v1.0 are listed separately below the table.
 
 | Story | Milestone | What remains |
 | --- | --- | --- |
@@ -115,17 +115,12 @@ Every one of the 42 MVP stories appears here exactly once. The three PAID storie
 | [PILOT-01](user-stories.md#pilot-01) | M9 | Planner key, per-Venture Collaborator access, limit, usage |
 | [PILOT-02](user-stories.md#pilot-02) | M9 | **Find dinner ideas**; privacy-filtered context; schema-validated drafts |
 | [PILOT-03](user-stories.md#pilot-03) | M9 | **Suggest to crew**; failures create no cards |
+| [FLOW-01](user-stories.md#flow-01) | M6 | Compare alternatives, lock a date in either order, retain ideas and count only selected costs. |
+| [FLOW-02](user-stories.md#flow-02) | M5 | Verify duration first, Planner override and completed responses. |
+| [FLOW-03](user-stories.md#flow-03) | M8 | Cancel and retry account linking with one draft, member and posted idea. |
+| [CREW-10](user-stories.md#crew-10) | M8 | Test subgroup isolation, withdrawn consent, deduplication and fresh RSVP. |
 
-Approved additions, pending milestone assignment. These dependencies describe build order only. The M2 board entry must allow drafting while availability is collected. M5 expands that board with Crew collaboration.
-
-| Story | Dependency | Verification |
-|---|---|---|
-| [FLOW-01](user-stories.md#flow-01) | Board drafts, date windows and budgets | Compare alternatives, lock a date in either order, retain ideas and count only selected costs. |
-| [FLOW-02](user-stories.md#flow-02) | Schedule and board permissions | Verify duration first, Planner override and completed responses. |
-| [FLOW-03](user-stories.md#flow-03) | Verified membership linking | Cancel and retry account linking with one draft, member and posted idea. |
-| [CREW-10](user-stories.md#crew-10) | Completed Ventures and direct invitations | Test subgroup isolation, withdrawn consent, deduplication and fresh RSVP. |
-
-**After MVP v1.0, gated by D17.** These stories aren't scheduled and aren't counted in the 42.
+**After MVP v1.0, gated by D17.** These stories aren't scheduled and aren't counted in the 46.
 
 | Story | Milestone | What remains |
 | --- | --- | --- |
@@ -366,6 +361,8 @@ M1 keeps today's local mode working for already-saved Ventures until the Planner
 - **Needs first:** M3, D6, D7.
 - **R1 gate:** at the end of M4, run the friends-and-family pilot with the D15 measures in place.
 
+MVP delivery starts with duration-first scheduling and draft access in M2. M5 delivers comparison, the featured Crew question and account linking for suggestions. M6 verifies that only selected-plan costs count. M8 completes account linking for side plans and invitations from Past Crew.
+
 Record alternatives, their relative days, duration and selected plan under one Venture. Keep proposal support separate from date availability and RSVP. Use a membership-scoped consent record for Past Crew, checked both on listing and on sending. Track child membership independently.
 
 ### M5 · Plan Board
@@ -381,7 +378,7 @@ Record alternatives, their relative days, duration and selected plan under one V
   - **Venture brief and starters:** the brief at the top of the board, edited by the Planner and readable by the crew; kept out of the Viewer projection and every card, preview and message; the imported draft shown only to the Planner until **Share with crew** ([BOARD-08](user-stories.md#board-08)). Starters on an empty board by Venture length ([BOARD-01](user-stories.md#board-01)).
   - **Collaborators and launch:** Attendee-to-Collaborator linking with a verified account plus the member's private credential ([CREW-03](user-stories.md#crew-03)). Both schedule modes open the Plan Board ([LAUNCH-02](user-stories.md#launch-02)).
   - **Migration:** existing Explore candidates and the itinerary move into decisions and options under D8. Shape it answers imported in M1 appear as the Planner-only draft brief.
-- **Closes:** LAUNCH-02, CREW-03, BOARD-01–08.
+- **Closes:** LAUNCH-02, CREW-03, BOARD-01–08, FLOW-02.
 - **Verify:**
   - the PRD Saturday Dinner acceptance check (Maya adds a link, Jules supports two options, a lock with no votes, Jules's RSVP unchanged, the itinerary window with the address, **Open in Maps** and **Show map**, switching away from a booked choice)
   - the lodging check (one stay covering Friday and Saturday nights; a $360 cabin counts once)
@@ -407,7 +404,7 @@ Record alternatives, their relative days, duration and selected plan under one V
   - included vs. excluded costs, the scope beside the rollup, and the **average per person** (the first two bullets of [BUDGET-05](user-stories.md#budget-05))
   - **All selected costs confirmed** ([BUDGET-06](user-stories.md#budget-06))
   - the budget engine moves its calculation to the server view (5.3)
-- **Closes:** BUDGET-02, BUDGET-03, BUDGET-04, BUDGET-06.
+- **Closes:** BUDGET-02, BUDGET-03, BUDGET-04, BUDGET-06, FLOW-01.
 - **Verify:** the cabin weekend table in [user stories](user-stories.md#budget-06): $460 → $510 → $720 confirmed, a $120 average for six, with the pill at $150 per person throughout.
 - **R2 gate:** at the end of M6, run the pilot and report the R2 measure together with how often locked options' booking links were opened, read alongside **Booked** marks. That report is the evidence for D17.
 
@@ -439,7 +436,7 @@ Record alternatives, their relative days, duration and selected plan under one V
   - invite only from the main Crew, with separate RSVPs ([CHILD-02](user-stories.md#child-02))
   - request inclusion, Planner approval, a linked summary on the main itinerary, changes flowing through, and a review flag when the main dates change ([CHILD-03](user-stories.md#child-03))
   - a linked child cost counted once in the main budget (closes [BUDGET-05](user-stories.md#budget-05))
-- **Closes:** CHILD-01–03, BUDGET-05.
+- **Closes:** CHILD-01–03, BUDGET-05, FLOW-03, CREW-10.
 - **Verify:** the PRD kayaking check: six RSVPs on the weekend and four on kayaking; moving kayaking from 10 to 11 a.m. updates the main itinerary; the linked cost counts once.
 
 ### M9 · Gemini pilot
