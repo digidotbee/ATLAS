@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { newId } from '../domain/factory';
+import { deviceTimeZone, plannerZoneSuffix, timeZoneOptionLabel } from '../domain/timeZone';
 import type { Availability, DateRange, TripConstraints } from '../domain/types';
 import { Field, formatDate, formatDateTimeLocal, NumberInput } from './common';
 import { CalendarPicker } from './CalendarPicker';
@@ -11,6 +12,8 @@ export interface AvailabilityCardProps {
   setAv: (p: Partial<Availability>) => void;
   setCons: (p: Partial<TripConstraints>) => void;
   span: number | null;
+  /** The Venture's IANA time zone (D10); Opt in by is a clock time in it. */
+  timeZone: string;
 }
 
 const fmt = (iso: string) => formatDate(iso, { weekday: 'short', month: 'short', day: 'numeric' });
@@ -67,7 +70,7 @@ export function RangeList({
   );
 }
 
-export function AvailabilityCard({ av, cons, setAv, setCons, span }: AvailabilityCardProps) {
+export function AvailabilityCard({ av, cons, setAv, setCons, span, timeZone }: AvailabilityCardProps) {
   const done = span !== null && span > 0;
   const [editing, setEditing] = useState(!done);
   const lengthText =
@@ -112,7 +115,10 @@ export function AvailabilityCard({ av, cons, setAv, setCons, span }: Availabilit
           {av.optInBy && (
             <div>
               <dt>Opt in by</dt>
-              <dd>{formatDateTimeLocal(av.optInBy)}</dd>
+              <dd>
+                {formatDateTimeLocal(av.optInBy)}
+                {av.optInBy.includes('T') && plannerZoneSuffix(timeZone, av.optInBy)}
+              </dd>
             </div>
           )}
           <div>
@@ -145,6 +151,7 @@ export function AvailabilityCard({ av, cons, setAv, setCons, span }: Availabilit
             <input type="datetime-local" value={av.optInBy ?? ''} onChange={(e) => setAv({ optInBy: e.target.value })} />
             <span className="field-hint">
               Collaborators must submit their availability before this cutoff to join the planning crew.
+              {timeZone !== deviceTimeZone() && ` Clock time in ${timeZoneOptionLabel(timeZone)}.`}
             </span>
           </Field>
           {span !== null && span > 0 && (

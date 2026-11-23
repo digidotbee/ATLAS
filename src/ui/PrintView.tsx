@@ -1,6 +1,7 @@
 import { candidateCost, chosenDate, summarize } from '../domain/budget';
 import { buildItinerary } from '../domain/itinerary';
 import { FOLLOW_UP_QUESTIONS } from '../domain/questions';
+import { ventureTimeZone, zoneAbbreviation } from '../domain/timeZone';
 import { CATEGORIES, type Candidate } from '../domain/types';
 import { useStore } from '../state/store';
 import { formatDate, formatLocalTime, Money } from './common';
@@ -52,6 +53,7 @@ export function PrintView({ id }: { id: string }) {
                   {d.end !== d.start && ` – ${formatDate(d.end, { month: 'short', day: 'numeric', year: 'numeric' })}`}
                   {d.startTime && ` · ${formatLocalTime(d.startTime)}`}
                   {d.endTime && `–${formatLocalTime(d.endTime)}`}
+                  {(d.startTime || d.endTime) && ` ${zoneAbbreviation(ventureTimeZone(trip), `${d.start}T${d.startTime || d.endTime}`)}`}
                   {s.shape.nights > 0 && ` · ${s.shape.nights} nights`}
                 </>
               )}

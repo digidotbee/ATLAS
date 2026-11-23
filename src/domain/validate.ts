@@ -25,6 +25,7 @@ export function parseAtlasData(raw: unknown, source: string): AtlasData {
     for (const key of ['id', 'name', 'destination', 'currency']) {
       if (typeof tr[key] !== 'string') fail(`Venture ${i + 1} is missing "${key}".`);
     }
+    if (tr.timeZone !== undefined && typeof tr.timeZone !== 'string') fail(`Venture "${String(tr.name)}" has a time zone that isn't text.`);
     if (tr.budgetTotal !== null && typeof tr.budgetTotal !== 'number') fail(`Venture "${String(tr.name)}" has no numeric budgetTotal or null budget target.`);
     if (tr.budgetBasis !== undefined && tr.budgetBasis !== 'total' && tr.budgetBasis !== 'perPerson') {
       fail(`Venture "${String(tr.name)}" has an unknown budget basis "${String(tr.budgetBasis)}".`);

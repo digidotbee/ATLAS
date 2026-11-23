@@ -1,4 +1,5 @@
 import { withBudgetTotal } from './budget';
+import { deviceTimeZone } from './timeZone';
 import {
   SCHEMA_VERSION,
   type AtlasData,
@@ -62,6 +63,8 @@ export interface NewTripInput {
   name: string;
   destination: string;
   region: string;
+  /** IANA name (D10). Defaults to the device's zone. */
+  timeZone?: string;
   currency: string;
   budgetTotal: number | null;
   budgetBasis?: BudgetBasis;
@@ -82,6 +85,7 @@ export function createTrip(input: NewTripInput): Trip {
     name: input.name.trim() || input.destination.trim(),
     destination: input.destination.trim(),
     region: input.region.trim(),
+    timeZone: input.timeZone ?? deviceTimeZone(),
     currency: input.currency,
     budgetTotal: input.budgetTotal,
     budgetBasis: basis,

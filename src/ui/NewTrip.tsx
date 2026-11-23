@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { formatMoney, nightsBetween } from '../domain/budget';
 import { createTrip } from '../domain/factory';
 import { budgetTotalForEntry, CURRENCY_CODE, NEW_TRIP_STEPS, optInDeadlineAfter, preferredNightsForDuration, stepErrors, type BudgetMode, type NewTripDraft, type NewTripStep } from '../domain/newTrip';
+import { deviceTimeZone, timeZoneChoices, timeZoneOptionLabel, zoneAbbreviation } from '../domain/timeZone';
 import { useStore } from '../state/store';
 import { Banner, Field, formatDateTimeLocal, formatLocalTime, NumberInput, todayISO } from './common';
 import { CalendarPicker } from './CalendarPicker';
@@ -20,14 +21,20 @@ const STEP_COPY: Record<NewTripStep, { title: string; hint: string }> = {
   },
 };
 
-function scheduleSummary(draft: NewTripDraft): string {
+/**
+ * The schedule in words. With `nameZone`, set times carry the Venture's zone (D10):
+ * the invite card always names it; Planner summaries name it only when it isn't the device's.
+ */
+function scheduleSummary(draft: NewTripDraft, nameZone: boolean): string {
   if (draft.whenMode === 'decision') {
     return `${formatDateTimeLocal(draft.earliest)} – ${formatDateTimeLocal(draft.latest)}`;
   }
+  const firstTime = draft.startTime || draft.endTime;
+  const zone = nameZone && draft.date && firstTime ? ` ${zoneAbbreviation(draft.timeZone, `${draft.date}T${firstTime}`)}` : '';
   const start = formatDateTimeLocal(`${draft.date}T${draft.startTime}`);
-  if (!draft.singleDay) return `${start} – ${formatDateTimeLocal(`${draft.endDate}T${draft.endTime}`)}`;
-  if (!draft.endTime) return start;
-  return `${start} ${draft.startTime ? '–' : 'until'} ${formatLocalTime(draft.endTime)}`;
+  if (!draft.singleDay) return `${start} – ${formatDateTimeLocal(`${draft.endDate}T${draft.endTime}`)}${zone}`;
+  if (!draft.endTime) return `${start}${zone}`;
+  return `${start} ${draft.startTime ? '–' : 'until'} ${formatLocalTime(draft.endTime)}${zone}`;
 }
 
 export function NewTrip() {
@@ -39,6 +46,7 @@ export function NewTrip() {
     destination: '',
     name: '',
     region: '',
+    timeZone: deviceTimeZone(),
     budget: null,
     budgetSkipped: false,
     currency: defaultCurrency,
@@ -68,6 +76,9 @@ export function NewTrip() {
   };
   const span = nightsBetween(d.earliest, d.latest);
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const device = useMemo(deviceTimeZone, []);
+  const zoneChoices = useMemo(() => timeZoneChoices(d.timeZone), [d.timeZone]);
+  const otherZone = d.timeZone !== device;
 
   // Move focus to the new question so keyboard and screen-reader users follow along.
   useEffect(() => {
@@ -99,6 +110,7 @@ export function NewTrip() {
       name: d.name,
       destination: d.destination,
       region: d.region,
+      timeZone: d.timeZone,
       currency: d.currency,
       budgetTotal: budgetTotalForEntry(d.budget, budgetMode, d.adults!, d.children ?? 0),
       budgetBasis: budgetMode,
@@ -151,7 +163,7 @@ export function NewTrip() {
   const people = (d.adults ?? 0) + (d.children ?? 0);
   const summaries: Record<NewTripStep, string> = {
     where: d.destination.trim(),
-    when: scheduleSummary(d),
+    when: scheduleSummary(d, otherZone),
     who: `${people} ${people === 1 ? 'person' : 'people'}`,
     budget: d.budget === null
       ? 'No target set'
@@ -201,14 +213,25 @@ export function NewTrip() {
         {step === 'where' && (
           <div className="stack">
             <input className="input-lg" value={d.destination} onChange={(e) => set({ destination: e.target.value })} placeholder="Destination or setting..." aria-label="Destination" autoFocus />
-            <details className="more" open={Boolean(d.name || d.region)}>
+            <details className="more" open={Boolean(d.name || d.region || otherZone)}>
               <summary>Fine-tune the details (optional)</summary>
-              <div className="grid-2">
-                <Field label="Name this Venture">
-                  <input value={d.name} onChange={(e) => set({ name: e.target.value })} placeholder="e.g. Pacific coast spring break" />
-                </Field>
-                <Field label="General area or neighborhood">
-                  <input value={d.region} onChange={(e) => set({ region: e.target.value })} placeholder="e.g. Central America" />
+              <div className="stack-sm">
+                <div className="grid-2">
+                  <Field label="Name this Venture">
+                    <input value={d.name} onChange={(e) => set({ name: e.target.value })} placeholder="e.g. Pacific coast spring break" />
+                  </Field>
+                  <Field label="General area or neighborhood">
+                    <input value={d.region} onChange={(e) => set({ region: e.target.value })} placeholder="e.g. Central America" />
+                  </Field>
+                </div>
+                <Field label="Time zone" hint="Dates, times and the Opt in by deadline use this time zone.">
+                  <select value={d.timeZone} onChange={(e) => set({ timeZone: e.target.value })}>
+                    {zoneChoices.map((zone) => (
+                      <option key={zone} value={zone}>
+                        {timeZoneOptionLabel(zone)}
+                      </option>
+                    ))}
+                  </select>
                 </Field>
               </div>
             </details>
@@ -217,6 +240,7 @@ export function NewTrip() {
 
         {step === 'when' && (
           <div className="stack when-step">
+            {otherZone && <p className="muted small">Times are in {timeZoneOptionLabel(d.timeZone)}.</p>}
             <div className="segmented budget-toggle when-toggle" role="group" aria-label="Date planning mode">
               <button type="button" className={d.whenMode === 'date' ? 'on' : ''} aria-pressed={d.whenMode === 'date'} onClick={() => set({ whenMode: 'date' })}>
                 SET A DATE
@@ -276,8 +300,8 @@ export function NewTrip() {
                   <input type="datetime-local" value={d.optInBy} onChange={(e) => set({ optInBy: e.target.value })} />
                 </Field>
                 <div className="chips" role="group" aria-label="Deadline shortcuts">
-                  <button type="button" className="chip" onClick={() => set({ optInBy: optInDeadlineAfter(24) })}>In 24 hours</button>
-                  <button type="button" className="chip" onClick={() => set({ optInBy: optInDeadlineAfter(72) })}>In 3 days</button>
+                  <button type="button" className="chip" onClick={() => set({ optInBy: optInDeadlineAfter(24, d.timeZone) })}>In 24 hours</button>
+                  <button type="button" className="chip" onClick={() => set({ optInBy: optInDeadlineAfter(72, d.timeZone) })}>In 3 days</button>
                 </div>
                 <Field label="Any timing notes? (optional)" hint="e.g., “Evenings work best” or “Must include Sunday brunch”">
                   <input value={d.flexibility} onChange={(e) => set({ flexibility: e.target.value })} />
@@ -360,11 +384,14 @@ export function NewTrip() {
               <p className="eyebrow">Invite card preview</p>
               <h2>{d.name.trim() || 'Let’s have an adventure…'}</h2>
               <p>{[summaries.where, d.region.trim()].filter(Boolean).join(' · ')}</p>
-              <p>{summaries.when}</p>
+              <p>{scheduleSummary(d, true)}</p>
               {d.whenMode === 'decision' && (
                 <>
                   {d.idealDuration.trim() && <p>Ideal length · {d.idealDuration.trim()}</p>}
-                  <p><strong>Opt in by</strong> {formatDateTimeLocal(d.optInBy)}</p>
+                  <p>
+                    <strong>Opt in by</strong> {formatDateTimeLocal(d.optInBy)}
+                    {d.optInBy && ` ${zoneAbbreviation(d.timeZone, d.optInBy)}`}
+                  </p>
                 </>
               )}
               <p>Planning headcount · {summaries.who}</p>

@@ -522,6 +522,7 @@ Icons are sourced from the `lucide-react` npm package. No local SVG files or gen
 
 | Date       | Change |
 |------------|--------|
+| 2026-11-23 | **Time zone** select in Set the Scene's optional details and in Venture settings, using the existing field and `.stack-sm` spacing. No new tokens or CSS. |
 | 2026-11-22 | Storm is the first-visit default. Choosing Auto saves the device-following preference. The sync indicator stays steady with reduced motion. |
 | 2026-11-21 | Budget pill (`.budget-pill`) under the Venture title shows the target as entered or **+Set budget**, and opens the new Budget view; the budget target controls moved there from Venture settings. Borders use `--accent`, not `--accent-vivid`, so the dashed outline stays visible on Daylight cream. First rule guarded by `prefers-reduced-motion`. |
 | 2026-11-21 | Venture settings: budget basis toggle (Total / Per person) reuses `.segmented`; the per-person field hint shows the group total. Budget panel shows the per-person amount next to the total. No new tokens. |

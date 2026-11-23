@@ -1,4 +1,5 @@
 import { nightsBetween } from './budget';
+import { wallTimeAt } from './timeZone';
 import type { BudgetBasis } from './types';
 
 /** Answers collected by the step-by-step new-trip flow. */
@@ -6,6 +7,8 @@ export interface NewTripDraft {
   destination: string;
   name: string;
   region: string;
+  /** IANA name (D10); dates, times and Opt in by are clock times in this zone. */
+  timeZone: string;
   budget: number | null;
   budgetSkipped: boolean;
   currency: string;
@@ -44,11 +47,9 @@ export function preferredNightsForDuration(value: string): number | null {
   return Math.max(1, Math.round(match[2].startsWith('day') ? amount - 1 : amount));
 }
 
-/** A datetime-local field needs wall time at the deadline, including its local offset. */
-export function optInDeadlineAfter(hours: number, now = Date.now()): string {
-  const deadline = new Date(now + hours * 3_600_000);
-  const localTime = deadline.getTime() - deadline.getTimezoneOffset() * 60_000;
-  return new Date(localTime).toISOString().slice(0, 16);
+/** The deadline `hours` from now, as a datetime-local value in the Venture's time zone (D10). */
+export function optInDeadlineAfter(hours: number, timeZone: string, now = Date.now()): string {
+  return wallTimeAt(now + hours * 3_600_000, timeZone);
 }
 
 export const NEW_TRIP_STEPS = ['where', 'when', 'who', 'budget'] as const;

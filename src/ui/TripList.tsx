@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { chosenDate, nightsBetween, summarize } from '../domain/budget';
 import { duplicateTrip } from '../domain/factory';
+import { plannerZoneSuffix, ventureTimeZone } from '../domain/timeZone';
 import type { Trip } from '../domain/types';
 import { useStore } from '../state/store';
 import { BudgetMeter } from './BudgetPanel';
@@ -47,12 +48,16 @@ function whenText(t: Trip): string {
           : d.endTime
             ? `Until ${formatLocalTime(d.endTime)}`
             : '';
-    return `${dateText}${timeText ? ` · ${timeText}` : n && n > 0 ? ` · ${n} nights` : ''}`;
+    const zone = timeText ? plannerZoneSuffix(ventureTimeZone(t), `${d.start}T${d.startTime || d.endTime}`) : '';
+    return `${dateText}${timeText ? ` · ${timeText}${zone}` : n && n > 0 ? ` · ${n} nights` : ''}`;
   }
-  if (t.availability)
+  if (t.availability) {
+    const optInBy = t.availability.optInBy;
+    const optInZone = optInBy?.includes('T') ? plannerZoneSuffix(ventureTimeZone(t), optInBy) : '';
     return `Available ${formatDate(t.availability.earliestDeparture)} – ${formatDate(t.availability.latestReturn)}${
-      t.availability.optInBy ? ` · Opt in by ${formatDate(t.availability.optInBy.split('T')[0])}${t.availability.optInBy.includes('T') ? ` at ${formatLocalTime(t.availability.optInBy.split('T')[1])}` : ''}` : ''
+      optInBy ? ` · Opt in by ${formatDate(optInBy.split('T')[0])}${optInBy.includes('T') ? ` at ${formatLocalTime(optInBy.split('T')[1])}${optInZone}` : ''}` : ''
     }`;
+  }
   return 'Dates not set';
 }
 
