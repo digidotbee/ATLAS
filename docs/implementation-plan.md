@@ -10,7 +10,7 @@ This plan turns the PRD into an ordered build. Every user story is assigned to e
 
 ## 1. Baseline
 
-Measured on `main` at `4f297fc`:
+Measured on `main` at `cb3c757` (November 23, 2026):
 
 - **What exists:**
   - a single-user planner that saves to the browser, with optional private GitHub Gist sync
@@ -18,7 +18,8 @@ Measured on `main` at `4f297fc`:
   - the original ATLAS planning tabs: Shape it, When & how long, Explore, Itinerary
   - the budget engine
   - the Budget pill and Budget view
-  - 82 unit tests and 4 browser flows
+  - the Venture time zone (D10), set in Set the Scene and Venture settings and saved in the browser
+  - 107 unit tests and 7 browser flows
 - **What doesn't exist:** a backend, accounts, invitations, Crew, voting, a Plan Board, or Viewers. The stack is Vite, React, TypeScript and hand-written WILDSTROM CSS. Tailwind, Supabase and a map library are not in the code yet.
 - **Stories already done:** [LAUNCH-01](user-stories.md#launch-01) and [BUDGET-01](user-stories.md#budget-01).
 
@@ -31,10 +32,10 @@ Measured on `main` at `4f297fc`:
 | **M2** · Crew and joining | Choose people, personal and group links, account-free answers, capacity, **Who** | LAUNCH-03, LAUNCH-04, LAUNCH-06, CREW-01, CREW-02, CREW-04, CREW-05, CREW-07, CREW-09 | M1, D5, D12 | XL |
 | **M3** · Direct delivery | One tap sends each person their own email or text; retries and receipts | LAUNCH-05, CREW-08 | M2, D3, D4, D14 | L |
 | **M4** · Date Decision and Lock-In | Partial availability, overlap heatmap, cutoff, **Lock this time**, RSVP | CREW-06, DATE-01, DATE-02, DATE-03, DATE-04 | M3, D6, D7 | L |
-| **M5** · Plan Board | Decisions, Venture brief, ideas, 👍 support, lock to itinerary, map pin, booking click-out, Collaborators | LAUNCH-02, CREW-03, BOARD-01–08, FLOW-02 | M4, D8, D11 | XL |
+| **M5** · Plan Board | Decisions, Venture brief, ideas, 👍 support, alternative plans, lock to itinerary, map pin, booking click-out, Collaborators | LAUNCH-02, CREW-03, BOARD-01–08, FLOW-02 | M4, D8, D11 | XL |
 | **M6** · Shared Budget | Running cost, confirmed vs. estimated, quantities, scope, average | BUDGET-02, BUDGET-03, BUDGET-04, BUDGET-06, FLOW-01 | M5 | M |
 | **M7** · Follow | **Request to follow**, approval, **Following**, redacted reads | VIEW-01–03 | M5 | M |
-| **M8** · Child Ventures | Side plans for part of the Crew, linked itinerary and cost | CHILD-01–03, BUDGET-05, FLOW-03, CREW-10 | M6, M7 | M |
+| **M8** · Child Ventures | Side plans for part of the Crew, linked itinerary and cost, invitations from Past Crew | CHILD-01–03, BUDGET-05, FLOW-03, CREW-10 | M6, M7 | M |
 | **M9** · Gemini pilot | Private AI dinner ideas inside the Plan Board | PILOT-01–03 | M5, D13 | M |
 
 The size labels are relative (S, M, L, XL) and are not time estimates. Each milestone ships as several small pull requests, each one verified and deployable.
@@ -44,8 +45,8 @@ The size labels are relative (S, M, L, XL) and are not time estimates. Each mile
 | Release | Milestones | What a group can do | Pilot measure |
 | --- | --- | --- | --- |
 | **R1 · Gather and pick a date** | M1–M4 | Invite people by email, text or link; collect availability; lock a date; RSVP | Share of invitees who vote through their link (target 55%) |
-| **R2 · Plan together** | M5–M6 | Suggest and decide where to eat and stay; see the shared budget | Planners who start another Venture within 45 days (target 35%). Also reported: how often a locked option’s booking link is opened, read alongside **Booked** marks ([BOARD-07](user-stories.md#board-07); evidence for D17). |
-| **R3 · MVP v1.0 complete** | M7–M9 | Followers, side plans, AI dinner ideas | Completed Shared Ventures per Active Household |
+| **R2 · Plan together** | M5–M6 | Suggest and decide where to eat and stay; compare alternative plans; see the shared budget | Planners who start another Venture within 45 days (target 35%). Also reported: how often a locked option’s booking link is opened, read alongside **Booked** marks ([BOARD-07](user-stories.md#board-07); evidence for D17). |
+| **R3 · MVP v1.0 complete** | M7–M9 | Followers, side plans, invitations from Past Crew, AI dinner ideas | Completed Shared Ventures per Active Household |
 
 ```mermaid
 flowchart LR
@@ -167,7 +168,7 @@ These are the decisions only Dot can make, with Claude's recommendation for each
 | D7 | **Changing a locked date** (PRD *Remaining ideation*) | The Planner can change a locked date. Memberships and availability are kept, every RSVP resets to pending, and **Send date to N** offers the new date with "date changed" wording. Child Ventures follow the existing CHILD-03 review rule. | M4 |
 | D8 | **What happens to the original single-user tabs** | **Revised November 23, 2026.** The Plan Board is the only planning view. A Venture opens to the Plan Board in either schedule mode; Review dates opens Date Decision, and the numbered tabs retire. Explore and Itinerary become the Plan Board: options become ideas, **Choose** becomes **Lock this option**, and the itinerary is built from locked options. When & how long becomes an optional Planner helper inside Date Decision (D5). **Shape it retires:** its feel, avoid and notes answers become the [Venture brief](user-stories.md#board-08), which the Planner edits and the whole crew sees; must-dos become decision cards; lodging and food become starter decisions ([BOARD-01](user-stories.md#board-01)); pace, bases, transport and season are dropped. The kids question and children's ages were removed on November 22. Travel legs stay Planner-only until the Transit ideation. The copy-and-paste research helper is replaced by **Add Idea** with provider JSON and by the Gemini pilot. Keep the print one-sheet; it shows the brief's feel line where it showed *The idea*. | M5 |
 | D9 | **Ventures already saved in browsers, and Gist sync** | Launching requires sign-in, as the PRD says. On first sign-in, offer to import the Ventures saved in this browser; nothing is imported without the Planner confirming. After import, the cloud is the source of truth. Gist sync becomes export-only, then is removed after R1. Keep the JSON backup. Private contact data never goes to the Gist. | M1 |
-| D10 | **Venture time zone** | Default to the Planner's device time zone, editable under Set the Scene. Store it as an IANA name, with all instants as time-zone-aware timestamps (PRD *Routing and data*). | M1 |
+| D10 | **Venture time zone** | Default to the Planner's device time zone, editable under Set the Scene. Store it as an IANA name, with all instants as time-zone-aware timestamps (PRD *Routing and data*). The browser side shipped November 23, 2026 (#43): Ventures keep a zone and clock times; M1 adds the server column. | M1 |
 | D11 | **Maps and coordinates** | **Decided November 22, 2026.** (1) **Library:** MapLibre GL JS (BSD-3), the open-source fork of Mapbox GL JS. No Mapbox account or token. (2) **Map images (tiles):** start with the OpenFreeMap public instance (free, no API key, no stated limits). Plan a later move to self-hosted Protomaps PMTiles on Cloudflare R2, served through the Protomaps Worker with edge caching, if OpenFreeMap has reliability problems or new limits, or a custom style is needed. The style URL is one config value behind a single `MapView` component, so the move is a config change. (3) **When a map loads:** never by default. A location shows as text with an **Open in Maps** link built from Google Maps URLs (no API key). **Show map** loads MapLibre with a dynamic import and draws the pin; **Drop a pin** loads it the same way so the Planner can place or confirm a pin. No maps on invite cards, group cards, link previews, emails or texts. The print one-sheet shows the address and the Maps link, with no map image in MVP v1.0. (4) **Coordinates, in this order:** (a) from the provider's link or JSON when present; (b) a pin the Planner drops or confirms; (c) only then a geocoder called from an Edge Function, Geoapify's free tier. Store `lat`, `lng` and `coords_source` (`provider`, `planner_pin` or `geocoder`) on the option. No Mapbox geocoding: storing its results requires its paid permanent tier. (5) **Attribution:** MapLibre's attribution control stays on, so "© OpenStreetMap contributors" shows on every map, plus the credit Geoapify's free tier requires. (6) **Privacy:** coordinates count as the address. Wherever a home address is redacted (Viewers, previews, AI inputs), its coordinates are too, and no map shows. Place text goes to the geocoder only from the Edge Function, never with names or contact details. Tile requests show the tile host roughly which area is being viewed; OpenFreeMap sets no cookies and keeps no user database, and self-hosting removes that third party. Geoapify and the tile host are listed in the privacy policy (D14). | M5 |
 | D12 | **Visual and stack wording in the PRD** | **Decided November 22, 2026.** The PRD now matches the code: WILDSTROM CSS with no Tailwind, and gold primary actions in the Storm theme (`#dfb84b`, used since Nov 19). Daylight's accent values stay as the [design system](design-system.md) records them. | M2 (new UI) |
 | D13 | **Gemini pilot scope and key storage** | Keep it in MVP v1.0 as the last milestone. Store the Planner's key encrypted server-side (Supabase Vault). Only an Edge Function reads it. | M9 |
@@ -191,6 +192,8 @@ These are the decisions only Dot can make, with Claude's recommendation for each
 | November 22, 2026 | D11 | Replaced the earlier Mapbox plan (a Mapbox account and token, with Mapbox geocoding) with MapLibre GL JS and OpenFreeMap tiles, moving later to Protomaps on Cloudflare R2 if needed. Maps load only on **Show map**. Coordinates come from the provider or a Planner pin before the Geoapify geocoder, and coordinates follow address redaction. The goal is a map setup that costs close to nothing at any scale. |
 | November 22, 2026 | D8 | Dot found Shape it and the Plan Board duplicated each other. Shape it retires and the Plan Board is the only planning view. Its answers become a Venture brief that the whole crew sees (Dot's choice over Planner-only notes), with must-dos as decision cards and starter decisions on an empty board. Separately, a hotfix removed the kids question and stopped collecting children's ages. |
 | November 22, 2026 | D12 | Dot chose to update the PRD to the code as built: WILDSTROM CSS, no Tailwind, and the gold Storm accent instead of "lime primary actions" (PRD v0.21). |
+| November 23, 2026 | D8 | Revised in PRD v0.22 (#44): a Venture opens to the Plan Board in either schedule mode, and Review dates opens Date Decision. The rest of the November 22 decision stands. |
+| November 23, 2026 | Planning together | Early planning before the date is locked, alternative plans, duration-first scheduling, contextual accounts and consent-based Past Crew invitations were approved in PRD v0.22 and committed to MVP v1.0 in v0.23 (#44) as FLOW-01 to FLOW-03 and CREW-10, so MVP v1.0 is now 46 stories. The same change renamed the PRD label **Whole Trip** to **Whole Venture**. |
 
 ## 5. Architecture
 
@@ -278,7 +281,7 @@ M1 keeps today's local mode working for already-saved Ventures until the Planner
   - Supabase projects and migrations for `ventures` and `candidate_windows` (ready for M2)
   - email-code sign-in at launch, with the draft kept through sign-in (no recipients yet)
   - Ventures saved and loaded through Supabase
-  - the Venture time zone
+  - the Venture time zone on the server (the browser side shipped in #43)
   - the browser-import offer
   - Gist sync made export-only
   - CI runs database tests against a local Supabase
@@ -286,7 +289,7 @@ M1 keeps today's local mode working for already-saved Ventures until the Planner
   - the budget entry and the derived group target (5.3), with BUDGET-01's tests run against the server
   - the existing planning tabs keep working on cloud data
 - **Verify:**
-  - the existing 82 unit tests and 4 browser flows still pass
+  - every existing unit test and browser flow still passes (107 and 7 at the baseline)
   - new browser flows for sign-in with draft restore, launch and reopen on another browser session, and import idempotency
   - row-level security tests showing one Planner can't read another's Venture
 - **Needs first:** D1, D2, D3, D9, D10. Start D4 registration and the D14 drafts now; they take calendar time.
@@ -489,7 +492,7 @@ These are recorded so they aren't built by accident:
 - **PRD *Routing and data*:** describe the real stack: WILDSTROM CSS, no Tailwind, with Supabase introduced in M1 and MapLibre GL JS with OpenFreeMap tiles in M5 (D11, D12). (Done in PRD v0.21.)
 - **PRD *Remaining ideation*:** record decisions D5, D6, D7 and D4 once made, with dated revision-history entries.
 - **PRD:** fix "lime primary actions" to match the accent decision (D12). (Done in PRD v0.21.)
-- **[Venture launch](venture-launch.md) and [AGENTS.md](../AGENTS.md):** point to this plan for build order. (Done in this change.)
+- **[Venture launch](venture-launch.md) and [AGENTS.md](../AGENTS.md):** point to this plan for build order. (Done.)
 
 ## Sources checked November 21, 2026
 
