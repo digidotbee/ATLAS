@@ -45,6 +45,21 @@ describe('new trip steps', () => {
     expect(stepErrors('when', { ...base, date: '2027-05-21', singleDay: false })[0]).toMatch(/end date/);
     expect(stepErrors('when', { ...base, date: '2027-07-30', endDate: '2027-05-21', singleDay: false })[0]).toMatch(/on or after/);
   });
+  it('LAUNCH-02 rejects a backwards evening in either fixed-date mode', () => {
+    const evening = { ...base, date: '2027-05-21', startTime: '21:00', endTime: '18:00' };
+    const error = ['The end time must be at or after the start time on the same day.'];
+    expect(stepErrors('when', evening)).toEqual(error);
+    expect(stepErrors('when', { ...evening, singleDay: false, endDate: evening.date })).toEqual(error);
+    expect(stepErrors('when', { ...evening, singleDay: false, endDate: '2027-05-22' })).toEqual([]);
+  });
+  it.each([
+    ['18:00', '21:00'],
+    ['18:00', '18:00'],
+    ['18:00', ''],
+    ['', '18:00'],
+  ])('LAUNCH-02 accepts optional same-day times [%s, %s]', (startTime, endTime) => {
+    expect(stepErrors('when', { ...base, date: '2027-05-21', startTime, endTime })).toEqual([]);
+  });
   it('requires a valid date-decision window and opt-in deadline', () => {
     const decision: NewTripDraft = { ...base, whenMode: 'decision' };
     expect(stepErrors('when', decision)).toHaveLength(2);
