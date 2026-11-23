@@ -4,7 +4,7 @@
 
 A Planner chooses people in **Crew** and taps **Launch & invite 6** once. ORIVOIR sends each person a separate text or email on the Planner’s behalf. The message names the Planner and opens the Venture in a browser. The guest can answer immediately. When the date is locked, the same person can RSVP on the Crew entry that holds their availability. Build this in ORIVOIR with React, TypeScript and Supabase. Paperless Post is a reference for the experience discussed in connection with Zapier. ORIVOIR’s backend calls the delivery providers directly and owns the cards, links, permissions, records and responses.
 
-This is the implementation contract for the [living PRD v0.21](prd.md). The [user stories](user-stories.md) define acceptance criteria for each story ID. The current wizard previews the invitation and saves the Venture locally, with optional Gist sync. Cloud delivery, shared joining and server-enforced capacity are implementation work. Start with [the wizard](../src/ui/NewTrip.tsx), [the store](../src/state/store.tsx) and [the launch guide](venture-launch.md).
+This is the implementation contract for the [living PRD v0.23](prd.md). The [user stories](user-stories.md) define acceptance criteria for each story ID. The current wizard previews the invitation and saves the Venture locally, with optional Gist sync. Cloud delivery, shared joining and server-enforced capacity are implementation work. Start with [the wizard](../src/ui/NewTrip.tsx), [the store](../src/state/store.tsx) and [the launch guide](venture-launch.md).
 
 ## Planner and guest experience
 
@@ -79,3 +79,11 @@ Use the repository’s existing unit, build and browser checks as the baseline. 
 | Twilio Node SDK, MIT | TypeScript example of one SMS submission. The messaging provider is an implementation choice. Keep any copied notice. [Example](https://github.com/twilio/twilio-node/blob/676777e0f190980b307c507ee378004923980d63/examples/typescript/example.ts#L45) · [License](https://github.com/twilio/twilio-node/blob/676777e0f190980b307c507ee378004923980d63/LICENSE) |
 | Rallly, AGPL-3.0 | Behavioral reference for committing a chosen date and notifying selected participants. Implement ORIVOIR’s fixed-date card and access rules independently. [Finalize action](https://github.com/lukevella/rallly/blob/7fc62880219d6e82fd904f22730b94bffb5c2d94/apps/web/src/features/poll/components/finalize-poll-dialog.tsx#L706) · [License](https://github.com/lukevella/rallly/blob/7fc62880219d6e82fd904f22730b94bffb5c2d94/LICENSE) |
 | MDN contact picker | Reference for multi-select and for detecting which fields the browser can return. [Example](https://github.com/mdn/content/blob/b2c48c8b7c097aeab4bc15a388c913f466f40e25/files/en-us/web/api/contact_picker_api/index.md#L73) · [Browser support](https://caniuse.com/mdn-api_navigator_contacts) |
+
+## Returning Crew and contextual accounts
+
+After a guest response, confirm it and retain private return access. Save to My Ventures is optional. Authenticate at posting or organizing, verify account plus private membership credential, and finish the saved intent exactly once.
+
+Index eligible Past Crew by the specific completed Venture, including child Ventures. Require active invitation permission for that Crew at selection and send. An invitation references an eligible account without disclosing contact details. Withdrawal and blocks suppress future delivery. Deduplicate selected people across sources. A new invitation has fresh capacity and RSVP state. A shared parent Venture never discloses private child participation.
+
+Acceptance: opt into repeat invitations for the sketch walk only, find that Crew from a new draft, revoke before send, and verify no delivery. Repeat with eligible consent and verify one invitation and no automatic membership. [CREW-10](user-stories.md#crew-10) · [FLOW-03](user-stories.md#flow-03).

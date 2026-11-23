@@ -1,6 +1,6 @@
 # Venture launch
 
-Use this document for the creation wizard and the four MVP roles in the [ORIVOIR living PRD v0.21](prd.md), dated November 22, 2026. The backend, delivery rules and test cases for both invitation paths are in [Crew invitations](crew-invitations.md).
+Use this document for the creation wizard and the four MVP roles in the [ORIVOIR living PRD v0.23](prd.md), dated November 23, 2026. The backend, delivery rules and test cases for both invitation paths are in [Crew invitations](crew-invitations.md).
 
 ## Creation wizard
 
@@ -9,11 +9,13 @@ Use this document for the creation wizard and the four MVP roles in the [ORIVOIR
 | Step | Planner action |
 | --- | --- |
 | 1. Set the Scene | Enter a destination, spot, or vibe. A Venture title, broader area and time zone are optional. The time zone defaults to the Planner's device and sets how dates, times and **Opt in by** are read ([implementation plan](implementation-plan.md) D10). The invite card names the zone beside any set time. |
-| 2. Schedule | **Set a date** supports a single day or evening with optional times, or a multi-day Venture. **Set for date decision** takes an earliest start, latest wrap-up, optional ideal length, and a required **Opt in by** deadline. Offer 24 hours, 3 days, or a custom deadline. |
+| 2. Schedule | **Set a date** supports a single day or evening with optional times, or a multi-day Venture. **Set for date decision** takes a duration, earliest start, latest wrap-up, and a required **Opt in by** deadline. Offer 24 hours, 3 days, or a custom deadline. |
 | 3. Crew | **Choose from contacts** or **Add by phone or email**. Review the selected people and one destination per person. The Planner can leave the list empty and share a group link after launch. Keep the optional **Max crew opt-ins** separate from the planning headcount, which can include the Planner, household defaults and people attending without a response. Both invite paths use the same capacity check. |
 | 4. Budget & Launch | Choose **Total (Everything included)**, **Per person**, or **Skip for now**. Preview the card, including **Opt in by** for Date Decision. **Launch & invite N** creates the Venture and queues N personal invitations in one action. With nobody selected, **Launch Venture** creates the Venture for sharing. Skipping Budget stays on this screen. |
 
-The Planner can revisit a completed step and edit it without losing later answers. The final preview reflects those edits. On launch, a fixed-date Venture opens planning. A Venture with a date to decide opens Date Decision.
+The Planner can revisit a completed step and edit it without losing later answers. The final preview reflects those edits. On launch, a fixed-date Venture opens planning. A Venture with a date to decide opens the same Plan Board with Review dates.
+
+The draft board accepts ideas before launch. Launch requires a fixed date or bounded window. Show duration above the window in Schedule and invitation preview. Offer **Past Crew** beside contacts and manual entry. A repeat Venture opens a fresh draft with selectable participants. [Planning together](user-stories.md#planning-together).
 
 ## MVP roles
 
@@ -28,7 +30,7 @@ An Attendee who becomes a Collaborator links their verified account to the exist
 
 ## Implementation milestones
 
-The full build order for all 42 MVP stories, with decisions and dependencies, is in the [implementation plan](implementation-plan.md). The notes below cover launch.
+The full build order for all 46 MVP stories, with decisions and dependencies, is in the [implementation plan](implementation-plan.md). The notes below cover launch.
 
 - **Wizard** uses local persistence and the existing planning and Date Decision workspaces. The invite preview is available for both schedule modes.
 - **Budget persistence** saves the entered amount, currency, and basis. A per-person budget keeps the amount the Planner entered, and the group total follows every headcount change. Every budget calculation still reads the saved group total, so Ventures saved earlier load as total budgets without migration. The Budget pill under the Venture title shows the target as entered, such as **$150 per person** or **$600 total**, or **+Set budget**. Every state opens the Budget view, where the Planner sets or edits the target and sees the planning headcount from **Who**. Switching the basis keeps the group total. See [BUDGET-01](user-stories.md#budget-01).

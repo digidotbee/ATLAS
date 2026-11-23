@@ -1,8 +1,8 @@
 # ORIVOIR user stories
 
-**Journey 1 · MVP v1.0 · November 21, 2026**
+**Journey 1 · MVP v1.0 · November 23, 2026**
 
-These 42 MVP stories follow a Planner and their crew from a rough idea to a locked date, a shared itinerary, and a confirmed budget. They cover the free consumer core and the optional Gemini pilot. Three more stories, PAID-01 to PAID-03, record the paid-link rules for after MVP v1.0 and are counted separately. The bullets under each story are its acceptance criteria. [ORIVOIR Living PRD v0.21, November 22, 2026](prd.md) · [Crew invitations engineering guide](crew-invitations.md)
+The 46 MVP stories follow a Planner and their crew from a rough idea to a locked date, a shared itinerary, and a confirmed budget. They cover the free consumer core and the optional Gemini pilot. Planning together includes FLOW-01 through FLOW-03 and CREW-10 in MVP v1.0. Three more stories, PAID-01 to PAID-03, record the paid-link rules for after MVP v1.0 and are counted separately. The bullets under each story are its acceptance criteria. [ORIVOIR Living PRD v0.23, November 23, 2026](prd.md) · [Crew invitations engineering guide](crew-invitations.md)
 
 | Journey | Stories | Source sections in the PRD |
 |---|---|---|
@@ -14,7 +14,8 @@ These 42 MVP stories follow a Planner and their crew from a rough idea to a lock
 | [Track the shared budget](#track-the-shared-budget) | BUDGET-01 to 06 | Budget amount and basis · Shared Budget journey · Budget acceptance checks · Ownership and lifecycle |
 | [Organize a child Venture](#organize-a-child-venture) | CHILD-01 to 03 | Delegated planning · Child Ventures |
 | [Find dinner ideas with Gemini](#find-dinner-ideas-with-gemini) | PILOT-01 to 03 | Plan Board · AI-assisted suggestions · Pilot connection |
-| [After MVP v1.0 · gated by D17](#after-mvp-v1-0) | PAID-01 to 03 (not counted in the 42) | Paid booking links |
+| [Planning together](#planning-together) | FLOW-01 to 03, CREW-10 | Planning together · Roles and accounts · Child Ventures |
+| [After MVP v1.0 · gated by D17](#after-mvp-v1-0) | PAID-01 to 03 (not counted in the 46) | Paid booking links |
 
 ## Launch a Venture
 
@@ -44,9 +45,9 @@ As a Planner who has picked a date, I want to enter it directly so the crew can 
 
 As a Planner with flexible dates, I want to give the crew a window and a deadline so I can compare times people can make.
 
-- **Set for date decision** captures the earliest start and latest wrap-up. I can optionally specify an ideal length.
+- **Set for date decision** shows the duration first, then requires an earliest start and latest wrap-up for launch.
 - **Opt in by** is required. I can choose 24 hours, 3 days, or a custom deadline. The deadline appears on the invite preview.
-- Launching opens Date Decision in **voting**. The personal card and the group invite both ask for availability.
+- Launching opens the Plan Board in **voting**, with **Review dates** available. The personal card and the group invite both ask for availability.
 
 <a id="launch-04"></a>
 
@@ -188,7 +189,7 @@ As a Planner, I want to see who responded and which windows work for them so I c
 As a Planner, I want to review the results or give the crew another chance to respond so a tie or a missed deadline still leaves me a way forward.
 
 - At cutoff, the server closes availability submissions and the workspace retains the results. A stale voting tab cannot record a late answer.
-- With zero replies, partial replies, or a tie, the Venture stays in Date Decision until I lock a time. Before locking, I can move the cutoff forward to reopen voting and permit new joins where capacity allows.
+- With zero replies, partial replies, or a tie, date selection remains pending until I lock a time. Before locking, I can move the cutoff forward to reopen voting and permit new joins where capacity allows.
 - If everyone answers without a clear match, I can lock a partial match or revise the choices and reopen voting. Revised choices prompt a fresh response.
 
 <a id="date-03"></a>
@@ -197,7 +198,7 @@ As a Planner, I want to review the results or give the crew another chance to re
 
 As a Planner, I want one explicit action to lock a window so everyone can move on to planning around the same date.
 
-- **Lock this time** saves the chosen window and moves the Venture to **planning** together. The Plan Board opens on the locked dates.
+- **Lock this time** saves the chosen window and moves the Venture to **planning** together. The existing board maps its outline onto the locked dates.
 - After a successful lock, the usual fixed-date flow prepares the same **Set a date** RSVP card and notification text. **Send date to N** sends in one action to active Crew with a permitted direct route and preserves each recipient’s existing entry. I can also **Share a group link** using the original group URL.
 - An unjoined or removed person is excluded from the direct resend. Dismissing the send or retrying a failed delivery leaves the date locked and the card available to send later.
 - An early lock immediately closes availability and new opt-ins. Submitting from a stale tab shows the current phase. Reopening the invite also loads the current state.
@@ -250,8 +251,8 @@ As an approved Viewer, I want to find the Venture when I sign in on another devi
 
 As a Planner, I want to open a decision such as Saturday dinner so the crew has one place to suggest options for it.
 
-- The Plan Board builds expandable days from the locked dates in the Venture time zone. A one-day Venture opens its day by default. Collapsed days show open and decided counts.
-- I can add a decision to a day or to **Whole Trip**, the PRD’s label for decisions spanning days. A title is enough. A time window, spending limit, and note are optional.
+- The board accepts unscheduled ideas and relative days before date lock. It builds calendar days from the locked dates in the Venture time zone. A one-day Venture opens its day by default. Collapsed days show open and decided counts.
+- I can add a decision to a day or to **Whole Venture**, the PRD’s label for decisions spanning days. A title is enough. A time window, spending limit, and note are optional.
 - The decision shows **Suggest an idea** to the Planner and signed-in Collaborators.
 - A board with no decisions offers starters chosen by the Venture’s length: **A place to stay** when it includes at least one night, **Where to eat** and **Something to do**. Tapping one opens the matching decision card with an editable title. Nothing is added until I tap, and the starters disappear once the board has a decision.
 - A must-do I already know goes on the board as a decision card, even before it has options.
@@ -406,7 +407,7 @@ A regular Plan Board card is enough when an activity needs a headcount or a poin
 As a Collaborator, I want to organize a side plan from the main Plan Board so I can take responsibility for an activity that only some of us want to do.
 
 - As a signed-in Collaborator linked to an active main Crew entry, I can start a child Venture with a title. I become its Planner and own its schedule, choices, invitations, and RSVPs.
-- The child uses the main Venture’s dates, time zone, and broad location as context. I can enter a settled plan directly or use the date and option decision flows. Child dates must fit within the main dates.
+- The child uses the main Venture’s dates, time zone, and broad location as context. I can enter a settled plan directly or use the date and option decision flows. Use the parent window while dates are open. Review child placement against the locked parent dates before displaying it on the itinerary.
 - A child links to one main Venture. Nesting ends at that level.
 
 <a id="child-02"></a>
@@ -460,6 +461,52 @@ As the person who requested ideas, I want to edit and share only the ones I woul
 - A draft stays private until I choose **Suggest to crew**. A shared idea uses the same support and lock-to-itinerary flow as a manual suggestion. Generating or sharing leaves RSVP status intact.
 - An unavailable provider, exhausted quota, or invalid response produces an actionable message and creates no board cards. Manual entry remains available, including for Ventures with no provider connection.
 
+## Planning together
+
+Required for MVP v1.0. FLOW-02 closes in M5, FLOW-01 in M6, and FLOW-03 and CREW-10 in M8.
+
+<a id="flow-01"></a>
+
+### FLOW-01 · Compare whole plans on one board
+
+As a Planner, I want to explore different versions of the same Venture while the Crew considers dates.
+
+- Start with one working plan. Add an idea or link before inviting anyone. Suggest another plan creates an alternative in the same Venture with its own outline, duration, estimates and support. A title is enough to start.
+- Compare a potluck and a picnic, or two multi-day outlines. Show relevant known details, estimated costs as estimates, and the names behind support counts to eligible Crew. A guest can support several alternatives with private access.
+- Choose this plan selects one outline and retains the others under Other plans. Selecting a plan and locking dates work in either order. Selecting a plan preserves availability, memberships and RSVP. Only the selected plan feeds the active itinerary and budget.
+- Undated ideas and relative days survive date lock. Map Day 1 to the start in Venture time; flag days outside the selected window for review. Retain their ideas. If a proposed date or duration changes, mark earlier support for reconfirmation.
+
+<a id="flow-02"></a>
+
+### FLOW-02 · Show each person the next useful action
+
+As a Crew member, I want to know what the group is deciding and when I have finished my part.
+
+- Show duration first, followed by a fixed date or bounded candidate window. With multiple durations show each on its proposal. An invite for one evening asks which evenings work, and a multi-night invite shows whole stays and partial availability.
+- Show one primary action for the current person. The Planner can use Ask the Crew on an open decision to feature it. The board keeps the date summary and other ideas accessible.
+- A returning member sees their recorded answer and the current question. An expression of interest, support, availability and a final RSVP convey distinct commitments. A changed locked schedule requests a fresh RSVP from existing members.
+
+<a id="flow-03"></a>
+
+### FLOW-03 · Keep the contribution through account creation
+
+As a guest, I want to take my next action without losing the response or idea I already entered.
+
+- Guest availability, RSVP and support work before sign-in. Confirm the saved response and offer private return access plus an optional Save to My Ventures.
+- Let a guest draft a suggestion or side plan. Ask for sign-in or account creation at sharing or organizing. Restore the draft on cancellation; after verification and private membership proof, complete the intended action once, even on retry.
+- Saving a Venture links the same membership. Posting or organizing uses Collaborator permissions. Keep the original spot, answers and support. From a completed Venture, a guest can also draft a new Venture and sign in at launch.
+
+<a id="crew-10"></a>
+
+### CREW-10 · Invite people from a shared Venture again
+
+As a participant, I want to invite people I met on a particular Venture to another gathering.
+
+- After the gathering, offer Let this Crew invite me again. A guest can create an account to save that connection. Record a revocable choice for this specific Crew. Participation or a prior RSVP alone grants no invitation permission.
+- From Invite Crew → Past Crew choose the previous gathering, select individual eligible people, and review the count. A child Venture has its own Past Crew and consent. Parent membership gives no access to its subgroup roster.
+- Plan something together again starts a fresh draft from a completed Venture, with eligible people available for selection. Send only on the Planner’s explicit action. Each recipient gets a fresh invitation and chooses whether to join.
+- Resolve eligible people by linked identity and recheck permission at send. Dedupe recipients across sources. Keep contact details private, honor withdrawal or blocking and never copy answers or memberships into the new Venture.
+
 ## Decisions still open
 
 | Area | Where v0.21 leaves the decision |
@@ -478,7 +525,7 @@ As the person who requested ideas, I want to edit and share only the ones I woul
 
 ## After MVP v1.0 · gated by D17
 
-These stories record the rules in [Paid booking links](prd.md#paid-booking-links). They are outside MVP v1.0 and outside the count of 42. Build them only after Dot turns paid links on (D17). PAID-03 follows the D19 recommendation. If Dot decides D19 differently, update it in the same change.
+These stories record the rules in [Paid booking links](prd.md#paid-booking-links). They are outside MVP v1.0 and outside the count of 46. Build them only after Dot turns paid links on (D17). PAID-03 follows the D19 recommendation. If Dot decides D19 differently, update it in the same change.
 
 <a id="paid-01"></a>
 

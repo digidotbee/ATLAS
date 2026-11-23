@@ -5,6 +5,10 @@
 
 ---
 
+## Plan Board hierarchy
+
+Lead with Venture title and time commitment. Place the date or candidate range beneath the duration. Use a single primary action for the current person and decision. Present comparable proposals together and place plan-specific durations on their cards. Reserve travel details for plans that use them. [Planning together](user-stories.md#planning-together).
+
 ## 1. Brand Identity
 
 **Product name:** ORIVOIR
