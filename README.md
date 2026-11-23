@@ -8,6 +8,8 @@ For the agreed creation wizard and the four MVP roles, see [Venture launch](docs
 
 Live: https://digidotbee.github.io/ATLAS/
 
+The approved [planning flow](docs/prd.md#planning-together) covers drafting before date lock, comparing complete plans, child Ventures and inviting Past Crew. The features below describe the current app.
+
 ## How it works
 - **Shape it** – follow-up questions (pace, bases, lodging style, must-dos…).
 - **When & how long** – for a Venture with flexible dates, ORIVOIR costs every possible window inside your availability and marks the best value.

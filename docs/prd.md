@@ -1,6 +1,6 @@
 # ORIVOIR Living PRD
 
-**Version 0.21 · November 22, 2026 · MVP v1.0**
+**Version 0.22 · November 23, 2026 · MVP v1.0**
 
 [User stories and acceptance criteria](user-stories.md)
 
@@ -13,6 +13,22 @@
 ORIVOIR helps groups coordinate Ventures ranging from a few hours to several weeks. The Planner journey takes a group from a rough idea to a locked date, coordinated plans and transit, and a shared budget. Human decisions drive the flow. The consumer core is free. ORIVOIR plans to earn commission from booking sites through clearly labeled paid links, under the rules in [Paid booking links](#paid-booking-links).
 
 This version defines creation, Date Lock-In, account requirements, and access for Viewers. It also defines the Plan Board, shared budget, and optional in-app AI suggestions and records the remaining Journey 1 milestones for later ideation. Update this document as decisions change and add a dated entry to the revision history.
+
+## Planning together
+
+The aim is to make real adventures with other people easy to start and repeat. A Venture can be a potluck, a walk or a holiday. A plan is one version of the Venture. An idea belongs to a plan or decision. A child Venture is an optional activity with its own host and participants.
+
+Open the working board from the draft. Require fixed dates or a bounded date window at launch. Put **One evening** above **Between May 28 and June 6** on the board and invitation. Display a shared duration once, or show each alternative’s duration beside it. Do not require a destination, price or itinerary to suggest a plan.
+
+Start with one plan. **Add an idea** adds to the current context. **Suggest another plan** introduces a whole alternative to the same Crew. Compare relevant details such as host and contributions for a potluck, or duration, activities and estimates for a weekend away. Keep relative days and unscheduled ideas. **Choose this plan** keeps its contents and moves alternatives under **Other plans**. Plan choice and date lock can happen in either order. Only the chosen plan contributes its costs to the working budget. On date lock, map relative days to dates and flag overflow for review. Changes to proposal dates or duration prompt supporters to reconfirm; a changed locked date returns RSVPs to pending.
+
+Show one next action appropriate to the person and current decision. **Ask the Crew** lets the Planner feature a different open question. Make the names behind support counts available to eligible Crew. Confirm when someone has answered. Keep support, availability and final attendance distinct.
+
+Offer optional **Save to My Ventures** after a guest response. Let the guest draft first, then offer **Create account & share** when posting an idea or organizing a side plan. Link the same private Crew entry, resume the intended action once, and keep the draft if sign-in is dismissed. A completed Venture can also lead into drafting the guest’s own Venture.
+
+After a gathering, **Let this Crew invite me again** enables future invitations from eligible fellow participants through ORIVOIR. Keep consent revocable and specific to the shared gathering. **Invite Crew → Past Crew** starts with the outing people remember. **Plan something together again** starts from the completed outing and opens a new draft. Both allow selection of individual consenting participants, preserve their private contact details and issue fresh invitations. A side plan has its own Crew and invitation boundary.
+
+A Planner can deliberately open a Venture to friends of the Crew, with a visible audience and optional available spots. Begin side plans with the main Crew. A wider discovery audience is a separate product surface; exact eligibility, identity and moderation rules must be defined before release. Repeating a gathering can later become a recurring Venture. A single invitation never enrolls anyone in future gatherings.
 
 ## Roles and accounts
 
@@ -40,7 +56,7 @@ Aim for a four-step wizard that takes under 90 seconds. Keep optional travel fie
 | Step | Requirements |
 |---|---|
 | Set the Scene | Capture a destination, spot, or vibe. Venture title and broader area are optional. |
-| Schedule | **Set a date** supports a single day or evening, optional times, and multi-day Ventures. **Set for date decision** captures the earliest start, latest wrap-up, optional ideal length, and required **Opt in by** cutoff. Offer 24 hours, 3 days, or a custom deadline. |
+| Schedule | **Set a date** supports a single day or evening, optional times, and multi-day Ventures. **Set for date decision** captures the time commitment first, then earliest start and latest wrap-up, and required **Opt in by** cutoff. Offer 24 hours, 3 days, or a custom deadline. |
 | Crew | **Choose from contacts** is the primary action where supported. **Add by phone or email** is available to everyone. Review one delivery destination per selected person. Keep the optional planning headcount and **Max crew opt-ins** separate. The Planner can continue with an empty list. |
 | Budget & Launch | Offer **Total (Everything included)**, **Per person**, and **Skip for now**. Save the amount, currency, and basis. Preview the invite card and show **Opt in by** for Date Decision. With ready recipients, **Launch & invite N** creates the Venture and sends a personal invitation to each in one action. With no selection, **Launch Venture** creates the Venture and offers **Share a group link**. Skipping Budget keeps the final action on this screen. |
 
@@ -107,9 +123,9 @@ The Planner sees the pending request and can approve or decline it. Approval gra
 
 ## Plan Board
 
-Fixed-date launch and Date Lock-In both open the Plan Board. Generate expandable day sections from the locked dates in the Venture time zone. Open the day by default for a one-day Venture. Summarize each collapsed day with open and decided counts. Use **Whole Trip** for decisions that span days, such as lodging.
+Both schedule modes open the Plan Board. Review dates opens Date Decision while voting is open or awaiting a lock. Once dates are locked, generate expandable day sections in the Venture time zone. Open the day by default for a one-day Venture. Summarize each collapsed day with open and decided counts. Use **Whole Venture** for decisions that span days, such as lodging.
 
-The Planner adds a **decision card** to a day or to Whole Trip. A title such as “Dinner” is enough to start. An optional time window, spending limit, or note gives the crew context. Show **Suggest an idea** on the decision card for the Planner and Collaborators.
+The Planner adds a **decision card** to a day or to Whole Venture. A title such as “Dinner” is enough to start. An optional time window, spending limit, or note gives the crew context. Show **Suggest an idea** on the decision card for the Planner and Collaborators.
 
 The **Add to plan** category list includes **A place to stay**. Choosing it opens a decision card with the editable title **Where are we staying?** The Planner and Collaborators can suggest a hotel, a cabin, a campsite, or a stay with friends on the same card. One card can cover several nights. The Planner adds it only when the Venture needs it.
 
@@ -174,7 +190,7 @@ A Collaborator can start a child Venture from the Plan Board to organize a plan 
 
 ### Launch and share
 
-1. **Start a side plan.** Enter a title from the main Plan Board. Use the main Venture’s dates, time zone, and broad location as context. The child Planner can add a settled plan directly or use the existing date and option decision flows where needed. Any child date must fit within the main Venture.
+1. **Start a side plan.** Enter a title from the main Plan Board. Use the main Venture’s dates, time zone, and broad location as context. The child Planner can add a settled plan directly or use the existing date and option decision flows where needed. While the parent date is open, use its candidate window. Once it is locked, verify that the child fits before adding it to the dated itinerary.
 2. **Launch to the crew.** Require a signed-in Collaborator linked to an active Crew entry in the main Venture to start and launch a child Venture. The child Planner can invite a subset of the existing crew. Invitees can use their personal links, and child RSVPs are independent of main Venture RSVPs.
 3. **Offer it to the shared itinerary.** The child Planner can ask the main Planner to include the side plan. Launching to the subgroup can happen before this approval. After approval, the shared itinerary shows an optional plan summary that links to the child Venture. Child planning details are available to the child participants and the main Planner, subject to their access permissions.
 
@@ -215,7 +231,7 @@ These are proposed routes and data contracts. The implementation should map them
 
 | Data | Required fields and behavior |
 |---|---|
-| Venture | Planner account ID, schedule mode, status, time zone, cutoff, target window, optional opt-in limit, optional ideal length, and locked start and end or slot reference. Venture brief (feel, avoid and notes) and whether the crew can see it yet. Store instants with timezone-aware timestamps. |
+| Venture | Planner account ID, schedule mode, status, time zone, cutoff, target window, optional opt-in limit, time commitment, and locked start and end or slot reference. Venture brief (feel, avoid and notes) and whether the crew can see it yet. Store instants with timezone-aware timestamps. |
 | Candidate window | Venture ID, stable slot ID, start and end. |
 | Crew invitation | Venture ID, stable recipient invitation ID, issuing Planner, private contact label, optional photo, selected SMS/email destination, pending/claimed/revoked state, nullable Crew membership ID and scoped token digest. Personal details are visible to the Planner. |
 | Invitation delivery | Invitation or opted-in membership, send operation, message purpose, schedule version, channel, status, attempts and provider reference. Record applicable SMS permission and suppression. Retrying one failed delivery preserves the other recipients and their responses. |
@@ -242,7 +258,7 @@ Launch records the Venture, invitations and queued deliveries atomically. Supaba
 - With six spots and five active Crew members, two simultaneous new submissions produce exactly one successful opt-in. An open or preview consumes no spot. Existing Crew can still vote until cutoff and RSVP after lock.
 - Removing a Crew member revokes their access, drops their responses from active counts, and makes a spot available if joining is still open. Raising the limit also frees capacity while joining is open.
 - A stale voting tab cannot submit after the cutoff or after an early lock. Extending the cutoff before lock reopens eligible voting and allows new joins where capacity permits.
-- With zero replies, partial replies, or tied results, the Venture stays in Date Decision until the Planner explicitly locks a time.
+- With zero replies, partial replies, or tied results, date selection remains pending on the Plan Board until the Planner explicitly locks a time.
 - For June 11–13, 2027, four whole-weekend replies and one Saturday-only reply display as **4 for the whole weekend · 1 for Saturday only**. Five people are available on Saturday. If the Saturday-only guest changes to the whole weekend while voting is open, the result becomes five whole and zero partial. Answering for another weekend uses the same Crew entry.
 - Eligible invitees can RSVP on the same link. Both whole-window and partial availability leave attendance pending until the person RSVPs to the locked dates.
 - Given the same Venture and settled schedule, fixed-date launch and Date Lock-In produce the same card and recipient-facing notification wording for each channel. The direct resend preserves each eligible person’s identity, and the group share preserves the original group URL. A group-only guest may opt into a date text. An unjoined invitee sees the departure screen after lock. A failed or dismissed send leaves the schedule locked.
@@ -316,3 +332,4 @@ The Planner signed off on this journey on November 18, 2026.
 | 0.19 | November 22, 2026 | Added paid booking links as the planned revenue path, with placement, disclosure, ranking and privacy rules, and click-out measurement in M5. Replaced Mapbox with MapLibre and OpenStreetMap tiles; maps load only on tap; coordinates come from the provider or a Planner pin before any geocoder; coordinates follow address redaction. |
 | 0.20 | November 22, 2026 | Made the Plan Board the only planning view. Added a Venture brief (feel, avoid, notes) that the Planner edits and the whole crew sees, never Viewers or messages; starter decisions on an empty board; must-dos as decision cards; Gemini preferences pre-filled from the brief. |
 | 0.21 | November 22, 2026 | Recorded the stack and accent as built (D12): WILDSTROM CSS with no Tailwind, and gold primary actions in the Storm theme. |
+| 0.22 | November 23, 2026 | Approved early planning, alternative plans, duration-first scheduling, contextual accounts and consent-based Past Crew invitations. |
