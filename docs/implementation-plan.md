@@ -1,6 +1,6 @@
 # ORIVOIR implementation plan · MVP v1.0
 
-**Draft 0.2 · November 23, 2026 · for the [living PRD v0.23](prd.md) and its [46 MVP user stories](user-stories.md)**
+**Draft 0.2 · November 23, 2026 · for the [living PRD v0.24](prd.md) and its [46 MVP user stories](user-stories.md)**
 
 This plan turns the PRD into an ordered build. Every user story is assigned to exactly one milestone, every milestone lists what it depends on, and every decision the PRD leaves open is named with a recommendation and the milestone it blocks.
 
@@ -90,8 +90,8 @@ Every one of the 46 MVP stories appears here exactly once. The three PAID storie
 | [CREW-08](user-stories.md#crew-08) | M3 | One-tap delivery, readiness review, retry only failures |
 | [CREW-09](user-stories.md#crew-09) | M2 | **Mom · Saturday works**; private contact details; separate statuses |
 | [DATE-01](user-stories.md#date-01) | M4 | Response pills, countdown, two-layer heatmap, whole and partial counts |
-| [DATE-02](user-stories.md#date-02) | M4 | Server cutoff, move the cutoff, revise options |
-| [DATE-03](user-stories.md#date-03) | M4 | **Lock this time**, **Send date to N**, early lock |
+| [DATE-02](user-stories.md#date-02) | M4 | Server cutoff, move the cutoff, revise options, timed-out departure message |
+| [DATE-03](user-stories.md#date-03) | M4 | **Lock this time**, **Send date to N**, early lock and its departure message |
 | [DATE-04](user-stories.md#date-04) | M4 | **Count me in** / **Can't make it**; **Text me when [Planner] picks a date** |
 | [VIEW-01](user-stories.md#view-01) | M7 | **Request to follow** from the departure screen, a group link and private email |
 | [VIEW-02](user-stories.md#view-02) | M7 | Approve, decline, revoke |
@@ -194,6 +194,7 @@ These are the decisions only Dot can make, with Claude's recommendation for each
 | November 22, 2026 | D12 | Dot chose to update the PRD to the code as built: WILDSTROM CSS, no Tailwind, and the gold Storm accent instead of "lime primary actions" (PRD v0.21). |
 | November 23, 2026 | D8 | Revised in PRD v0.22 (#44): a Venture opens to the Plan Board in either schedule mode, and Review dates opens Date Decision. The rest of the November 22 decision stands. |
 | November 23, 2026 | Planning together | Early planning before the date is locked, alternative plans, duration-first scheduling, contextual accounts and consent-based Past Crew invitations were approved in PRD v0.22 and committed to MVP v1.0 in v0.23 (#44) as FLOW-01 to FLOW-03 and CREW-10, so MVP v1.0 is now 46 stories. The same change renamed the PRD label **Whole Trip** to **Whole Venture**. |
+| November 23, 2026 | Departure screen | Dot clarified her November 22 decision: the kind message **This Venture has departed. All [limit] spots are filled.** is for people who missed the last spot of a full Venture, and **Nothing ventured, nothing gained…** is for people who let **Opt in by** pass without responding. After an early lock the screen says **This Venture has departed.** (PRD v0.24). |
 
 ## 5. Architecture
 
@@ -306,7 +307,7 @@ M1 keeps today's local mode working for already-saved Ventures until the Planner
   - **Candidate windows:** generated and editable in Schedule (D5), and shown on the invite preview.
   - **At launch:** invitations and the group link. **Share personal invite** and **Share a group link** use the device share sheet, or copy the link where there's no share sheet.
   - **Personal and group landing pages:** **Responding as [name]**, the display-name prompt for group joiners, whole-window availability and **None of these work**, fixed-date RSVP, and **Manage my response**.
-  - **Joining:** one atomic join function for both link types. **This Venture has departed** when full or closed (the **Request to follow** button arrives in M7; until then the screen says to ask the Planner).
+  - **Joining:** one atomic join function for both link types. **This Venture has departed. All [limit] spots are filled.** when full; M4 adds the cutoff and early-lock messages (the **Request to follow** button arrives in M7; until then the screen says to ask the Planner).
   - **Who view:** joined members, **N of M spots filled**, named invitations **Awaiting reply**, private contact details on row tap, **Remove from Crew**, raise the limit.
   - **A minimal Date Decision workspace:** status, roster, whole-window counts per window ([LAUNCH-03](user-stories.md#launch-03)).
 - **Closes:** LAUNCH-03, LAUNCH-04, LAUNCH-06, CREW-01, CREW-02, CREW-04, CREW-05, CREW-07, CREW-09.
@@ -359,7 +360,7 @@ M1 keeps today's local mode working for already-saved Ventures until the Planner
   - the PRD June 11–13 example (**4 for the whole weekend · 1 for Saturday only**, then five whole)
   - stale tabs after cutoff and after an early lock
   - card parity between a fixed-date launch and a lock for the same schedule, on each channel
-  - unjoined people see the departure screen after the lock
+  - unjoined people see the departure screen after the lock: **Nothing ventured, nothing gained…** once the cutoff has passed, **This Venture has departed.** after an early lock
   - a failed or dismissed send leaves the date locked
 - **Needs first:** M3, D6, D7.
 - **R1 gate:** at the end of M4, run the friends-and-family pilot with the D15 measures in place.

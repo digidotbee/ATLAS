@@ -2,7 +2,7 @@
 
 **Journey 1 · MVP v1.0 · November 23, 2026**
 
-The 46 MVP stories follow a Planner and their crew from a rough idea to a locked date, a shared itinerary, and a confirmed budget. They cover the free consumer core and the optional Gemini pilot. Planning together includes FLOW-01 through FLOW-03 and CREW-10 in MVP v1.0. Three more stories, PAID-01 to PAID-03, record the paid-link rules for after MVP v1.0 and are counted separately. The bullets under each story are its acceptance criteria. [ORIVOIR Living PRD v0.23, November 23, 2026](prd.md) · [Crew invitations engineering guide](crew-invitations.md)
+The 46 MVP stories follow a Planner and their crew from a rough idea to a locked date, a shared itinerary, and a confirmed budget. They cover the free consumer core and the optional Gemini pilot. Planning together includes FLOW-01 through FLOW-03 and CREW-10 in MVP v1.0. Three more stories, PAID-01 to PAID-03, record the paid-link rules for after MVP v1.0 and are counted separately. The bullets under each story are its acceptance criteria. [ORIVOIR Living PRD v0.24, November 23, 2026](prd.md) · [Crew invitations engineering guide](crew-invitations.md)
 
 | Journey | Stories | Source sections in the PRD |
 |---|---|---|
@@ -189,6 +189,7 @@ As a Planner, I want to see who responded and which windows work for them so I c
 As a Planner, I want to review the results or give the crew another chance to respond so a tie or a missed deadline still leaves me a way forward.
 
 - At cutoff, the server closes availability submissions and the workspace retains the results. A stale voting tab cannot record a late answer.
+- Someone who never responded and opens the Venture after the cutoff sees the departure screen with **Nothing ventured, nothing gained…**, unless the Venture filled first.
 - With zero replies, partial replies, or a tie, date selection remains pending until I lock a time. Before locking, I can move the cutoff forward to reopen voting and permit new joins where capacity allows.
 - If everyone answers without a clear match, I can lock a partial match or revise the choices and reopen voting. Revised choices prompt a fresh response.
 
@@ -202,6 +203,7 @@ As a Planner, I want one explicit action to lock a window so everyone can move o
 - After a successful lock, the usual fixed-date flow prepares the same **Set a date** RSVP card and notification text. **Send date to N** sends in one action to active Crew with a permitted direct route and preserves each recipient’s existing entry. I can also **Share a group link** using the original group URL.
 - An unjoined or removed person is excluded from the direct resend. Dismissing the send or retrying a failed delivery leaves the date locked and the card available to send later.
 - An early lock immediately closes availability and new opt-ins. Submitting from a stale tab shows the current phase. Reopening the invite also loads the current state.
+- After an early lock, someone who never responded sees the departure screen with **This Venture has departed.**
 
 <a id="date-04"></a>
 
@@ -221,7 +223,7 @@ As an opted-in Attendee or Collaborator, I want to see the time the Planner chos
 
 As a visitor who missed the join window, I want to ask to follow the Venture so I can still see the plans the Planner chooses to share.
 
-- When capacity is full, or Date Decision joining has closed at cutoff or early lock, I see the departure screen and **Request to follow**, even if I previously opened an invitation.
+- When capacity is full, or Date Decision joining has closed at cutoff or early lock, I see the departure screen and **Request to follow**, even if I previously opened an invitation. Its message depends on how joining closed ([CREW-04](#crew-04), [DATE-02](#date-02), [DATE-03](#date-03)).
 - From a group link, I can request directly if signed in. If signed out, I enter my email and tap **Request to follow** in the private email to sign in or create my account and submit the original request. A direct Viewer invitation takes me to that same action.
 - An email preview leaves the private link usable. An intentional tap shows **Request sent** and repeating it creates at most one pending request. Following takes no Crew spot or RSVP and requires the Planner’s approval for access.
 
@@ -509,7 +511,7 @@ As a participant, I want to invite people I met on a particular Venture to anoth
 
 ## Decisions still open
 
-| Area | Where v0.23 leaves the decision |
+| Area | Where v0.24 leaves the decision |
 |---|---|
 | Availability windows | Decide how to generate candidates from the Planner’s target range and ideal length, and how a guest enters part of an evening. Editable Friday–Sunday suggestions are an option under consideration. |
 | Post-lock guest visibility | Opted-in members can see the chosen time, RSVP, and support eligible options. The full set of details visible to an opted-in guest and how to confirm previously offered days are still open. |

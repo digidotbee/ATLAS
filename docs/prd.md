@@ -1,6 +1,6 @@
 # ORIVOIR Living PRD
 
-**Version 0.23 · November 23, 2026 · MVP v1.0**
+**Version 0.24 · November 23, 2026 · MVP v1.0**
 
 [User stories and acceptance criteria](user-stories.md)
 
@@ -101,7 +101,7 @@ For each window, count each respondent once, either for the whole window or for 
 | Everyone replies without a clear match | Show the overlap and let the Planner lock a partial match or revise the options and reopen voting. Revising options should prompt a fresh response for the new choices. |
 | Planner locks a time | An explicit **Lock this time** action saves the chosen window, moves the Venture into **planning**, and starts the standard fixed-date invitation send flow. An early lock closes voting immediately. |
 | Eligible invitee returns after lock-in | The same link shows the chosen time and **Count me in** or **Can’t make it**. The Planner sees confirmed, declined, and pending attendance. Availability totals remain separate from RSVP totals. |
-| New visitor arrives after joining closes | Show the departure screen with **Request to follow** and explain that the Planner can approve view-only access. Opening the link earlier did not reserve a spot. |
+| New visitor arrives after joining closes | Show the departure screen with **Request to follow** and explain that the Planner can approve view-only access. Opening the link earlier did not reserve a spot. The message says why joining closed: a full Venture shows **This Venture has departed. All [limit] spots are filled.** Once **Opt in by** passes, it shows **Nothing ventured, nothing gained…** After an early lock, it shows **This Venture has departed.** A Venture that filled before its cutoff keeps the full-Venture message. |
 
 **Resend the fixed-date invitation.** After **Lock this time** succeeds, prepare the same **Set a date** card, date/time details, RSVP actions and channel-specific notification text as a fixed-date launch. **Send date to N** sends to active Crew members with an eligible direct route, including group-link respondents who requested that update. Each direct message resolves to the same invitation or membership that supplied availability. **Share a group link** reuses the original group URL for group conversations. Leave unjoined, removed or suppressed recipients off the direct resend. Dismissing the send or retrying a failure leaves the date locked. Either message opens the current Venture state. Availability alone leaves attendance pending.
 
@@ -336,3 +336,4 @@ The Planner signed off on this journey on November 18, 2026.
 | 0.21 | November 22, 2026 | Recorded the stack and accent as built (D12): WILDSTROM CSS with no Tailwind, and gold primary actions in the Storm theme. |
 | 0.22 | November 23, 2026 | Approved early planning, alternative plans, duration-first scheduling, contextual accounts and consent-based Past Crew invitations. |
 | 0.23 | November 23, 2026 | Committed all four planning and Past Crew stories to MVP v1.0. |
+| 0.24 | November 23, 2026 | Gave the departure screen a message for each way joining closes: the kind full-Venture message, **Nothing ventured, nothing gained…** once **Opt in by** passes without a response, and **This Venture has departed.** after an early lock. |
