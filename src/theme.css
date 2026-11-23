@@ -2,7 +2,7 @@
    WILDSTROM Design System — "Wild by nature. Engineered with intention."
    Token values are taken verbatim from the Wildstrom showcase
    (Storm + Daylight). Loaded after styles.css, which it re-skins.
-   Mode: Storm by default; Daylight when the device prefers light or the
+   Mode: Storm by default; Daylight when Auto follows a light device preference or the
    person picks it (html[data-theme]).
    ========================================================================== */
 
@@ -81,7 +81,7 @@
   color-scheme: light;
 }
 @media (prefers-color-scheme: light) {
-  :root:not([data-theme='storm']) {
+  :root[data-theme='auto'] {
     --surface-100: #f5f4ec;
     --surface-200: #e9e8db;
     --ink: #262b33;
@@ -345,8 +345,8 @@ textarea[readonly] {
   filter: invert(0.9);
 }
 @media (prefers-color-scheme: light) {
-  :root:not([data-theme='storm']) input[type='date']::-webkit-calendar-picker-indicator,
-  :root:not([data-theme='storm']) input[type='time']::-webkit-calendar-picker-indicator {
+  :root[data-theme='auto'] input[type='date']::-webkit-calendar-picker-indicator,
+  :root[data-theme='auto'] input[type='time']::-webkit-calendar-picker-indicator {
     filter: none;
   }
 }
