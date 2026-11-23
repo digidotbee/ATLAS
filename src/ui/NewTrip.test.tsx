@@ -1,5 +1,6 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { deviceTimeZone, timeZoneOptionLabel, zoneAbbreviation } from '../domain/timeZone';
 import { StoreProvider, useStore } from '../state/store';
 import { formatDateTimeLocal, formatLocalTime } from './common';
 import { NewTrip } from './NewTrip';
@@ -57,6 +58,7 @@ function selectCalendarDate(date: ReturnType<typeof calendarDate>, endpoint?: st
 afterEach(() => {
   cleanup();
   localStorage.clear();
+  vi.restoreAllMocks();
 });
 
 describe('Venture creation wizard', () => {
@@ -204,6 +206,62 @@ describe('Venture creation wizard', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Launch Venture' }));
     const [trip] = JSON.parse(screen.getByTestId('saved-trips').textContent ?? '[]');
     expect(trip).toMatchObject({ travelers: { adults: 4, children: 2 }, budgetTotal: 901.50, budgetBasis: 'perPerson', budgetPerPerson: 150.25 });
+  });
+
+  it('D10 defaults to the device time zone and names it on the invite card only', () => {
+    render(
+      <StoreProvider>
+        <NewTrip />
+        <TripState />
+      </StoreProvider>,
+    );
+    const zone = screen.getByLabelText(/^Time zone/) as HTMLSelectElement;
+    expect(zone.value).toBe(deviceTimeZone());
+    expect(zone.closest('details')?.open).toBe(false);
+    fireEvent.change(screen.getByLabelText('Destination'), { target: { value: 'Mom’s House' } });
+    next();
+    expect(screen.queryByText(/^Times are in/)).toBeNull();
+    const date = calendarDate(4);
+    selectCalendarDate(date);
+    fireEvent.change(screen.getByLabelText('Start time (optional)'), { target: { value: '18:00' } });
+    next();
+    const abbreviation = zoneAbbreviation(deviceTimeZone(), `${date.iso}T18:00`);
+    expect(screen.getByRole('button', { name: 'Edit Schedule' }).textContent).not.toContain(abbreviation);
+    next();
+    expect(preview().textContent).toContain(`${formatLocalTime('18:00')} ${abbreviation}`);
+    fireEvent.click(screen.getByRole('button', { name: 'Skip for now' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Launch Venture' }));
+    const [trip] = JSON.parse(screen.getByTestId('saved-trips').textContent ?? '[]');
+    expect(trip.timeZone).toBe(deviceTimeZone());
+  });
+
+  it('D10 saves another time zone and sets the deadline shortcut in it', () => {
+    const other = deviceTimeZone() === 'Asia/Tokyo' ? 'America/Los_Angeles' : 'Asia/Tokyo';
+    vi.spyOn(Date, 'now').mockReturnValue(Date.UTC(2026, 10, 22, 12, 0));
+    render(
+      <StoreProvider>
+        <NewTrip />
+        <TripState />
+      </StoreProvider>,
+    );
+    fireEvent.change(screen.getByLabelText('Destination'), { target: { value: 'Thanksgiving' } });
+    fireEvent.change(screen.getByLabelText(/^Time zone/), { target: { value: other } });
+    expect(screen.getByLabelText(/^Time zone/).closest('details')?.open).toBe(true);
+    next();
+    expect(screen.getByText(`Times are in ${timeZoneOptionLabel(other)}.`)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'SET FOR DATE DECISION' }));
+    selectCalendarDate(calendarDate(4), 'Earliest start');
+    selectCalendarDate(calendarDate(11));
+    fireEvent.click(screen.getByRole('button', { name: 'In 24 hours' }));
+    const cutoff = other === 'Asia/Tokyo' ? '2026-11-23T21:00' : '2026-11-23T04:00';
+    expect((screen.getByLabelText('Opt in by') as HTMLInputElement).value).toBe(cutoff);
+    continueToBudget();
+    expect(preview().textContent).toContain(`${formatDateTimeLocal(cutoff)} ${zoneAbbreviation(other, cutoff)}`);
+    fireEvent.click(screen.getByRole('button', { name: 'Skip for now' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Launch Venture' }));
+    const [trip] = JSON.parse(screen.getByTestId('saved-trips').textContent ?? '[]');
+    expect(trip.timeZone).toBe(other);
+    expect(trip.availability.optInBy).toBe(cutoff);
   });
 
   it('requires date details before continuing without a skip action', () => {

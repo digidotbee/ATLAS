@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { budgetTotalForEntry, NEW_TRIP_STEPS, optInDeadlineAfter, preferredNightsForDuration, stepErrors, type NewTripDraft } from './newTrip';
+import { deviceTimeZone } from './timeZone';
 
 const base: NewTripDraft = {
   destination: 'Japan',
   name: '',
   region: '',
+  timeZone: 'America/Los_Angeles',
   budget: 9000,
   budgetSkipped: false,
   currency: 'USD',
@@ -74,8 +76,18 @@ describe('new trip steps', () => {
   });
   it('sets the deadline shortcuts in local time across the end of a month', () => {
     const now = new Date(2030, 0, 31, 18, 45).getTime();
-    expect(optInDeadlineAfter(24, now)).toBe('2030-02-01T18:45');
-    expect(optInDeadlineAfter(72, now)).toBe('2030-02-03T18:45');
+    expect(optInDeadlineAfter(24, deviceTimeZone(), now)).toBe('2030-02-01T18:45');
+    expect(optInDeadlineAfter(72, deviceTimeZone(), now)).toBe('2030-02-03T18:45');
+  });
+  it('D10 sets the deadline shortcuts in the Venture time zone, not the device zone', () => {
+    const now = Date.UTC(2026, 10, 22, 12, 0); // Nov 22, 2026, noon UTC
+    expect(optInDeadlineAfter(24, 'America/Los_Angeles', now)).toBe('2026-11-23T04:00');
+    expect(optInDeadlineAfter(24, 'Asia/Tokyo', now)).toBe('2026-11-23T21:00');
+    expect(optInDeadlineAfter(72, 'Asia/Kolkata', now)).toBe('2026-11-25T17:30');
+  });
+  it('D10 keeps 24 hours exact across a daylight-saving change', () => {
+    const now = Date.UTC(2027, 2, 13, 12, 0); // Mar 13, 2027, 7:00 a.m. EST in New York
+    expect(optInDeadlineAfter(24, 'America/New_York', now)).toBe('2027-03-14T08:00');
   });
   it('uses whole-person counts with at least one adult', () => {
     expect(stepErrors('who', { ...base, adults: 0 })).toHaveLength(1);

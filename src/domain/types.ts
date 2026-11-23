@@ -227,6 +227,11 @@ export interface Trip {
   name: string;
   destination: string;
   region: string;
+  /**
+   * IANA time zone (D10) that dates, times and Opt in by are read in, e.g. "America/Los_Angeles".
+   * Missing on Ventures saved before D10; read those with ventureTimeZone(), which uses the device's.
+   */
+  timeZone?: string;
   currency: string;
   /**
    * Group total, everything included. Every budget calculation reads this.

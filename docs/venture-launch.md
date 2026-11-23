@@ -8,7 +8,7 @@ Use this document for the creation wizard and the four MVP roles in the [ORIVOIR
 
 | Step | Planner action |
 | --- | --- |
-| 1. Set the Scene | Enter a destination, spot, or vibe. A Venture title and broader area are optional. |
+| 1. Set the Scene | Enter a destination, spot, or vibe. A Venture title, broader area and time zone are optional. The time zone defaults to the Planner's device and sets how dates, times and **Opt in by** are read ([implementation plan](implementation-plan.md) D10). The invite card names the zone beside any set time. |
 | 2. Schedule | **Set a date** supports a single day or evening with optional times, or a multi-day Venture. **Set for date decision** takes an earliest start, latest wrap-up, optional ideal length, and a required **Opt in by** deadline. Offer 24 hours, 3 days, or a custom deadline. |
 | 3. Crew | **Choose from contacts** or **Add by phone or email**. Review the selected people and one destination per person. The Planner can leave the list empty and share a group link after launch. Keep the optional **Max crew opt-ins** separate from the planning headcount, which can include the Planner, household defaults and people attending without a response. Both invite paths use the same capacity check. |
 | 4. Budget & Launch | Choose **Total (Everything included)**, **Per person**, or **Skip for now**. Preview the card, including **Opt in by** for Date Decision. **Launch & invite N** creates the Venture and queues N personal invitations in one action. With nobody selected, **Launch Venture** creates the Venture for sharing. Skipping Budget stays on this screen. |

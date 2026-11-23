@@ -1,4 +1,5 @@
 import { chosenDate, nightsBetween } from '../domain/budget';
+import { plannerZoneSuffix, ventureTimeZone } from '../domain/timeZone';
 import type { Availability, TripConstraints } from '../domain/types';
 import { setWindowStatus } from '../domain/windows';
 import { useStore } from '../state/store';
@@ -55,6 +56,8 @@ export function DatesTab({ trip, update }: TabProps) {
               ` – ${formatDate(locked.end, { month: 'long', day: 'numeric', year: 'numeric' })}`}
             {locked.startTime && ` · ${formatLocalTime(locked.startTime)}`}
             {locked.endTime && `–${formatLocalTime(locked.endTime)}`}
+            {(locked.startTime || locked.endTime) &&
+              plannerZoneSuffix(ventureTimeZone(trip), `${locked.start}T${locked.startTime || locked.endTime}`)}
             {lockedNights !== null && lockedNights > 0 && ` · ${lockedNights} nights`}
           </h3>
           <p className="muted small">{locked.notes}</p>
@@ -77,7 +80,7 @@ export function DatesTab({ trip, update }: TabProps) {
         </div>
       )}
 
-      <AvailabilityCard av={av} cons={cons} setAv={setAv} setCons={setCons} span={span} />
+      <AvailabilityCard av={av} cons={cons} setAv={setAv} setCons={setCons} span={span} timeZone={ventureTimeZone(trip)} />
 
       <EstimatesCard trip={trip} update={update} />
 
