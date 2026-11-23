@@ -1,6 +1,6 @@
 # ORIVOIR Living PRD
 
-**Version 0.20 · November 22, 2026 · MVP v1.0**
+**Version 0.21 · November 22, 2026 · MVP v1.0**
 
 [User stories and acceptance criteria](user-stories.md)
 
@@ -201,7 +201,7 @@ When a Venture enters planning, the Plan Board shows what is settled and which d
 
 ## Routing and data
 
-These are proposed routes and data contracts. The implementation should map them onto the existing Vite, React, TypeScript, Tailwind CSS, MapLibre GL JS with OpenFreeMap tiles (implementation plan D11), and Supabase stack. GitHub Pages uses hash routing today. A future move to orivoir.com, hosted on Cloudflare (implementation plan D1), supports share previews.
+These are proposed routes and data contracts. The implementation should map them onto the existing Vite, React, TypeScript and WILDSTROM CSS stack (hand-written CSS with no Tailwind; see the [design system](design-system.md)), adding Supabase in M1 and MapLibre GL JS with OpenFreeMap tiles in M5 (implementation plan D11, D12). GitHub Pages uses hash routing today. A future move to orivoir.com, hosted on Cloudflare (implementation plan D1), supports share previews.
 
 | Surface | Proposed route | Access |
 |---|---|---|
@@ -261,7 +261,7 @@ Launch records the Venture, invitations and queued deliveries atomically. Supaba
 | Rescheduling | Define what happens to invitations and attendance when a locked date changes. |
 | Transit | Specify chained Plane, Car, Ship/Cruise, and Train/Bus legs, including the 90-minute Shared Transfer Window. |
 
-Use ORIVOIR’s dark navy, layered teal and sage graphics, lime primary actions, and compact pill controls throughout. The north star remains **Completed Shared Ventures per Active Household**. The pilot targets at least 55% invitee link voting and 35% organizer repeat use within 45 days.
+Use ORIVOIR’s WILDSTROM design system throughout: dark navy, layered teal and sage graphics, gold primary actions in the Storm theme, and compact pill controls. Token values for Storm and Daylight are in the [design system](design-system.md). The north star remains **Completed Shared Ventures per Active Household**. The pilot targets at least 55% invitee link voting and 35% organizer repeat use within 45 days.
 
 ## Shared Budget journey
 
@@ -315,3 +315,4 @@ The Planner signed off on this journey on November 18, 2026.
 | 0.18 | November 21, 2026 | Made one-tap, contact-based Crew invitations the primary flow. Specified private SMS/email cards, the group-link alternative, Planner-only contact details, delivery recovery, and the fixed-date resend to eligible Crew. |
 | 0.19 | November 22, 2026 | Added paid booking links as the planned revenue path, with placement, disclosure, ranking and privacy rules, and click-out measurement in M5. Replaced Mapbox with MapLibre and OpenStreetMap tiles; maps load only on tap; coordinates come from the provider or a Planner pin before any geocoder; coordinates follow address redaction. |
 | 0.20 | November 22, 2026 | Made the Plan Board the only planning view. Added a Venture brief (feel, avoid, notes) that the Planner edits and the whole crew sees, never Viewers or messages; starter decisions on an empty board; must-dos as decision cards; Gemini preferences pre-filled from the brief. |
+| 0.21 | November 22, 2026 | Recorded the stack and accent as built (D12): WILDSTROM CSS with no Tailwind, and gold primary actions in the Storm theme. |

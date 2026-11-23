@@ -1,6 +1,6 @@
 # Venture launch
 
-Use this document for the creation wizard and the four MVP roles in the [ORIVOIR living PRD v0.20](prd.md), dated November 22, 2026. The backend, delivery rules and test cases for both invitation paths are in [Crew invitations](crew-invitations.md).
+Use this document for the creation wizard and the four MVP roles in the [ORIVOIR living PRD v0.21](prd.md), dated November 22, 2026. The backend, delivery rules and test cases for both invitation paths are in [Crew invitations](crew-invitations.md).
 
 ## Creation wizard
 
