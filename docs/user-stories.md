@@ -2,7 +2,7 @@
 
 **Journey 1 · MVP v1.0 · November 23, 2026**
 
-The 46 MVP stories follow a Planner and their crew from a rough idea to a locked date, a shared itinerary, and a confirmed budget. They cover the free consumer core and the optional Gemini pilot. Planning together includes FLOW-01 through FLOW-03 and CREW-10 in MVP v1.0. Three more stories, PAID-01 to PAID-03, record the paid-link rules for after MVP v1.0 and are counted separately. The bullets under each story are its acceptance criteria. [ORIVOIR Living PRD v0.25, November 23, 2026](prd.md) · [Crew invitations engineering guide](crew-invitations.md)
+The 46 MVP stories follow a Planner and their crew from a rough idea to a locked date, a shared itinerary, and a confirmed budget. They cover the free consumer core and the optional Gemini pilot. Planning together includes FLOW-01 through FLOW-03 and CREW-10 in MVP v1.0. Three more stories, PAID-01 to PAID-03, record the paid-link rules for after MVP v1.0 and are counted separately. The bullets under each story are its acceptance criteria. [ORIVOIR Living PRD v0.26, November 23, 2026](prd.md) · [Crew invitations engineering guide](crew-invitations.md)
 
 | Journey | Stories | Source sections in the PRD |
 |---|---|---|
@@ -421,6 +421,7 @@ As a child Planner, I want to invite just the main Crew members interested in my
 
 - I choose invitees only from the main Crew. I can launch to that subgroup before the main Planner approves itinerary placement. Those invitees can use their personal links.
 - RSVPs belong to their respective Ventures. If six people confirm for a cabin weekend and four join kayaking, the main Venture still shows six and kayaking shows four.
+- If someone leaves or is removed from the main Crew, their side-plan membership ends too.
 
 <a id="child-03"></a>
 
@@ -474,7 +475,7 @@ Required for MVP v1.0. FLOW-02 closes in M5, FLOW-01 in M6, and FLOW-03 and CREW
 
 As a Planner, I want to explore different versions of the same Venture while the Crew considers dates.
 
-- Start with one working plan. Add an idea or link before inviting anyone. Suggest another plan creates an alternative in the same Venture with its own outline, duration, estimates and support. A title is enough to start.
+- Start with one working plan. Add an idea or link before inviting anyone; until launch the Venture is a draft only its Planner sees. Suggest another plan creates an alternative in the same Venture with its own outline, duration, estimates and support. A title is enough to start.
 - Compare a potluck and a picnic, or two multi-day outlines. Show relevant known details, estimated costs as estimates, and the names behind support counts to eligible Crew. A guest can support several alternatives with private access.
 - Choose this plan selects one outline and retains the others under Other plans. Selecting a plan and locking dates work in either order. Selecting a plan preserves availability, memberships and RSVP. Only the selected plan feeds the active itinerary and budget.
 - Undated ideas and relative days survive date lock. Map Day 1 to the start in Venture time; flag days outside the selected window for review. Retain their ideas. If a proposed date or duration changes, mark earlier support for reconfirmation.
@@ -505,14 +506,15 @@ As a guest, I want to take my next action without losing the response or idea I 
 
 As a participant, I want to invite people I met on a particular Venture to another gathering.
 
-- After the gathering, offer Let this Crew invite me again. A guest can create an account to save that connection. Record a revocable choice for this specific Crew. Participation or a prior RSVP alone grants no invitation permission.
+- After the gathering, offer Let this Crew invite me again. Saving that connection requires an account; a guest creates one to opt in. Record a revocable choice for this specific Crew. Participation or a prior RSVP alone grants no invitation permission.
 - From Invite Crew → Past Crew choose the previous gathering, select individual eligible people, and review the count. A child Venture has its own Past Crew and consent. Parent membership gives no access to its subgroup roster.
 - Plan something together again starts a fresh draft from a completed Venture, with eligible people available for selection. Send only on the Planner’s explicit action. Each recipient gets a fresh invitation and chooses whether to join.
-- Resolve eligible people by linked identity and recheck permission at send. Dedupe recipients across sources. Keep contact details private, honor withdrawal or blocking and never copy answers or memberships into the new Venture.
+- Resolve eligible people by linked identity and recheck permission at send. Dedupe recipients across sources. Keep contact details private, honor withdrawal or blocking and never copy answers or memberships into the new Venture. The inviting Planner never sees a Past Crew recipient's contact details.
+- A Past Crew invitation offers **Don't invite me from this person again**. It stops further Past Crew invitations from that person; withdrawing consent stops them from the whole Crew.
 
 ## Decisions still open
 
-| Area | Where v0.25 leaves the decision |
+| Area | Where v0.26 leaves the decision |
 |---|---|
 | Availability windows | Decide how to generate candidates from the Planner’s target range and ideal length, and how a guest enters part of an evening. Editable Friday–Sunday suggestions are an option under consideration. |
 | Post-lock guest visibility | Opted-in members can see the chosen time, RSVP, and support eligible options. The full set of details visible to an opted-in guest and how to confirm previously offered days are still open. |

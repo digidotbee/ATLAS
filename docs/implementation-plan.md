@@ -1,6 +1,6 @@
 # ORIVOIR implementation plan · MVP v1.0
 
-**Draft 0.2 · November 23, 2026 · for the [living PRD v0.25](prd.md) and its [46 MVP user stories](user-stories.md)**
+**Draft 0.2 · November 23, 2026 · for the [living PRD v0.26](prd.md) and its [46 MVP user stories](user-stories.md)**
 
 This plan turns the PRD into an ordered build. Every user story is assigned to exactly one milestone, every milestone lists what it depends on, and every decision the PRD leaves open is named with a recommendation and the milestone it blocks.
 
@@ -76,7 +76,7 @@ Every one of the 46 MVP stories appears here exactly once. The three PAID storie
 | --- | --- | --- |
 | [LAUNCH-01](user-stories.md#launch-01) | M0 | Done |
 | [LAUNCH-02](user-stories.md#launch-02) | M5 | A fixed-date launch opens the Plan Board in **planning**. The RSVP card itself ships in M2. Evenings past midnight (PRD v0.25) are built in the browser now. |
-| [LAUNCH-03](user-stories.md#launch-03) | M2 | Open the working board in **voting** with Review dates; the personal and group cards ask for availability |
+| [LAUNCH-03](user-stories.md#launch-03) | M2 | Open in **voting** with Review dates (the date summary until M5 builds the board); the personal and group cards ask for availability |
 | [LAUNCH-04](user-stories.md#launch-04) | M2 | **Max crew opt-ins**, kept separate from the planning headcount |
 | [LAUNCH-05](user-stories.md#launch-05) | M3 | **Launch & invite N**; the draft survives sign-in; a retried launch returns the same Venture |
 | [LAUNCH-06](user-stories.md#launch-06) | M2 | Contact picker, manual entry, one invitation per recipient |
@@ -111,7 +111,7 @@ Every one of the 46 MVP stories appears here exactly once. The three PAID storie
 | [BUDGET-05](user-stories.md#budget-05) | M8 | Scope and average per person in M6. Linked child costs close it in M8. |
 | [BUDGET-06](user-stories.md#budget-06) | M6 | **All selected costs confirmed** |
 | [CHILD-01](user-stories.md#child-01) | M8 | Start a child Venture as a Collaborator |
-| [CHILD-02](user-stories.md#child-02) | M8 | Invite a subgroup; separate RSVPs |
+| [CHILD-02](user-stories.md#child-02) | M8 | Invite a subgroup; separate RSVPs; leaving the main Crew ends side-plan membership |
 | [CHILD-03](user-stories.md#child-03) | M8 | Approved summary on the main itinerary; changes flow through |
 | [PILOT-01](user-stories.md#pilot-01) | M9 | Planner key, per-Venture Collaborator access, limit, usage |
 | [PILOT-02](user-stories.md#pilot-02) | M9 | **Find dinner ideas**; privacy-filtered context; schema-validated drafts |
@@ -119,7 +119,7 @@ Every one of the 46 MVP stories appears here exactly once. The three PAID storie
 | [FLOW-01](user-stories.md#flow-01) | M6 | Compare alternatives, lock a date in either order, retain ideas and count only selected costs. |
 | [FLOW-02](user-stories.md#flow-02) | M5 | Verify duration first, Planner override and completed responses. |
 | [FLOW-03](user-stories.md#flow-03) | M8 | Cancel and retry account linking with one draft, member and posted idea. |
-| [CREW-10](user-stories.md#crew-10) | M8 | Test subgroup isolation, withdrawn consent, deduplication and fresh RSVP. |
+| [CREW-10](user-stories.md#crew-10) | M8 | Test subgroup isolation, consent only with an account, withdrawn consent, a per-person block, deduplication, hidden destinations and fresh RSVP. |
 
 **After MVP v1.0, gated by D17.** These stories aren't scheduled and aren't counted in the 46.
 
@@ -196,6 +196,7 @@ These are the decisions only Dot can make, with Claude's recommendation for each
 | November 23, 2026 | Planning together | Early planning before the date is locked, alternative plans, duration-first scheduling, contextual accounts and consent-based Past Crew invitations were approved in PRD v0.22 and committed to MVP v1.0 in v0.23 (#44) as FLOW-01 to FLOW-03 and CREW-10, so MVP v1.0 is now 46 stories. The same change renamed the PRD label **Whole Trip** to **Whole Venture**. |
 | November 23, 2026 | Departure screen | Dot clarified her November 22 decision: the kind message **This Venture has departed. All [limit] spots are filled.** is for people who missed the last spot of a full Venture, and **Nothing ventured, nothing gained…** is for people who let **Opt in by** pass without responding. After an early lock the screen says **This Venture has departed.** (PRD v0.24). |
 | November 23, 2026 | Evenings past midnight | Dot chose to read an end time earlier than the start time on a single day or evening as ending the next day (PRD v0.25), instead of keeping #41's error and pointing to the multi-day workaround. Every place the times appear says "(next day)", so the saved times never carry the meaning silently. |
+| November 23, 2026 | Planning-together data model | Dot chose, for FLOW-01–03 and CREW-10 (PRD v0.26): drafts are Ventures with an empty `launched_at` (not a third status, so `voting` and `planning` keep meaning the date phase); consenting to Past Crew invitations requires an account, so ORIVOIR reaches people only through their own sign-in email; a Past Crew invitation offers **Don't invite me from this person again**, alongside consent withdrawal; leaving the main Crew ends side-plan membership, for privacy; the "draft access" #44 placed in M2 means saving a Venture as a draft before launch. Claude's model: one or more plans per Venture with one chosen, relative days, plan support with reconfirmation, and Past Crew destinations resolved on the server. |
 
 ## 5. Architecture
 
@@ -230,22 +231,33 @@ These responsibilities come from [PRD *Routing and data*](prd.md#routing-and-dat
 
 | Table | Key fields | Rules |
 | --- | --- | --- |
-| `ventures` | Planner, title, destination, region, `time_zone`, `schedule_mode` (fixed or decision), `status` (voting or planning), fixed or locked schedule, `opt_in_by`, target window, ideal length, `max_opt_ins`, planning headcount, budget amount, currency and basis, cushion, `parent_venture_id`, `legacy_local_id`, brief (`brief_feel`, `brief_avoid`, `brief_notes`, `brief_shared`) | One nesting level. `legacy_local_id` makes the browser import idempotent. |
+| `ventures` | Planner, title, destination, region, `time_zone`, `schedule_mode` (fixed or decision), `status` (voting or planning), fixed or locked schedule, `opt_in_by`, target window, ideal length, `max_opt_ins`, planning headcount, budget amount, currency and basis, cushion, `parent_venture_id`, `legacy_local_id`, brief (`brief_feel`, `brief_avoid`, `brief_notes`, `brief_shared`), `launched_at` (empty while a draft), `featured_decision_id` (**Ask the Crew**), `client_request_id` (side plans) | One nesting level. `legacy_local_id` makes the browser import idempotent. A draft (no `launched_at`) is visible only to its Planner; launch sets it. `status` keeps meaning the date phase. `client_request_id` is unique per creating membership, so a side plan started through sign-in is created once. |
 | `candidate_windows` | Venture, stable slot key, start and end dates and times, revision | Revising windows bumps the revision and prompts fresh answers (DATE-02) |
-| `invitations` | Venture, issuer, private recipient label, private avatar reference, channel, destination, normalized `destination_key`, state (pending, claimed, revoked), membership | One intended invitation per recipient per Venture, unique on (Venture, `destination_key`). Planner-only. |
-| `memberships` | Venture, account (required for Collaborators), role, shared display name and photo choice, status (active, removed), `opted_in_at` | One active membership per claimed invitation. Removal revokes access. |
+| `invitations` | Venture, issuer, `source` (contacts or Past Crew), private recipient label, private avatar reference, channel, destination, normalized `destination_key`, recipient account (Past Crew), state (pending, claimed, revoked), membership | One intended invitation per recipient per Venture, unique on (Venture, `destination_key`) and on (Venture, recipient account). Planner-only. A Past Crew invitation's destination comes from the recipient's own account at send and is never shown to the inviting Planner. |
+| `memberships` | Venture, account (required for Collaborators), role, shared display name and photo choice, status (active, removed), `opted_in_at` | One active membership per claimed invitation. Removal revokes access. Leaving or removal from a main Crew also ends that person's memberships in its child Ventures. |
 | `private_access` | Token digest, purpose (invitation, member, viewer-follow), scope, expiry, revoked or used time | Tokens are high-entropy and only digests are stored. Viewer-follow tokens are single-use. |
 | `availability` | Membership (one current), submitted time, `none_work`, selections per window (whole, or specific dates) | A missing row means pending. An empty submission means **None of these work**. |
 | `attendance` | Membership (one current), schedule version, going or not going | Separate from availability |
 | `send_operations`, `deliveries` | Operation key, purpose, schedule version; per delivery: channel, status (queued, accepted, delivered, failed, uncertain), attempts, provider message ID | Unique operation key and provider message ID make launches and callbacks replay-safe |
 | `messaging_permissions` | Destination, channel, sender, purpose, source and time, withdrawal or suppression | Checked again at dispatch |
 | `follower_access` | Venture, account, status (pending, approved, declined, revoked) | Unique per (Venture, account) |
-| `decisions`, `options`, `supports` | Day or Whole Venture, title, kind (general or stay), window, limit; option title, place, address, coordinates (`lat`, `lng`, `coords_source`: `provider`, `planner_pin` or `geocoder`; D11), source, proposed time, estimate (amount, currency, basis, quantity), cost state, confirmed amount and quantity, included, booked, private draft; support per member | One support row per (option, member). One locked option per decision. |
+| `past_crew_consents` | Venture (the shared gathering), account, granted time, withdrawn time | Account required. Unique per (Venture, account). Checked when Past Crew is listed and again at send. A child Venture has its own consents. |
+| `crew_blocks` | Blocking account, blocked account, created time | From **Don't invite me from this person again** on a Past Crew invitation. Blocked pairs are left out of Past Crew lists and sends. |
+| `plans` | Venture, title, outline note, length, optional proposed window, proposer membership, revision, chosen | Every Venture starts with one plan. At most one chosen per Venture (a partial unique index). Changing a plan's proposed dates or length bumps its revision. |
+| `plan_supports` | Plan, membership, supported revision | One per (plan, member). Support for an older revision shows as needing reconfirmation. Separate from availability and attendance. |
+| `decisions`, `options`, `supports` | Plan, relative day (Day N) or Whole Venture, title, kind (general or stay), window, limit; option title, place, address, coordinates (`lat`, `lng`, `coords_source`: `provider`, `planner_pin` or `geocoder`; D11), source, proposed time, estimate (amount, currency, basis, quantity), cost state, confirmed amount and quantity, included, booked, private draft, `client_request_id`; support per member | One support row per (option, member). One locked option per decision. Only the chosen plan's decisions feed the itinerary and budget. `client_request_id` is unique per member, so an idea posted through sign-in is created once. |
 | `child_links` | Child Venture, main Venture, status (requested, approved), linked cost | Updates flow from the child |
 | `ai_connections`, `ai_requests` | Planner, encrypted key reference, per-Venture Collaborator access, limit, usage | Requests log counts and outcomes, never prompt text containing personal data |
 | `events` | Event name, Venture ID, member or account ID, timestamp | For D15 only. No names or contact details. The booking click-out event (BOARD-07) records only the option ID, decision kind, member or account ID and timestamp. |
 
 **Budget rule on the server.** The client's `withBudgetTotal` won't run on server-side writes. The PRD says a group estimate is "derived when needed … without overwriting the saved entry", so the database stores the entry (amount, currency, basis) and computes the group target when it's read, in a view or function. It doesn't store the derived total. The same applies to estimates that use the default quantity (M6).
+
+**Planning together on the server** ([FLOW-01](user-stories.md#flow-01)–[FLOW-03](user-stories.md#flow-03), [CREW-10](user-stories.md#crew-10)).
+
+- **Plans and days.** At date lock, Day N lands on the start date plus N − 1 in the Venture time zone. Days past the end are flagged for review and keep their ideas. Choosing a plan and locking dates work in either order and leave availability, memberships and RSVPs alone.
+- **Four commitments.** Interest is joining (`opted_in_at`), support is `supports` and `plan_supports`, availability and the RSVP (`attendance`) have their own tables. Nothing new stores them.
+- **Drafts.** A Planner's draft lives on the server with an empty `launched_at`. A guest's own draft, and a guest's unposted idea or side plan, stay in their browser until they sign in.
+- **Past Crew.** A gathering is complete once its locked end time has passed; there is no completed status. Eligible people are the consenting accounts among that Venture's members, minus the inviter, withdrawn consents and blocked pairs. Answers and memberships are never copied into the new Venture.
 
 ### 5.4 Access model
 
@@ -260,6 +272,9 @@ These responsibilities come from [PRD *Routing and data*](prd.md#routing-and-dat
   Each function checks the token's scope, the Venture's phase, the cutoff and capacity, and writes in one transaction, locking the Venture row so two people can't take the last spot.
 - **Viewers** read through a redacted projection. Home addresses and their coordinates, minors' details, the Venture brief, invitations, contact data and tokens never leave the database for them.
 - **Venture brief:** the Planner writes it. Collaborators read it through membership and Attendees through the card function. While `brief_shared` is false (an imported draft), only the Planner reads it.
+- **Drafts:** a Venture with no `launched_at` is readable and writable only by its Planner.
+- **Support names:** the names behind support counts, for options and for plans, are visible to the Crew and never part of the Viewer projection.
+- **Past Crew:** listing and sending go through server functions that recheck consent, withdrawal and blocks each time, return names only, never destinations, and resolve each destination from the recipient's account at send. Membership in a main Crew gives no access to a child Venture's roster.
 - **Edge Functions:**
   - the delivery worker and provider callbacks (signature-verified)
   - invite preview metadata, on the host
@@ -270,7 +285,7 @@ These responsibilities come from [PRD *Routing and data*](prd.md#routing-and-dat
 
 ### 5.5 Moving off browser storage
 
-M1 keeps today's local mode working for already-saved Ventures until the Planner imports them (D9). New Ventures launch only after sign-in. The import maps each local Venture to `ventures` plus its existing budget fields and keeps the original ID in `legacy_local_id`, so running it twice changes nothing. Shape it answers become a draft brief with `brief_shared` false: the purpose answer becomes the feel line, the avoid answer the avoid line, and the notes plus the pace, bases, lodging, transport, must-do, food and season answers become labeled lines in the notes. A kids answer is never imported. The browser copy is kept until the import is confirmed.
+M1 keeps today's local mode working for already-saved Ventures until the Planner imports them (D9). New Ventures launch only after sign-in. The import maps each local Venture to `ventures` plus its existing budget fields and keeps the original ID in `legacy_local_id`, so running it twice changes nothing. Imported Ventures arrive launched (`launched_at` set to the import time). From M5, each has one chosen plan holding its decisions. Shape it answers become a draft brief with `brief_shared` false: the purpose answer becomes the feel line, the avoid answer the avoid line, and the notes plus the pace, bases, lodging, transport, must-do, food and season answers become labeled lines in the notes. A kids answer is never imported. The browser copy is kept until the import is confirmed.
 
 ## 6. Milestones
 
@@ -280,7 +295,7 @@ M1 keeps today's local mode working for already-saved Ventures until the Planner
 
 - **Build:**
   - the domain and host move; path routing with redirects from old hash links
-  - Supabase projects and migrations for `ventures` and `candidate_windows` (ready for M2)
+  - Supabase projects and migrations for `ventures` (including `launched_at`) and `candidate_windows` (ready for M2)
   - email-code sign-in at launch, with the draft kept through sign-in (no recipients yet)
   - Ventures saved and loaded through Supabase
   - the Venture time zone on the server (the browser side shipped in #43)
@@ -310,7 +325,9 @@ M1 keeps today's local mode working for already-saved Ventures until the Planner
   - **Personal and group landing pages:** **Responding as [name]**, the display-name prompt for group joiners, whole-window availability and **None of these work**, fixed-date RSVP, and **Manage my response**.
   - **Joining:** one atomic join function for both link types. **This Venture has departed. All [limit] spots are filled.** when full; M4 adds the cutoff and early-lock messages (the **Request to follow** button arrives in M7; until then the screen says to ask the Planner).
   - **Who view:** joined members, **N of M spots filled**, named invitations **Awaiting reply**, private contact details on row tap, **Remove from Crew**, raise the limit.
-  - **A minimal Date Decision workspace:** status, roster, whole-window counts per window ([LAUNCH-03](user-stories.md#launch-03)).
+  - **A minimal Date Decision workspace:** status, roster, whole-window counts per window ([LAUNCH-03](user-stories.md#launch-03)). Until M5 builds the Plan Board, a Venture in **voting** opens to its date summary with Review dates.
+  - **Drafts:** the Planner can leave the wizard and come back to a saved draft (no `launched_at`) that only they can see; launch sets `launched_at` ([FLOW-01](user-stories.md#flow-01)). Adding ideas to a draft comes with the board in M5.
+  - **Duration first:** Schedule, the invite preview and the cards show the length above the date or window ([FLOW-02](user-stories.md#flow-02)).
 - **Closes:** LAUNCH-03, LAUNCH-04, LAUNCH-06, CREW-01, CREW-02, CREW-04, CREW-05, CREW-07, CREW-09.
 - **Verify:**
   - database race tests: two simultaneous first answers for the last spot admit exactly one
@@ -366,10 +383,6 @@ M1 keeps today's local mode working for already-saved Ventures until the Planner
 - **Needs first:** M3, D6, D7.
 - **R1 gate:** at the end of M4, run the friends-and-family pilot with the D15 measures in place.
 
-MVP delivery starts with duration-first scheduling and draft access in M2. M5 delivers comparison, the featured Crew question and account linking for suggestions. M6 verifies that only selected-plan costs count. M8 completes account linking for side plans and invitations from Past Crew.
-
-Record alternatives, their relative days, duration and selected plan under one Venture. Keep proposal support separate from date availability and RSVP. Use a membership-scoped consent record for Past Crew, checked both on listing and on sending. Track child membership independently.
-
 ### M5 · Plan Board
 
 **Goal:** the Crew suggests, supports and decides, and decisions land on the itinerary.
@@ -382,7 +395,10 @@ Record alternatives, their relative days, duration and selected plan under one V
   - **Booking click-out:** the Planner, Collaborators and Attendees can open a locked option's source link. Opening it records the D15 click-out event and changes nothing else ([BOARD-07](user-stories.md#board-07)). No paid links (D17).
   - **Venture brief and starters:** the brief at the top of the board, edited by the Planner and readable by the crew; kept out of the Viewer projection and every card, preview and message; the imported draft shown only to the Planner until **Share with crew** ([BOARD-08](user-stories.md#board-08)). Starters on an empty board by Venture length ([BOARD-01](user-stories.md#board-01)).
   - **Collaborators and launch:** Attendee-to-Collaborator linking with a verified account plus the member's private credential ([CREW-03](user-stories.md#crew-03)). Both schedule modes open the Plan Board ([LAUNCH-02](user-stories.md#launch-02)).
-  - **Migration:** existing Explore candidates and the itinerary move into decisions and options under D8. Shape it answers imported in M1 appear as the Planner-only draft brief.
+  - **Plans:** every Venture's one working plan; **Suggest another plan**, comparison, plan support with reconfirmation, **Choose this plan** and **Other plans**; ideas on relative days (Day N) and undated ideas; adding ideas to a draft before launch ([FLOW-01](user-stories.md#flow-01)).
+  - **Next action:** one primary action per person, **Ask the Crew** to feature an open decision, the names behind support counts for the Crew, and distinct interest, support, availability and RSVP states ([FLOW-02](user-stories.md#flow-02)).
+  - **Guest suggestions:** a guest drafts an idea in the browser, signs in at **Create account & share**, and the idea posts once on the same membership ([FLOW-03](user-stories.md#flow-03)).
+  - **Migration:** existing Explore candidates and the itinerary move into decisions and options under D8, inside one chosen plan per Venture. Shape it answers imported in M1 appear as the Planner-only draft brief.
 - **Closes:** LAUNCH-02, CREW-03, BOARD-01–08, FLOW-02.
 - **Verify:**
   - the PRD Saturday Dinner acceptance check (Maya adds a link, Jules supports two options, a lock with no votes, Jules's RSVP unchanged, the itinerary window with the address, **Open in Maps** and **Show map**, switching away from a booked choice)
@@ -409,6 +425,7 @@ Record alternatives, their relative days, duration and selected plan under one V
   - included vs. excluded costs, the scope beside the rollup, and the **average per person** (the first two bullets of [BUDGET-05](user-stories.md#budget-05))
   - **All selected costs confirmed** ([BUDGET-06](user-stories.md#budget-06))
   - the budget engine moves its calculation to the server view (5.3)
+  - only the chosen plan's costs count toward the working budget; other plans show their own estimates ([FLOW-01](user-stories.md#flow-01))
 - **Closes:** BUDGET-02, BUDGET-03, BUDGET-04, BUDGET-06, FLOW-01.
 - **Verify:** the cabin weekend table in [user stories](user-stories.md#budget-06): $460 → $510 → $720 confirmed, a $120 average for six, with the pill at $150 per person throughout.
 - **R2 gate:** at the end of M6, run the pilot and report the R2 measure together with how often locked options' booking links were opened, read alongside **Booked** marks. That report is the evidence for D17.
@@ -441,6 +458,9 @@ Record alternatives, their relative days, duration and selected plan under one V
   - invite only from the main Crew, with separate RSVPs ([CHILD-02](user-stories.md#child-02))
   - request inclusion, Planner approval, a linked summary on the main itinerary, changes flowing through, and a review flag when the main dates change ([CHILD-03](user-stories.md#child-03))
   - a linked child cost counted once in the main budget (closes [BUDGET-05](user-stories.md#budget-05))
+  - leaving or removal from the main Crew ends side-plan memberships ([CHILD-02](user-stories.md#child-02))
+  - a guest drafts a side plan in the browser and signs in to organize it; it is created once on the same membership ([FLOW-03](user-stories.md#flow-03))
+  - **Past Crew** ([CREW-10](user-stories.md#crew-10)): **Let this Crew invite me again** after the gathering, with account creation for guests; **Invite Crew → Past Crew** and **Plan something together again**; fresh invitations whose destinations the inviting Planner never sees; **Don't invite me from this person again** on a Past Crew invitation; consent withdrawal
 - **Closes:** CHILD-01–03, BUDGET-05, FLOW-03, CREW-10.
 - **Verify:** the PRD kayaking check: six RSVPs on the weekend and four on kayaking; moving kayaking from 10 to 11 a.m. updates the main itinerary; the linked cost counts once.
 
