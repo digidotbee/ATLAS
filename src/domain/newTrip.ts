@@ -55,6 +55,14 @@ export function optInDeadlineAfter(hours: number, timeZone: string, now = Date.n
 export const NEW_TRIP_STEPS = ['where', 'when', 'who', 'budget'] as const;
 export type NewTripStep = (typeof NEW_TRIP_STEPS)[number];
 
+/**
+ * True when a single day or evening runs past midnight: it starts and ends on the same date,
+ * but its end time is earlier than its start time, so it ends the next day (PRD v0.25).
+ */
+export function endsNextDay(dates: { start: string; end: string; startTime?: string; endTime?: string }): boolean {
+  return dates.start === dates.end && !!dates.startTime && !!dates.endTime && dates.endTime < dates.startTime;
+}
+
 /** Problems that block moving past a step. */
 export function stepErrors(step: NewTripStep, d: NewTripDraft): string[] {
   const e: string[] = [];
@@ -68,8 +76,9 @@ export function stepErrors(step: NewTripStep, d: NewTripDraft): string[] {
       if (!d.date) e.push('Choose a date.');
       if (!d.singleDay && !d.endDate) e.push('Add an end date, or choose Single day / evening.');
       else if (d.date && d.endDate && d.endDate < d.date) e.push('The end date must be on or after the start date.');
-      const endsOnStartDate = d.singleDay || d.endDate === d.date;
-      if (d.date && endsOnStartDate && d.startTime && d.endTime && d.endTime < d.startTime) {
+      // A single day or evening may run past midnight (see endsNextDay). A multi-day Venture
+      // names its end date, so backwards times on one date are a mistake there.
+      if (d.date && !d.singleDay && d.endDate === d.date && d.startTime && d.endTime && d.endTime < d.startTime) {
         e.push('The end time must be at or after the start time on the same day.');
       }
     } else {

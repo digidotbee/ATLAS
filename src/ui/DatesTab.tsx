@@ -1,9 +1,10 @@
 import { chosenDate, nightsBetween } from '../domain/budget';
+import { endsNextDay } from '../domain/newTrip';
 import { plannerZoneSuffix, ventureTimeZone } from '../domain/timeZone';
 import type { Availability, TripConstraints } from '../domain/types';
 import { setWindowStatus } from '../domain/windows';
 import { useStore } from '../state/store';
-import { Banner, formatDate, formatLocalTime } from './common';
+import { Banner, formatDate, formatLocalTime, NEXT_DAY_SUFFIX } from './common';
 import { href } from './router';
 import type { TabProps } from './TripView';
 import { AvailabilityCard } from './AvailabilityCard';
@@ -58,6 +59,7 @@ export function DatesTab({ trip, update }: TabProps) {
             {locked.endTime && `–${formatLocalTime(locked.endTime)}`}
             {(locked.startTime || locked.endTime) &&
               plannerZoneSuffix(ventureTimeZone(trip), `${locked.start}T${locked.startTime || locked.endTime}`)}
+            {endsNextDay(locked) && NEXT_DAY_SUFFIX}
             {lockedNights !== null && lockedNights > 0 && ` · ${lockedNights} nights`}
           </h3>
           <p className="muted small">{locked.notes}</p>

@@ -1,6 +1,6 @@
 # ORIVOIR Living PRD
 
-**Version 0.24 · November 23, 2026 · MVP v1.0**
+**Version 0.25 · November 23, 2026 · MVP v1.0**
 
 [User stories and acceptance criteria](user-stories.md)
 
@@ -58,7 +58,7 @@ Aim for a four-step wizard that takes under 90 seconds. Keep optional travel fie
 | Step | Requirements |
 |---|---|
 | Set the Scene | Capture a destination, spot, or vibe. Venture title and broader area are optional. |
-| Schedule | **Set a date** supports a single day or evening, optional times, and multi-day Ventures. **Set for date decision** captures the time commitment first, then earliest start and latest wrap-up, and required **Opt in by** cutoff. Offer 24 hours, 3 days, or a custom deadline. |
+| Schedule | **Set a date** supports a single day or evening, optional times, and multi-day Ventures. On a single day or evening, an end time earlier than the start time ends the next day, and every place the times appear says so, for example "9:00 PM – 1:00 AM (next day)". A multi-day Venture whose end date is its start date still needs an end time at or after the start time. **Set for date decision** captures the time commitment first, then earliest start and latest wrap-up, and required **Opt in by** cutoff. Offer 24 hours, 3 days, or a custom deadline. |
 | Crew | **Choose from contacts** is the primary action where supported. **Add by phone or email** is available to everyone. Review one delivery destination per selected person. Keep the optional planning headcount and **Max crew opt-ins** separate. The Planner can continue with an empty list. |
 | Budget & Launch | Offer **Total (Everything included)**, **Per person**, and **Skip for now**. Save the amount, currency, and basis. Preview the invite card and show **Opt in by** for Date Decision. With ready recipients, **Launch & invite N** creates the Venture and sends a personal invitation to each in one action. With no selection, **Launch Venture** creates the Venture and offers **Share a group link**. Skipping Budget keeps the final action on this screen. |
 
@@ -337,3 +337,4 @@ The Planner signed off on this journey on November 18, 2026.
 | 0.22 | November 23, 2026 | Approved early planning, alternative plans, duration-first scheduling, contextual accounts and consent-based Past Crew invitations. |
 | 0.23 | November 23, 2026 | Committed all four planning and Past Crew stories to MVP v1.0. |
 | 0.24 | November 23, 2026 | Gave the departure screen a message for each way joining closes: the kind full-Venture message, **Nothing ventured, nothing gained…** once **Opt in by** passes without a response, and **This Venture has departed.** after an early lock. |
+| 0.25 | November 23, 2026 | A single day or evening can run past midnight: an end time earlier than the start time ends the next day, and every place the times appear says "(next day)". |

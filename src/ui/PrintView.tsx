@@ -1,10 +1,11 @@
 import { candidateCost, chosenDate, summarize } from '../domain/budget';
 import { buildItinerary } from '../domain/itinerary';
+import { endsNextDay } from '../domain/newTrip';
 import { FOLLOW_UP_QUESTIONS } from '../domain/questions';
 import { ventureTimeZone, zoneAbbreviation } from '../domain/timeZone';
 import { CATEGORIES, type Candidate } from '../domain/types';
 import { useStore } from '../state/store';
-import { formatDate, formatLocalTime, Money } from './common';
+import { formatDate, formatLocalTime, Money, NEXT_DAY_SUFFIX } from './common';
 import { href } from './router';
 
 /** The printable one-page itinerary. Uses print CSS to fit a single Letter/A4 sheet. */
@@ -54,6 +55,7 @@ export function PrintView({ id }: { id: string }) {
                   {d.startTime && ` · ${formatLocalTime(d.startTime)}`}
                   {d.endTime && `–${formatLocalTime(d.endTime)}`}
                   {(d.startTime || d.endTime) && ` ${zoneAbbreviation(ventureTimeZone(trip), `${d.start}T${d.startTime || d.endTime}`)}`}
+                  {endsNextDay(d) && NEXT_DAY_SUFFIX}
                   {s.shape.nights > 0 && ` · ${s.shape.nights} nights`}
                 </>
               )}
