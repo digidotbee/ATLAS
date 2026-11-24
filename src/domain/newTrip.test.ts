@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { budgetTotalForEntry, NEW_TRIP_STEPS, optInDeadlineAfter, preferredNightsForDuration, stepErrors, type NewTripDraft } from './newTrip';
+import { budgetTotalForEntry, endsNextDay, NEW_TRIP_STEPS, optInDeadlineAfter, preferredNightsForDuration, stepErrors, type NewTripDraft } from './newTrip';
 import { deviceTimeZone } from './timeZone';
 
 const base: NewTripDraft = {
@@ -47,12 +47,23 @@ describe('new trip steps', () => {
     expect(stepErrors('when', { ...base, date: '2027-05-21', singleDay: false })[0]).toMatch(/end date/);
     expect(stepErrors('when', { ...base, date: '2027-07-30', endDate: '2027-05-21', singleDay: false })[0]).toMatch(/on or after/);
   });
-  it('LAUNCH-02 rejects a backwards evening in either fixed-date mode', () => {
-    const evening = { ...base, date: '2027-05-21', startTime: '21:00', endTime: '18:00' };
-    const error = ['The end time must be at or after the start time on the same day.'];
-    expect(stepErrors('when', evening)).toEqual(error);
-    expect(stepErrors('when', { ...evening, singleDay: false, endDate: evening.date })).toEqual(error);
+  it('LAUNCH-02 reads a single evening that ends before it starts as ending the next day', () => {
+    const evening = { ...base, singleDay: true, date: '2027-05-21', startTime: '21:00', endTime: '01:00' };
+    expect(stepErrors('when', evening)).toEqual([]);
+    // A multi-day Venture names its end date, so the same backwards times on one date are still a mistake.
+    expect(stepErrors('when', { ...evening, singleDay: false, endDate: evening.date })).toEqual([
+      'The end time must be at or after the start time on the same day.',
+    ]);
     expect(stepErrors('when', { ...evening, singleDay: false, endDate: '2027-05-22' })).toEqual([]);
+  });
+  it.each([
+    [{ start: '2027-05-21', end: '2027-05-21', startTime: '21:00', endTime: '01:00' }, true],
+    [{ start: '2027-05-21', end: '2027-05-21', startTime: '18:00', endTime: '21:00' }, false],
+    [{ start: '2027-05-21', end: '2027-05-21', startTime: '18:00', endTime: '18:00' }, false],
+    [{ start: '2027-05-21', end: '2027-05-21', endTime: '01:00' }, false],
+    [{ start: '2027-05-21', end: '2027-05-22', startTime: '21:00', endTime: '01:00' }, false],
+  ])('LAUNCH-02 says when a single day ends the next day %#', (dates, expected) => {
+    expect(endsNextDay(dates)).toBe(expected);
   });
   it.each([
     ['18:00', '21:00'],

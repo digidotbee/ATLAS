@@ -128,6 +128,24 @@ describe('Venture creation wizard', () => {
     expect(window.location.hash).toBe(`#/trip/${trip.id}/plan`);
   });
 
+  it('LAUNCH-02 previews and saves a single evening that runs past midnight', () => {
+    startAtSchedule('Rooftop countdown');
+    const date = calendarDate(4);
+    selectCalendarDate(date);
+    fireEvent.change(screen.getByLabelText('Start time (optional)'), { target: { value: '21:00' } });
+    expect(screen.queryByText(/the next day/)).toBeNull();
+    fireEvent.change(screen.getByLabelText('End time (optional)'), { target: { value: '01:00' } });
+    expect(screen.getByText(`Ends ${formatLocalTime('01:00')} the next day.`)).toBeTruthy();
+    continueToBudget();
+    expect(preview().textContent).toContain(`${formatLocalTime('01:00')}`);
+    expect(preview().textContent).toMatch(/\(next\sday\)/);
+    fireEvent.click(screen.getByRole('button', { name: 'Skip for now' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Launch Venture' }));
+
+    const [trip] = JSON.parse(screen.getByTestId('saved-trips').textContent ?? '[]');
+    expect(trip.dateOptions[0]).toMatchObject({ start: date.iso, end: date.iso, startTime: '21:00', endTime: '01:00' });
+  });
+
   it('previews and saves a fixed multi-day Venture with a total budget', () => {
     startAtSchedule('Family weekend');
     fireEvent.click(screen.getByRole('checkbox', { name: 'Single day / evening' }));

@@ -80,6 +80,9 @@ export function todayISO(): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 }
 
+/** Follows the end time of a single evening that runs past midnight; the no-break space keeps it on one line. */
+export const NEXT_DAY_SUFFIX = ' (next\u00a0day)';
+
 export function formatLocalTime(time: string): string {
   if (!/^\d{2}:\d{2}$/.test(time)) return '';
   return new Date(`2000-01-01T${time}`).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });

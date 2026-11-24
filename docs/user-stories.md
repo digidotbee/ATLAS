@@ -2,7 +2,7 @@
 
 **Journey 1 · MVP v1.0 · November 23, 2026**
 
-The 46 MVP stories follow a Planner and their crew from a rough idea to a locked date, a shared itinerary, and a confirmed budget. They cover the free consumer core and the optional Gemini pilot. Planning together includes FLOW-01 through FLOW-03 and CREW-10 in MVP v1.0. Three more stories, PAID-01 to PAID-03, record the paid-link rules for after MVP v1.0 and are counted separately. The bullets under each story are its acceptance criteria. [ORIVOIR Living PRD v0.24, November 23, 2026](prd.md) · [Crew invitations engineering guide](crew-invitations.md)
+The 46 MVP stories follow a Planner and their crew from a rough idea to a locked date, a shared itinerary, and a confirmed budget. They cover the free consumer core and the optional Gemini pilot. Planning together includes FLOW-01 through FLOW-03 and CREW-10 in MVP v1.0. Three more stories, PAID-01 to PAID-03, record the paid-link rules for after MVP v1.0 and are counted separately. The bullets under each story are its acceptance criteria. [ORIVOIR Living PRD v0.25, November 23, 2026](prd.md) · [Crew invitations engineering guide](crew-invitations.md)
 
 | Journey | Stories | Source sections in the PRD |
 |---|---|---|
@@ -37,6 +37,7 @@ As a Planner, I want to start with a place or a vibe so I can bring people toget
 As a Planner who has picked a date, I want to enter it directly so the crew can start planning what to do.
 
 - **Set a date** supports a single day or evening with optional start and end times, as well as a multi-day Venture.
+- On a single day or evening, an end time earlier than the start time means the Venture ends the next day. The schedule step, the invite card, the Venture list, the dates view and the print one-sheet all say "(next day)". A multi-day Venture whose end date is its start date still needs an end time at or after the start time.
 - Launching with fixed dates opens the Plan Board in **planning**. The **Set a date** invitation shows the Venture title, the date or range, and any set times in the Venture time zone. It asks the recipient to RSVP.
 
 <a id="launch-03"></a>
@@ -511,7 +512,7 @@ As a participant, I want to invite people I met on a particular Venture to anoth
 
 ## Decisions still open
 
-| Area | Where v0.24 leaves the decision |
+| Area | Where v0.25 leaves the decision |
 |---|---|
 | Availability windows | Decide how to generate candidates from the Planner’s target range and ideal length, and how a guest enters part of an evening. Editable Friday–Sunday suggestions are an option under consideration. |
 | Post-lock guest visibility | Opted-in members can see the chosen time, RSVP, and support eligible options. The full set of details visible to an opted-in guest and how to confirm previously offered days are still open. |

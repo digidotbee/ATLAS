@@ -2,6 +2,7 @@ import { chosenDate, nightsBetween, travelerCount } from './budget';
 import { departureMonths } from './windows';
 import { AIRPORT, blankMove, moveKey } from './moves';
 import { blankCandidate } from './factory';
+import { endsNextDay } from './newTrip';
 import { FOLLOW_UP_QUESTIONS } from './questions';
 import {
   CATEGORIES,
@@ -30,7 +31,7 @@ export function buildResearchPrompt(trip: Trip, profile: FamilyProfile, focus: C
     ? tripDates
         .map((d) => {
           const n = nightsBetween(d.start, d.end);
-          const time = d.startTime || d.endTime ? ` (${d.startTime || 'unspecified'}${d.endTime ? `–${d.endTime}` : ''})` : '';
+          const time = d.startTime || d.endTime ? ` (${d.startTime || 'unspecified'}${d.endTime ? `–${d.endTime}` : ''}${endsNextDay(d) ? ' next day' : ''})` : '';
           return `- ${d.label || 'Option'}: ${d.start || '?'} to ${d.end || '?'}${n !== null ? ` (${n} nights)` : ''}${time}${d.id === date?.id ? ' ← preferred' : ''}`;
         })
         .join('\n')

@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { chosenDate, nightsBetween, summarize } from '../domain/budget';
 import { duplicateTrip } from '../domain/factory';
+import { endsNextDay } from '../domain/newTrip';
 import { plannerZoneSuffix, ventureTimeZone } from '../domain/timeZone';
 import type { Trip } from '../domain/types';
 import { useStore } from '../state/store';
 import { BudgetMeter } from './BudgetPanel';
-import { formatDate, formatLocalTime, Money } from './common';
+import { formatDate, formatLocalTime, Money, NEXT_DAY_SUFFIX } from './common';
 import { go, href } from './router';
 
 type Status = { key: 'booked' | 'dates' | 'planning' | 'draft'; label: string };
@@ -49,7 +50,8 @@ function whenText(t: Trip): string {
             ? `Until ${formatLocalTime(d.endTime)}`
             : '';
     const zone = timeText ? plannerZoneSuffix(ventureTimeZone(t), `${d.start}T${d.startTime || d.endTime}`) : '';
-    return `${dateText}${timeText ? ` · ${timeText}${zone}` : n && n > 0 ? ` · ${n} nights` : ''}`;
+    const nextDay = endsNextDay(d) ? NEXT_DAY_SUFFIX : '';
+    return `${dateText}${timeText ? ` · ${timeText}${zone}${nextDay}` : n && n > 0 ? ` · ${n} nights` : ''}`;
   }
   if (t.availability) {
     const optInBy = t.availability.optInBy;

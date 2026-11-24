@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { formatMoney, nightsBetween } from '../domain/budget';
 import { createTrip } from '../domain/factory';
-import { budgetTotalForEntry, CURRENCY_CODE, NEW_TRIP_STEPS, optInDeadlineAfter, preferredNightsForDuration, stepErrors, type BudgetMode, type NewTripDraft, type NewTripStep } from '../domain/newTrip';
+import { budgetTotalForEntry, CURRENCY_CODE, endsNextDay, NEW_TRIP_STEPS, optInDeadlineAfter, preferredNightsForDuration, stepErrors, type BudgetMode, type NewTripDraft, type NewTripStep } from '../domain/newTrip';
 import { deviceTimeZone, timeZoneOptionLabel, timeZoneOptions, zoneAbbreviation } from '../domain/timeZone';
 import { useStore } from '../state/store';
-import { Banner, Field, formatDateTimeLocal, formatLocalTime, NumberInput, todayISO } from './common';
+import { Banner, Field, formatDateTimeLocal, formatLocalTime, NEXT_DAY_SUFFIX, NumberInput, todayISO } from './common';
 import { CalendarPicker } from './CalendarPicker';
 import { go, href } from './router';
 
@@ -34,7 +34,13 @@ function scheduleSummary(draft: NewTripDraft, nameZone: boolean): string {
   const start = formatDateTimeLocal(`${draft.date}T${draft.startTime}`);
   if (!draft.singleDay) return `${start} – ${formatDateTimeLocal(`${draft.endDate}T${draft.endTime}`)}${zone}`;
   if (!draft.endTime) return `${start}${zone}`;
-  return `${start} ${draft.startTime ? '–' : 'until'} ${formatLocalTime(draft.endTime)}${zone}`;
+  const nextDay = endsNextDay(draftDates(draft)) ? NEXT_DAY_SUFFIX : '';
+  return `${start} ${draft.startTime ? '–' : 'until'} ${formatLocalTime(draft.endTime)}${zone}${nextDay}`;
+}
+
+/** The draft's fixed date in the shape the saved Venture uses. */
+function draftDates(draft: NewTripDraft) {
+  return { start: draft.date, end: draft.singleDay ? draft.date : draft.endDate, startTime: draft.startTime, endTime: draft.endTime };
 }
 
 export function NewTrip() {
@@ -277,6 +283,11 @@ export function NewTrip() {
                     <input type="time" value={d.endTime} onChange={(e) => set({ endTime: e.target.value })} />
                   </Field>
                 </div>
+                {endsNextDay(draftDates(d)) && (
+                  <p className="muted small" role="status">
+                    Ends {formatLocalTime(d.endTime)} the next day.
+                  </p>
+                )}
                 <p className="muted small when-helper">Your Venture will open in planning with these dates.</p>
               </div>
             ) : (

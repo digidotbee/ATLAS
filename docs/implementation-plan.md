@@ -1,6 +1,6 @@
 # ORIVOIR implementation plan · MVP v1.0
 
-**Draft 0.2 · November 23, 2026 · for the [living PRD v0.24](prd.md) and its [46 MVP user stories](user-stories.md)**
+**Draft 0.2 · November 23, 2026 · for the [living PRD v0.25](prd.md) and its [46 MVP user stories](user-stories.md)**
 
 This plan turns the PRD into an ordered build. Every user story is assigned to exactly one milestone, every milestone lists what it depends on, and every decision the PRD leaves open is named with a recommendation and the milestone it blocks.
 
@@ -75,7 +75,7 @@ Every one of the 46 MVP stories appears here exactly once. The three PAID storie
 | Story | Milestone | What remains |
 | --- | --- | --- |
 | [LAUNCH-01](user-stories.md#launch-01) | M0 | Done |
-| [LAUNCH-02](user-stories.md#launch-02) | M5 | A fixed-date launch opens the Plan Board in **planning**. The RSVP card itself ships in M2. |
+| [LAUNCH-02](user-stories.md#launch-02) | M5 | A fixed-date launch opens the Plan Board in **planning**. The RSVP card itself ships in M2. Evenings past midnight (PRD v0.25) are built in the browser now. |
 | [LAUNCH-03](user-stories.md#launch-03) | M2 | Open the working board in **voting** with Review dates; the personal and group cards ask for availability |
 | [LAUNCH-04](user-stories.md#launch-04) | M2 | **Max crew opt-ins**, kept separate from the planning headcount |
 | [LAUNCH-05](user-stories.md#launch-05) | M3 | **Launch & invite N**; the draft survives sign-in; a retried launch returns the same Venture |
@@ -195,6 +195,7 @@ These are the decisions only Dot can make, with Claude's recommendation for each
 | November 23, 2026 | D8 | Revised in PRD v0.22 (#44): a Venture opens to the Plan Board in either schedule mode, and Review dates opens Date Decision. The rest of the November 22 decision stands. |
 | November 23, 2026 | Planning together | Early planning before the date is locked, alternative plans, duration-first scheduling, contextual accounts and consent-based Past Crew invitations were approved in PRD v0.22 and committed to MVP v1.0 in v0.23 (#44) as FLOW-01 to FLOW-03 and CREW-10, so MVP v1.0 is now 46 stories. The same change renamed the PRD label **Whole Trip** to **Whole Venture**. |
 | November 23, 2026 | Departure screen | Dot clarified her November 22 decision: the kind message **This Venture has departed. All [limit] spots are filled.** is for people who missed the last spot of a full Venture, and **Nothing ventured, nothing gained…** is for people who let **Opt in by** pass without responding. After an early lock the screen says **This Venture has departed.** (PRD v0.24). |
+| November 23, 2026 | Evenings past midnight | Dot chose to read an end time earlier than the start time on a single day or evening as ending the next day (PRD v0.25), instead of keeping #41's error and pointing to the multi-day workaround. Every place the times appear says "(next day)", so the saved times never carry the meaning silently. |
 
 ## 5. Architecture
 
