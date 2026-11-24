@@ -509,7 +509,7 @@ As a participant, I want to invite people I met on a particular Venture to anoth
 
 ## Decisions still open
 
-| Area | Where v0.21 leaves the decision |
+| Area | Where v0.23 leaves the decision |
 |---|---|
 | Availability windows | Decide how to generate candidates from the Planner’s target range and ideal length, and how a guest enters part of an evening. Editable Friday–Sunday suggestions are an option under consideration. |
 | Post-lock guest visibility | Opted-in members can see the chosen time, RSVP, and support eligible options. The full set of details visible to an opted-in guest and how to confirm previously offered days are still open. |
