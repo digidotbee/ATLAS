@@ -1,6 +1,6 @@
 # ORIVOIR Living PRD
 
-**Version 0.25 · November 23, 2026 · MVP v1.0**
+**Version 0.26 · November 23, 2026 · MVP v1.0**
 
 [User stories and acceptance criteria](user-stories.md)
 
@@ -20,7 +20,7 @@ MVP v1.0 includes FLOW-01, FLOW-02, FLOW-03 and CREW-10. Release acceptance cove
 
 The aim is to make real adventures with other people easy to start and repeat. A Venture can be a potluck, a walk or a holiday. A plan is one version of the Venture. An idea belongs to a plan or decision. A child Venture is an optional activity with its own host and participants.
 
-Open the working board from the draft. Require fixed dates or a bounded date window at launch. Put **One evening** above **Between May 28 and June 6** on the board and invitation. Display a shared duration once, or show each alternative’s duration beside it. Do not require a destination, price or itinerary to suggest a plan.
+Open the working board from the draft, which only the Planner sees until launch. Require fixed dates or a bounded date window at launch. Put **One evening** above **Between May 28 and June 6** on the board and invitation. Display a shared duration once, or show each alternative’s duration beside it. Do not require a destination, price or itinerary to suggest a plan.
 
 Start with one plan. **Add an idea** adds to the current context. **Suggest another plan** introduces a whole alternative to the same Crew. Compare relevant details such as host and contributions for a potluck, or duration, activities and estimates for a weekend away. Keep relative days and unscheduled ideas. **Choose this plan** keeps its contents and moves alternatives under **Other plans**. Plan choice and date lock can happen in either order. Only the chosen plan contributes its costs to the working budget. On date lock, map relative days to dates and flag overflow for review. Changes to proposal dates or duration prompt supporters to reconfirm; a changed locked date returns RSVPs to pending.
 
@@ -28,7 +28,7 @@ Show one next action appropriate to the person and current decision. **Ask the C
 
 Offer optional **Save to My Ventures** after a guest response. Let the guest draft first, then offer **Create account & share** when posting an idea or organizing a side plan. Link the same private Crew entry, resume the intended action once, and keep the draft if sign-in is dismissed. A completed Venture can also lead into drafting the guest’s own Venture.
 
-After a gathering, **Let this Crew invite me again** enables future invitations from eligible fellow participants through ORIVOIR. Keep consent revocable and specific to the shared gathering. **Invite Crew → Past Crew** starts with the outing people remember. **Plan something together again** starts from the completed outing and opens a new draft. Both allow selection of individual consenting participants, preserve their private contact details and issue fresh invitations. A side plan has its own Crew and invitation boundary.
+After a gathering, **Let this Crew invite me again** enables future invitations from eligible fellow participants through ORIVOIR. Keep consent revocable and specific to the shared gathering. Saving that choice requires an account, so ORIVOIR reaches people later only through their own sign-in email; a guest creates an account to opt in. A Past Crew invitation offers **Don't invite me from this person again**, which stops further Past Crew invitations from that person. **Invite Crew → Past Crew** starts with the outing people remember. **Plan something together again** starts from the completed outing and opens a new draft. Both allow selection of individual consenting participants, preserve their private contact details and issue fresh invitations. The inviting Planner never sees a Past Crew recipient's contact details. A side plan has its own Crew and invitation boundary, and leaving or removal from the main Crew ends side-plan membership too.
 
 A Planner can deliberately open a Venture to friends of the Crew, with a visible audience and optional available spots. Begin side plans with the main Crew. A wider discovery audience is a separate product surface; exact eligibility, identity and moderation rules must be defined before release. Repeating a gathering can later become a recurring Venture. A single invitation never enrolls anyone in future gatherings.
 
@@ -233,14 +233,18 @@ These are proposed routes and data contracts. The implementation should map them
 
 | Data | Required fields and behavior |
 |---|---|
-| Venture | Planner account ID, schedule mode, status, time zone, cutoff, target window, optional opt-in limit, time commitment, and locked start and end or slot reference. Venture brief (feel, avoid and notes) and whether the crew can see it yet. Store instants with timezone-aware timestamps. |
+| Venture | Planner account ID, schedule mode, status, time zone, cutoff, target window, optional opt-in limit, time commitment, and locked start and end or slot reference. Venture brief (feel, avoid and notes) and whether the crew can see it yet. Launch time, empty while the Venture is a Planner-only draft. The decision featured by **Ask the Crew**. Store instants with timezone-aware timestamps. |
+| Plan | Venture ID, title, length, optional proposed window, proposer, revision and whether it is the chosen plan. Every Venture starts with one plan and has at most one chosen. Decisions belong to a plan and sit on a relative day (Day 1, Day 2) or the whole Venture. |
+| Plan support | Plan ID and Crew membership ID, unique as a pair, with the plan revision supported. Support for an earlier revision needs reconfirming. Kept separate from availability and attendance. |
 | Candidate window | Venture ID, stable slot ID, start and end. |
-| Crew invitation | Venture ID, stable recipient invitation ID, issuing Planner, private contact label, optional photo, selected SMS/email destination, pending/claimed/revoked state, nullable Crew membership ID and scoped token digest. Personal details are visible to the Planner. |
+| Crew invitation | Venture ID, stable recipient invitation ID, issuing Planner, private contact label, optional photo, selected SMS/email destination, pending/claimed/revoked state, nullable Crew membership ID and scoped token digest. Personal details are visible to the Planner. A Past Crew invitation records its source and the recipient's account instead; its destination comes from that account at send and is never shown to the inviting Planner. |
 | Invitation delivery | Invitation or opted-in membership, send operation, message purpose, schedule version, channel, status, attempts and provider reference. Record applicable SMS permission and suppression. Retrying one failed delivery preserves the other recipients and their responses. |
-| Crew membership | Venture ID, collaborator ID, display name, role, account ID required for Collaborators and optional for Attendees, opt-in timestamp, and active or removed status. Store private response credentials securely and revoke access on removal. |
+| Crew membership | Venture ID, collaborator ID, display name, role, account ID required for Collaborators and optional for Attendees, opt-in timestamp, and active or removed status. Store private response credentials securely and revoke access on removal. Leaving or removal from a main Crew also ends that person's child-Venture memberships. |
 | Availability response | Crew membership ID, submitted timestamp, and selected slots or availability ranges. For each multi-day candidate, retain its stable ID and either whole-window availability or the specific available dates within it, in the Venture time zone. A submitted empty selection means **None of these work**. A missing submission means pending. |
 | Attendance response | Crew membership ID, fixed or locked schedule, and confirmed or declined status. A missing response means pending. |
 | Follower access | Venture ID and authenticated user ID, unique as a pair. Status is pending, approved, declined, or revoked. |
+| Past Crew consent | Venture ID of the shared gathering and account ID, unique as a pair, with granted and withdrawn times. An account is required. Checked when Past Crew is listed and again at send. |
+| Past Crew block | Blocking account and blocked account, from **Don't invite me from this person again**. Blocked pairs never appear in each other's Past Crew lists or sends. |
 
 Supabase owns authorization and timing. A server transaction checks join scope, Venture phase, cutoff, and capacity before creating a membership and its first response together. Updates check active membership, role, and the relevant phase. Private response credentials authorize only the member’s own responses and support on options open for voting. Adding suggestions or starting child Ventures requires a signed-in Collaborator or Planner with access to the Venture. Locking the date and switching to planning happen atomically. Realtime updates Planner counts. The invite page reloads state when reopened and handles a stale submission by showing the current phase. Account membership and server-side redaction govern Viewer reads.
 
@@ -338,3 +342,4 @@ The Planner signed off on this journey on November 18, 2026.
 | 0.23 | November 23, 2026 | Committed all four planning and Past Crew stories to MVP v1.0. |
 | 0.24 | November 23, 2026 | Gave the departure screen a message for each way joining closes: the kind full-Venture message, **Nothing ventured, nothing gained…** once **Opt in by** passes without a response, and **This Venture has departed.** after an early lock. |
 | 0.25 | November 23, 2026 | A single day or evening can run past midnight: an end time earlier than the start time ends the next day, and every place the times appear says "(next day)". |
+| 0.26 | November 23, 2026 | Planning-together data rules: drafts stay Planner-only until launch; plans, relative days and plan support; Past Crew consent requires an account; **Don't invite me from this person again** on Past Crew invitations; the inviting Planner never sees Past Crew contact details; leaving the main Crew ends side-plan membership. |

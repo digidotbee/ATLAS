@@ -1,6 +1,6 @@
 # Venture launch
 
-Use this document for the creation wizard and the four MVP roles in the [ORIVOIR living PRD v0.25](prd.md), dated November 23, 2026. The backend, delivery rules and test cases for both invitation paths are in [Crew invitations](crew-invitations.md).
+Use this document for the creation wizard and the four MVP roles in the [ORIVOIR living PRD v0.26](prd.md), dated November 23, 2026. The backend, delivery rules and test cases for both invitation paths are in [Crew invitations](crew-invitations.md).
 
 ## Creation wizard
 
@@ -15,7 +15,7 @@ Use this document for the creation wizard and the four MVP roles in the [ORIVOIR
 
 The Planner can revisit a completed step and edit it without losing later answers. The final preview reflects those edits. On launch, a fixed-date Venture opens planning. A Venture with a date to decide opens the same Plan Board with Review dates.
 
-The draft board accepts ideas before launch. Launch requires a fixed date or bounded window. Show duration above the window in Schedule and invitation preview. Offer **Past Crew** beside contacts and manual entry. A repeat Venture opens a fresh draft with selectable participants. [Planning together](user-stories.md#planning-together).
+The draft board accepts ideas before launch, and only the Planner sees a draft. Launch requires a fixed date or bounded window. Show duration above the window in Schedule and invitation preview. Offer **Past Crew** beside contacts and manual entry. A repeat Venture opens a fresh draft with selectable participants. [Planning together](user-stories.md#planning-together).
 
 ## MVP roles
 
