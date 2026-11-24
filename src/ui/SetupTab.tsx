@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { timeZoneChoices, timeZoneOptionLabel, ventureTimeZone } from '../domain/timeZone';
+import { timeZoneOptions, ventureTimeZone } from '../domain/timeZone';
 import { useStore } from '../state/store';
 import { Field, NumberInput } from './common';
 import { go, href } from './router';
@@ -8,7 +8,7 @@ import type { TabProps } from './TripView';
 export function SetupTab({ trip, update }: TabProps) {
   const { deleteTrip } = useStore();
   const zone = ventureTimeZone(trip);
-  const zoneChoices = useMemo(() => timeZoneChoices(zone), [zone]);
+  const zoneOptions = useMemo(() => timeZoneOptions(zone), [zone]);
   return (
     <div className="stack">
       <h2>Venture settings</h2>
@@ -26,9 +26,9 @@ export function SetupTab({ trip, update }: TabProps) {
         </Field>
         <Field label="Time zone" hint="Dates, times and the Opt in by deadline use this time zone. Changing it keeps their clock times.">
           <select value={zone} onChange={(e) => update((t) => ({ ...t, timeZone: e.target.value }))}>
-            {zoneChoices.map((z) => (
+            {zoneOptions.map(({ zone: z, label }) => (
               <option key={z} value={z}>
-                {timeZoneOptionLabel(z)}
+                {label}
               </option>
             ))}
           </select>

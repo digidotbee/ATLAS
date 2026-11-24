@@ -128,6 +128,14 @@ export function timeZoneOptionLabel(zone: string, now = Date.now()): string {
 }
 
 /**
+ * Every picker zone with its label. Labelling ~420 zones costs tens of milliseconds,
+ * so screens build this once per chosen zone (useMemo), never on each render.
+ */
+export function timeZoneOptions(current: string, now = Date.now()): { zone: string; label: string }[] {
+  return timeZoneChoices(current).map((zone) => ({ zone, label: timeZoneOptionLabel(zone, now) }));
+}
+
+/**
  * " PDT" when a Planner-facing screen should name the zone because it differs from the
  * device's, otherwise "". Invite cards always name the zone; see zoneAbbreviation.
  */
