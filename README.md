@@ -42,7 +42,15 @@ npm run build
 npm run test:e2e
 ```
 
-Pull requests to `main` run the unit tests, production build, and browser test. A push to `main` deploys the tested build to GitHub Pages after all checks pass.
+The database (M1) lives in `supabase/`: migrations in `supabase/migrations/`, tests in `supabase/tests/sql/`. Each test file runs in one transaction, rolls back, and prints `ok - <name>` per check.
+
+```sh
+npx supabase db start   # local Supabase, needs Docker
+npm run test:db
+npm run test:db:local   # or: a throwaway plain Postgres, no Docker
+```
+
+Pull requests to `main` run the unit tests, production build, browser test and database tests. A push to `main` deploys the tested build to GitHub Pages after all checks pass.
 
 Code map: `src/domain` (types, budget math, itinerary, research brief/import, validation — all unit-tested),
 `src/storage` (browser + Gist), `src/state/store.tsx`, `src/ui`.

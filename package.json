@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:db": "bash scripts/db-test.sh",
+    "test:db:local": "bash scripts/db-test-local.sh"
   },
   "dependencies": {
     "lucide-react": "^1.73.0",

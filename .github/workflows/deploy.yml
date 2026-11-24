@@ -33,9 +33,22 @@ jobs:
         with:
           path: dist
 
+  # M1: migrations and row-level security tested on a real local Supabase (Postgres only).
+  database:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: supabase/setup-cli@v3
+        with:
+          version: 2.122.1
+      - run: supabase db start
+      - run: bash scripts/db-test.sh
+      - if: always()
+        run: supabase stop --no-backup
+
   deploy:
     if: github.ref == 'refs/heads/main'
-    needs: build
+    needs: [build, database]
     runs-on: ubuntu-latest
     permissions:
       contents: read
