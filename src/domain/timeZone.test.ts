@@ -41,6 +41,11 @@ describe('D10 Venture time zone', () => {
     expect([...zones].sort((a, b) => a.localeCompare(b))).toEqual(zones);
   });
 
+  it('D10 offers UTC in the picker even where the engine leaves it out', () => {
+    // Chrome's zone list has no "UTC"; run with TZ=America/Los_Angeles to see this fail without the fix.
+    expect(timeZoneChoices('Asia/Tokyo')).toContain('UTC');
+  });
+
   it('D10 converts between an instant and clock time in the Venture zone', () => {
     const instant = Date.UTC(2026, 6, 2, 1, 0); // 2026-07-02 01:00 UTC
     expect(wallTimeAt(instant, 'America/Los_Angeles')).toBe('2026-07-01T18:00');
@@ -58,6 +63,17 @@ describe('D10 Venture time zone', () => {
     const skipped = instantOf('2027-03-14T02:30', 'America/New_York')!;
     expect(Math.abs(skipped - Date.UTC(2027, 2, 14, 7, 0))).toBeLessThanOrEqual(30 * 60_000);
     expect(wallTimeAt(Date.UTC(2027, 2, 13, 12, 0) + 24 * 3_600_000, 'America/New_York')).toBe('2027-03-14T08:00');
+  });
+
+  it('D10 resolves a repeated hour to its first occurrence on both sides of Greenwich', () => {
+    // Each zone falls back in 2027, so these clock times happen twice; the first is still on summer time.
+    expect(instantOf('2027-11-07T01:30', 'America/Los_Angeles')).toBe(Date.UTC(2027, 10, 7, 8, 30)); // PDT
+    expect(instantOf('2027-10-31T01:30', 'Europe/London')).toBe(Date.UTC(2027, 9, 31, 0, 30)); // BST
+    expect(instantOf('2027-10-31T02:30', 'Europe/Berlin')).toBe(Date.UTC(2027, 9, 31, 0, 30)); // CEST
+    expect(instantOf('2027-04-04T02:30', 'Australia/Sydney')).toBe(Date.UTC(2027, 3, 3, 15, 30)); // AEDT
+    // A skipped time east of Greenwich still lands within an hour of it.
+    const skipped = instantOf('2027-03-28T02:30', 'Europe/Berlin')!;
+    expect(Math.abs(skipped - Date.UTC(2027, 2, 28, 1, 0))).toBeLessThanOrEqual(30 * 60_000);
   });
 
   it('D10 names the zone at the given clock time', () => {

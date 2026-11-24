@@ -7,6 +7,7 @@
  */
 
 const WALL_TIME = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/;
+const DAY_MS = 24 * 3_600_000;
 
 export function isValidTimeZone(zone: string): boolean {
   if (!zone) return false;
@@ -33,7 +34,7 @@ export function ventureTimeZone(venture: { timeZone?: string }): string {
   return venture.timeZone && isValidTimeZone(venture.timeZone) ? venture.timeZone : deviceTimeZone();
 }
 
-/** Every zone the browser knows, sorted, always including `current`. */
+/** Every zone the browser knows, sorted, always including `current`, the device zone and UTC. */
 export function timeZoneChoices(current: string): string[] {
   let zones: string[] = [];
   try {
@@ -44,6 +45,7 @@ export function timeZoneChoices(current: string): string[] {
   const all = new Set(zones);
   if (current) all.add(current);
   all.add(deviceTimeZone());
+  all.add('UTC'); // Chrome's list leaves it out, and online Ventures may want it.
   return [...all].sort((a, b) => a.localeCompare(b));
 }
 
@@ -82,6 +84,13 @@ export function instantOf(wallTime: string, zone: string): number | null {
   const m = WALL_TIME.exec(wallTime);
   if (!m) return null;
   const asUtc = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]), Number(m[4]), Number(m[5]));
+  // Try the offsets in force a day either side; every one that reads back as the same clock
+  // time is a real occurrence, and the earliest is the first.
+  const occurrences = [asUtc - DAY_MS, asUtc, asUtc + DAY_MS]
+    .map((probe) => asUtc - offsetMinutes(probe, zone) * 60_000)
+    .filter((instant) => wallTimeAt(instant, zone) === wallTime);
+  if (occurrences.length > 0) return Math.min(...occurrences);
+  // Skipped when clocks went forward: step from the offset before the jump to the one after.
   const first = asUtc - offsetMinutes(asUtc, zone) * 60_000;
   return asUtc - offsetMinutes(first, zone) * 60_000;
 }
