@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { formatMoney, nightsBetween } from '../domain/budget';
 import { createTrip } from '../domain/factory';
 import { budgetTotalForEntry, CURRENCY_CODE, NEW_TRIP_STEPS, optInDeadlineAfter, preferredNightsForDuration, stepErrors, type BudgetMode, type NewTripDraft, type NewTripStep } from '../domain/newTrip';
-import { deviceTimeZone, timeZoneChoices, timeZoneOptionLabel, zoneAbbreviation } from '../domain/timeZone';
+import { deviceTimeZone, timeZoneOptionLabel, timeZoneOptions, zoneAbbreviation } from '../domain/timeZone';
 import { useStore } from '../state/store';
 import { Banner, Field, formatDateTimeLocal, formatLocalTime, NumberInput, todayISO } from './common';
 import { CalendarPicker } from './CalendarPicker';
@@ -77,7 +77,7 @@ export function NewTrip() {
   const span = nightsBetween(d.earliest, d.latest);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const device = useMemo(deviceTimeZone, []);
-  const zoneChoices = useMemo(() => timeZoneChoices(d.timeZone), [d.timeZone]);
+  const zoneOptions = useMemo(() => timeZoneOptions(d.timeZone), [d.timeZone]);
   const otherZone = d.timeZone !== device;
 
   // Move focus to the new question so keyboard and screen-reader users follow along.
@@ -226,9 +226,9 @@ export function NewTrip() {
                 </div>
                 <Field label="Time zone" hint="Dates, times and the Opt in by deadline use this time zone.">
                   <select value={d.timeZone} onChange={(e) => set({ timeZone: e.target.value })}>
-                    {zoneChoices.map((zone) => (
+                    {zoneOptions.map(({ zone, label }) => (
                       <option key={zone} value={zone}>
-                        {timeZoneOptionLabel(zone)}
+                        {label}
                       </option>
                     ))}
                   </select>

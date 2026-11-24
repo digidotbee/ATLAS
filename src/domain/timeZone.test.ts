@@ -10,6 +10,7 @@ import {
   plannerZoneSuffix,
   timeZoneChoices,
   timeZoneOptionLabel,
+  timeZoneOptions,
   ventureTimeZone,
   wallTimeAt,
   zoneAbbreviation,
@@ -39,6 +40,13 @@ describe('D10 Venture time zone', () => {
     expect(zones).toContain(deviceTimeZone());
     expect(new Set(zones).size).toBe(zones.length);
     expect([...zones].sort((a, b) => a.localeCompare(b))).toEqual(zones);
+  });
+
+  it('D10 pairs each picker zone with its offset label', () => {
+    const now = Date.UTC(2026, 6, 2, 1, 0);
+    const options = timeZoneOptions('Asia/Tokyo', now);
+    expect(options.map((o) => o.zone)).toEqual(timeZoneChoices('Asia/Tokyo'));
+    expect(options.find((o) => o.zone === 'Asia/Tokyo')?.label).toBe(timeZoneOptionLabel('Asia/Tokyo', now));
   });
 
   it('D10 offers UTC in the picker even where the engine leaves it out', () => {
