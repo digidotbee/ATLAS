@@ -1,8 +1,8 @@
 # ORIVOIR user stories
 
-**Journey 1 · MVP v1.0 · November 23, 2026**
+**Journey 1 · MVP v1.0 · November 26, 2026**
 
-The 46 MVP stories follow a Planner and their crew from a rough idea to a locked date, a shared itinerary, and a confirmed budget. They cover the free consumer core and the optional Gemini pilot. Planning together includes FLOW-01 through FLOW-03 and CREW-10 in MVP v1.0. Three more stories, PAID-01 to PAID-03, record the paid-link rules for after MVP v1.0 and are counted separately. The bullets under each story are its acceptance criteria. [ORIVOIR Living PRD v0.26, November 23, 2026](prd.md) · [Crew invitations engineering guide](crew-invitations.md)
+The 46 MVP stories follow a Planner and their crew from a rough idea to a locked date, a shared itinerary, and a confirmed budget. They cover the free consumer core and the optional Gemini pilot. Planning together includes FLOW-01 through FLOW-03 and CREW-10 in MVP v1.0. Three more stories, PAID-01 to PAID-03, record the paid-link rules for after MVP v1.0 and are counted separately. The bullets under each story are its acceptance criteria. [ORIVOIR Living PRD v0.27, November 26, 2026](prd.md) · [Crew invitations engineering guide](crew-invitations.md)
 
 | Journey | Stories | Source sections in the PRD |
 |---|---|---|
@@ -44,9 +44,10 @@ As a Planner who has picked a date, I want to enter it directly so the crew can 
 
 ### LAUNCH-03 · Ask the crew to help pick a date
 
-As a Planner with flexible dates, I want to give the crew a window and a deadline so I can compare times people can make.
+As a Planner with flexible dates, I want to propose dates and a deadline so I can compare times people can make.
 
-- **Set for date decision** shows the duration first, then requires an earliest start and latest wrap-up for launch.
+- **Set for date decision** asks for the length first, and it's optional: **One day or evening**, or **N nights**. Then I propose dates: one or more ranges, with single days struck out where they don't work.
+- Launch needs at least one proposed day, and the proposal spans at most 92 days. With a length set, at least one unbroken run of proposed days must hold a stretch of that length.
 - **Opt in by** is required. I can choose 24 hours, 3 days, or a custom deadline. The deadline appears on the invite preview.
 - Launching opens the Plan Board in **voting**, with **Review dates** available. The personal card and the group invite both ask for availability.
 
@@ -136,8 +137,9 @@ As a Planner, I want to see the active Crew and manage capacity so the roster an
 
 As an invitee, I want to tell the Planner which days I can come so they can include me when I can join for only part of a Venture.
 
-- On my first availability reply, I can tap any whole window once. **I can join for part** opens the dates within a multi-day option. I can choose Saturday only, or Friday and Sunday, in the Venture time zone. Selecting all days counts as choosing the whole window.
-- I can offer the whole first weekend and just Saturday of the second in a single submission. I get one Crew entry and one spot. A response of **None of these work** clears my selections across all windows.
+- The proposed dates appear as calendars, one month grid for each month with proposed days, showing only the weeks that contain them. Days in those weeks that aren't proposed show a red X, named "Not proposed" for screen readers, and can't be selected. A legend explains the X.
+- I can tap single days, select a range by tapping its first and last day, or tap **Available every day** and then tap the days I can't make. A day I can't make looks empty, not crossed out.
+- However I answer, it saves as the proposed days I can make, in the Venture time zone. One answer covers every proposed range, with one Crew entry and one spot. **None of these work** clears my selections.
 - While voting is open, I can use my private response access to change the days I offered. The Planner sees my latest answer.
 
 <a id="crew-07"></a>
@@ -176,12 +178,13 @@ As a Planner, I want familiar names and photos beside the answers so I can see a
 
 ### DATE-01 · See where availability overlaps
 
-As a Planner, I want to see who responded and which windows work for them so I can choose a time that fits the crew.
+As a Planner, I want to see who responded and which days work for them so I can choose a time that fits the crew.
 
-- Live response pills and a countdown show who answered and how much time remains. A dual-layer heatmap shows overlap across candidate windows and highlights matches to the preferred duration when one was set.
-- Only successful opt-ins appear on the response roster. **None of these work** counts as a submitted response with no matching window. A pending response is distinguishable from that answer.
-- For each candidate window, each person counts once as available for all or part. Four whole-weekend replies plus one Saturday-only reply show **4 for the whole weekend · 1 for Saturday only**. Saturday has five people available.
-- While voting is open, edits replace earlier answers. If the Saturday-only respondent switches to the full weekend, I see five whole and zero partial.
+- Live response pills and a countdown show who answered and how much time remains. The calendars show two layers: how many people can make each day, and, when I set a length, the best stretches highlighted.
+- Only successful opt-ins appear on the response roster. **None of these work** counts as a submitted response with no days selected. A pending response is distinguishable from that answer.
+- A stretch of my length can start on any proposed day but never crosses a day that isn't proposed. Stretches are ranked by how many people can make every day of them, then by how many can make part, then earliest first. Each person counts once per stretch.
+- With a length of 2 nights, four people who picked June 11–13 and one who picked only Saturday show **4 for all 3 days · 1 for Saturday only**. Saturday has five people available. When partial respondents picked different days, the summary reads **N for part**, and tapping the stretch shows who can make which days.
+- While voting is open, edits replace earlier answers. If the Saturday-only respondent adds Friday and Sunday, I see **5 for all 3 days**.
 
 <a id="date-02"></a>
 
@@ -192,15 +195,15 @@ As a Planner, I want to review the results or give the crew another chance to re
 - At cutoff, the server closes availability submissions and the workspace retains the results. A stale voting tab cannot record a late answer.
 - Someone who never responded and opens the Venture after the cutoff sees the departure screen with **Nothing ventured, nothing gained…**, unless the Venture filled first.
 - With zero replies, partial replies, or a tie, date selection remains pending until I lock a time. Before locking, I can move the cutoff forward to reopen voting and permit new joins where capacity allows.
-- If everyone answers without a clear match, I can lock a partial match or revise the choices and reopen voting. Revised choices prompt a fresh response.
+- If everyone answers without a clear match, I can lock a partial match or revise the proposed dates and reopen voting. A revised proposal asks for a fresh response.
 
 <a id="date-03"></a>
 
 ### DATE-03 · Lock the time I choose
 
-As a Planner, I want one explicit action to lock a window so everyone can move on to planning around the same date.
+As a Planner, I want one explicit action to lock the dates so everyone can move on to planning around the same date.
 
-- **Lock this time** saves the chosen window and moves the Venture to **planning** together. The existing board maps its outline onto the locked dates.
+- **Lock this time** saves the chosen stretch or day and moves the Venture to **planning** together. The existing board maps its outline onto the locked dates.
 - After a successful lock, the usual fixed-date flow prepares the same **Set a date** RSVP card and notification text. **Send date to N** sends in one action to active Crew with a permitted direct route and preserves each recipient’s existing entry. I can also **Share a group link** using the original group URL.
 - An unjoined or removed person is excluded from the direct resend. Dismissing the send or retrying a failed delivery leaves the date locked and the card available to send later.
 - An early lock immediately closes availability and new opt-ins. Submitting from a stale tab shows the current phase. Reopening the invite also loads the current state.
@@ -213,7 +216,7 @@ As a Planner, I want one explicit action to lock a window so everyone can move o
 As an opted-in Attendee or Collaborator, I want to see the time the Planner chose and confirm whether I can come so the crew has an accurate attendance count.
 
 - I can open the original invite or the resent fixed-date card. With my private response access restored, I see the locked schedule and the usual **Count me in** or **Can’t make it** actions. My RSVP updates my existing Crew entry.
-- The Planner sees confirmed, declined, and pending attendance. My RSVP stays pending after a whole-window or partial availability reply until I answer for the locked date. Availability and attendance totals remain distinct.
+- The Planner sees confirmed, declined, and pending attendance. My RSVP stays pending after I offer days, for all of the locked dates or part of them, until I answer for the locked date. Availability and attendance totals remain distinct.
 - If I joined via the group link, I can choose **Text me when [Planner] picks a date** after submitting availability. I can continue through my original link and private response access if I skip the offer or withdraw that permission.
 
 ## Follow a Venture
@@ -410,7 +413,7 @@ A regular Plan Board card is enough when an activity needs a headcount or a poin
 As a Collaborator, I want to organize a side plan from the main Plan Board so I can take responsibility for an activity that only some of us want to do.
 
 - As a signed-in Collaborator linked to an active main Crew entry, I can start a child Venture with a title. I become its Planner and own its schedule, choices, invitations, and RSVPs.
-- The child uses the main Venture’s dates, time zone, and broad location as context. I can enter a settled plan directly or use the date and option decision flows. Use the parent window while dates are open. Review child placement against the locked parent dates before displaying it on the itinerary.
+- The child uses the main Venture’s dates, time zone, and broad location as context. I can enter a settled plan directly or use the date and option decision flows. Use the parent's proposed dates while its date is open. Review child placement against the locked parent dates before displaying it on the itinerary.
 - A child links to one main Venture. Nesting ends at that level.
 
 <a id="child-02"></a>
@@ -486,7 +489,7 @@ As a Planner, I want to explore different versions of the same Venture while the
 
 As a Crew member, I want to know what the group is deciding and when I have finished my part.
 
-- Show duration first, followed by a fixed date or bounded candidate window. With multiple durations show each on its proposal. An invite for one evening asks which evenings work, and a multi-night invite shows whole stays and partial availability.
+- Show duration first, followed by a fixed date or the proposed dates. With multiple durations show each on its proposal. Every date-decision invite asks which proposed days work on the same calendar, and the Planner sees whole stretches and partial availability.
 - Show one primary action for the current person. The Planner can use Ask the Crew on an open decision to feature it. The board keeps the date summary and other ideas accessible.
 - A returning member sees their recorded answer and the current question. An expression of interest, support, availability and a final RSVP convey distinct commitments. A changed locked schedule requests a fresh RSVP from existing members.
 
@@ -514,9 +517,8 @@ As a participant, I want to invite people I met on a particular Venture to anoth
 
 ## Decisions still open
 
-| Area | Where v0.26 leaves the decision |
+| Area | Where v0.27 leaves the decision |
 |---|---|
-| Availability windows | Decide how to generate candidates from the Planner’s target range and ideal length, and how a guest enters part of an evening. Editable Friday–Sunday suggestions are an option under consideration. |
 | Post-lock guest visibility | Opted-in members can see the chosen time, RSVP, and support eligible options. The full set of details visible to an opted-in guest and how to confirm previously offered days are still open. |
 | Rescheduling | A child plan affected by changed main dates has a review rule. The general rules for existing invitations and attendance when a locked date changes are still open. |
 | Direct delivery | Select providers and supported destinations. Enable the first SMS invitation and date updates only where ORIVOIR meets the chosen sender and permission requirements. |

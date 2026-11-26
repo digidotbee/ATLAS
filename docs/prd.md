@@ -1,6 +1,6 @@
 # ORIVOIR Living PRD
 
-**Version 0.26 · November 23, 2026 · MVP v1.0**
+**Version 0.27 · November 26, 2026 · MVP v1.0**
 
 [User stories and acceptance criteria](user-stories.md)
 
@@ -20,7 +20,7 @@ MVP v1.0 includes FLOW-01, FLOW-02, FLOW-03 and CREW-10. Release acceptance cove
 
 The aim is to make real adventures with other people easy to start and repeat. A Venture can be a potluck, a walk or a holiday. A plan is one version of the Venture. An idea belongs to a plan or decision. A child Venture is an optional activity with its own host and participants.
 
-Open the working board from the draft, which only the Planner sees until launch. Require fixed dates or a bounded date window at launch. Put **One evening** above **Between May 28 and June 6** on the board and invitation. Display a shared duration once, or show each alternative’s duration beside it. Do not require a destination, price or itinerary to suggest a plan.
+Open the working board from the draft, which only the Planner sees until launch. Require fixed dates or at least one proposed day at launch. Put the length, such as **2 nights**, above **Between May 28 and June 6** on the board and invitation. Display a shared duration once, or show each alternative’s duration beside it. Do not require a destination, price or itinerary to suggest a plan.
 
 Start with one plan. **Add an idea** adds to the current context. **Suggest another plan** introduces a whole alternative to the same Crew. Compare relevant details such as host and contributions for a potluck, or duration, activities and estimates for a weekend away. Keep relative days and unscheduled ideas. **Choose this plan** keeps its contents and moves alternatives under **Other plans**. Plan choice and date lock can happen in either order. Only the chosen plan contributes its costs to the working budget. On date lock, map relative days to dates and flag overflow for review. Changes to proposal dates or duration prompt supporters to reconfirm; a changed locked date returns RSVPs to pending.
 
@@ -58,7 +58,7 @@ Aim for a four-step wizard that takes under 90 seconds. Keep optional travel fie
 | Step | Requirements |
 |---|---|
 | Set the Scene | Capture a destination, spot, or vibe. Venture title and broader area are optional. |
-| Schedule | **Set a date** supports a single day or evening, optional times, and multi-day Ventures. On a single day or evening, an end time earlier than the start time ends the next day, and every place the times appear says so, for example "9:00 PM – 1:00 AM (next day)". A multi-day Venture whose end date is its start date still needs an end time at or after the start time. **Set for date decision** captures the time commitment first, then earliest start and latest wrap-up, and required **Opt in by** cutoff. Offer 24 hours, 3 days, or a custom deadline. |
+| Schedule | **Set a date** supports a single day or evening, optional times, and multi-day Ventures. On a single day or evening, an end time earlier than the start time ends the next day, and every place the times appear says so, for example "9:00 PM – 1:00 AM (next day)". A multi-day Venture whose end date is its start date still needs an end time at or after the start time. **Set for date decision** captures the length first, then the proposed dates and the required **Opt in by** cutoff. The length is optional: **One day or evening**, or **N nights**. The Planner proposes one or more date ranges and can strike single days out of them. The proposal spans at most 92 days, and with a length set, at least one unbroken run must hold a stretch of that length. Offer 24 hours, 3 days, or a custom deadline for the cutoff. |
 | Crew | **Choose from contacts** is the primary action where supported. **Add by phone or email** is available to everyone. Review one delivery destination per selected person. Keep the optional planning headcount and **Max crew opt-ins** separate. The Planner can continue with an empty list. |
 | Budget & Launch | Offer **Total (Everything included)**, **Per person**, and **Skip for now**. Save the amount, currency, and basis. Preview the invite card and show **Opt in by** for Date Decision. With ready recipients, **Launch & invite N** creates the Venture and sends a personal invitation to each in one action. With no selection, **Launch Venture** creates the Venture and offers **Share a group link**. Skipping Budget keeps the final action on this screen. |
 
@@ -88,18 +88,24 @@ The current wizard multiplies a per-person entry by the party size at creation a
 
 ## Date Lock-In
 
-The voting workspace shows response pills, a cutoff countdown, and overlap across candidate windows. The PRD calls for a dual-layer heatmap that surfaces overlap matching the preferred duration. The exact method for generating candidate windows remains open.
+The Crew answers on calendars of the Planner's proposed dates: one month grid for each month with proposed days, showing only the weeks that contain them. Every day in those weeks that isn't proposed shows a red X, can't be selected, and is named "Not proposed" for screen readers. A one-line legend explains the X, and its shape carries the meaning as well as its color.
 
-For weekend options, the first invite asks **Which weekends could work for you?** One tap selects an entire window. On a multi-day option, **I can join for part** opens the dates in that window in the Venture time zone. Invitees select the days they can come, even if those days are separated. They can answer for several windows and submit once. Selecting every day counts as a whole-window answer. **None of these work** clears all selections and records an explicit empty response on submission.
+An invitee answers in any of three ways:
 
-For each window, count each respondent once, either for the whole window or for part of it. Show which days partial respondents can join. A daily total includes both whole-window respondents and people who selected that day. Edits replace the person’s previous selections while voting is open.
+- tap single days
+- select a range by tapping its first and last day, which selects every proposed day between them
+- tap **Available every day**, which selects every proposed day and switches taps to clearing the days they can't make
+
+A cleared day looks empty, never crossed out: the red X means only that the Planner didn't propose the day. Whichever way someone answers, it saves as the set of proposed days they can make, in the Venture time zone. One answer covers every proposed range, with one Crew entry and one spot. **None of these work** clears all selections and records an explicit empty response on submission. Edits replace the person's previous answer while voting is open. For a Venture of one day or evening, the answer is yes or no for each day; partial availability within a day isn't in MVP.
+
+The voting workspace shows response pills, a cutoff countdown, and two layers on the same calendars: how many people can make each day, and, with a length set, the best stretches highlighted. A stretch of the Planner's length can start on any proposed day but never crosses a day that isn't proposed. Stretches are ranked by how many people can make every day of them, then by how many can make part, then earliest first. Each person counts once per stretch, for all of it or for part. When every partial respondent picked the same single day, the summary names it, as in **4 for all 3 days · 1 for Saturday only**. Otherwise it reads **N for part**, and tapping the stretch shows who can make which days. Without a length, the Planner sees counts per day. A daily total includes everyone who selected that day.
 
 | Situation | Product behavior |
 |---|---|
-| Voting is open | Invitees can submit or edit their availability. The Planner sees whole-window and partial availability, overlap by day, and the response status of known Crew members. |
+| Voting is open | Invitees can submit or edit their availability. The Planner sees counts per day, ranked stretches when a length is set, and the response status of known Crew members. |
 | Cutoff passes | Availability submissions close at the server. The Venture remains in the date-decision workspace with voting closed. The Planner sees the results and can lock a time or move the cutoff forward. Only people who successfully opted in appear on the Crew response roster. |
-| Everyone replies without a clear match | Show the overlap and let the Planner lock a partial match or revise the options and reopen voting. Revising options should prompt a fresh response for the new choices. |
-| Planner locks a time | An explicit **Lock this time** action saves the chosen window, moves the Venture into **planning**, and starts the standard fixed-date invitation send flow. An early lock closes voting immediately. |
+| Everyone replies without a clear match | Show the overlap and let the Planner lock a partial match or revise the proposed dates and reopen voting. A revised proposal asks for a fresh response. |
+| Planner locks a time | An explicit **Lock this time** action saves the chosen stretch or day, moves the Venture into **planning**, and starts the standard fixed-date invitation send flow. An early lock closes voting immediately. |
 | Eligible invitee returns after lock-in | The same link shows the chosen time and **Count me in** or **Can’t make it**. The Planner sees confirmed, declined, and pending attendance. Availability totals remain separate from RSVP totals. |
 | New visitor arrives after joining closes | Show the departure screen with **Request to follow** and explain that the Planner can approve view-only access. Opening the link earlier did not reserve a spot. The message says why joining closed: a full Venture shows **This Venture has departed. All [limit] spots are filled.** Once **Opt in by** passes, it shows **Nothing ventured, nothing gained…** After an early lock, it shows **This Venture has departed.** A Venture that filled before its cutoff keeps the full-Venture message. |
 
@@ -192,7 +198,7 @@ A Collaborator can start a child Venture from the Plan Board to organize a plan 
 
 ### Launch and share
 
-1. **Start a side plan.** Enter a title from the main Plan Board. Use the main Venture’s dates, time zone, and broad location as context. The child Planner can add a settled plan directly or use the existing date and option decision flows where needed. While the parent date is open, use its candidate window. Once it is locked, verify that the child fits before adding it to the dated itinerary.
+1. **Start a side plan.** Enter a title from the main Plan Board. Use the main Venture’s dates, time zone, and broad location as context. The child Planner can add a settled plan directly or use the existing date and option decision flows where needed. While the parent date is open, use its proposed dates. Once it is locked, verify that the child fits before adding it to the dated itinerary.
 2. **Launch to the crew.** Require a signed-in Collaborator linked to an active Crew entry in the main Venture to start and launch a child Venture. The child Planner can invite a subset of the existing crew. Invitees can use their personal links, and child RSVPs are independent of main Venture RSVPs.
 3. **Offer it to the shared itinerary.** The child Planner can ask the main Planner to include the side plan. Launching to the subgroup can happen before this approval. After approval, the shared itinerary shows an optional plan summary that links to the child Venture. Child planning details are available to the child participants and the main Planner, subject to their access permissions.
 
@@ -233,14 +239,14 @@ These are proposed routes and data contracts. The implementation should map them
 
 | Data | Required fields and behavior |
 |---|---|
-| Venture | Planner account ID, schedule mode, status, time zone, cutoff, target window, optional opt-in limit, time commitment, and locked start and end or slot reference. Venture brief (feel, avoid and notes) and whether the crew can see it yet. Launch time, empty while the Venture is a Planner-only draft. The decision featured by **Ask the Crew**. Store instants with timezone-aware timestamps. |
+| Venture | Planner account ID, schedule mode, status, time zone, cutoff, the outer span of the proposed dates, optional opt-in limit, optional length (one day or evening, or a number of nights), and locked start and end or slot reference. Venture brief (feel, avoid and notes) and whether the crew can see it yet. Launch time, empty while the Venture is a Planner-only draft. The decision featured by **Ask the Crew**. Store instants with timezone-aware timestamps. |
 | Plan | Venture ID, title, length, optional proposed window, proposer, revision and whether it is the chosen plan. Every Venture starts with one plan and has at most one chosen. Decisions belong to a plan and sit on a relative day (Day 1, Day 2) or the whole Venture. |
 | Plan support | Plan ID and Crew membership ID, unique as a pair, with the plan revision supported. Support for an earlier revision needs reconfirming. Kept separate from availability and attendance. |
-| Candidate window | Venture ID, stable slot ID, start and end. |
+| Proposed dates | Venture ID, stable slot ID, and the start and end dates of one unbroken run of proposed days. Striking a day out splits a run in two. The proposal spans at most 92 days. |
 | Crew invitation | Venture ID, stable recipient invitation ID, issuing Planner, private contact label, optional photo, selected SMS/email destination, pending/claimed/revoked state, nullable Crew membership ID and scoped token digest. Personal details are visible to the Planner. A Past Crew invitation records its source and the recipient's account instead; its destination comes from that account at send and is never shown to the inviting Planner. |
 | Invitation delivery | Invitation or opted-in membership, send operation, message purpose, schedule version, channel, status, attempts and provider reference. Record applicable SMS permission and suppression. Retrying one failed delivery preserves the other recipients and their responses. |
 | Crew membership | Venture ID, collaborator ID, display name, role, account ID required for Collaborators and optional for Attendees, opt-in timestamp, and active or removed status. Store private response credentials securely and revoke access on removal. Leaving or removal from a main Crew also ends that person's child-Venture memberships. |
-| Availability response | Crew membership ID, submitted timestamp, and selected slots or availability ranges. For each multi-day candidate, retain its stable ID and either whole-window availability or the specific available dates within it, in the Venture time zone. A submitted empty selection means **None of these work**. A missing submission means pending. |
+| Availability response | Crew membership ID, submitted timestamp, and the set of proposed dates the person can make, in the Venture time zone. A submitted empty set means **None of these work**. A missing submission means pending. Revising the proposal asks for a fresh response. |
 | Attendance response | Crew membership ID, fixed or locked schedule, and confirmed or declined status. A missing response means pending. |
 | Follower access | Venture ID and authenticated user ID, unique as a pair. Status is pending, approved, declined, or revoked. |
 | Past Crew consent | Venture ID of the shared gathering and account ID, unique as a pair, with granted and withdrawn times. An account is required. Checked when Past Crew is listed and again at send. |
@@ -265,8 +271,9 @@ Launch records the Venture, invitations and queued deliveries atomically. Supaba
 - Removing a Crew member revokes their access, drops their responses from active counts, and makes a spot available if joining is still open. Raising the limit also frees capacity while joining is open.
 - A stale voting tab cannot submit after the cutoff or after an early lock. Extending the cutoff before lock reopens eligible voting and allows new joins where capacity permits.
 - With zero replies, partial replies, or tied results, date selection remains pending on the Plan Board until the Planner explicitly locks a time.
-- For June 11–13, 2027, four whole-weekend replies and one Saturday-only reply display as **4 for the whole weekend · 1 for Saturday only**. Five people are available on Saturday. If the Saturday-only guest changes to the whole weekend while voting is open, the result becomes five whole and zero partial. Answering for another weekend uses the same Crew entry.
-- Eligible invitees can RSVP on the same link. Both whole-window and partial availability leave attendance pending until the person RSVPs to the locked dates.
+- The Planner proposes June 4–14, 2027 and strikes out June 9. The invite shows the three weeks of June that hold proposed days. June 1–3, June 9 and June 15–19 show the red X and can't be selected. A guest taps **Available every day**, then June 12, and the answer saves as June 4–8, 10, 11, 13 and 14.
+- With a length of 2 nights, four people who picked June 11–13 and one who picked only Saturday, June 12, show **4 for all 3 days · 1 for Saturday only** for that stretch. Five people are available on Saturday. If the Saturday-only guest adds Friday and Sunday while voting is open, the stretch shows **5 for all 3 days**. Adding days from another proposed range edits the same answer and Crew entry.
+- Eligible invitees can RSVP on the same link. Offering days, for all of a stretch or part of it, leaves attendance pending until the person RSVPs to the locked dates.
 - Given the same Venture and settled schedule, fixed-date launch and Date Lock-In produce the same card and recipient-facing notification wording for each channel. The direct resend preserves each eligible person’s identity, and the group share preserves the original group URL. A group-only guest may opt into a date text. An unjoined invitee sees the departure screen after lock. A failed or dismissed send leaves the schedule locked.
 - The Venture brief reaches the Planner, Collaborators and Attendees on the Plan Board and never a Viewer, an invite card, a preview, an email or a text. An imported Venture’s earlier answers stay a Planner-only draft until the Planner taps **Share with crew**.
 - A preview of a private Viewer email leaves the request unsubmitted. In the ordinary one-tap flow, selecting the email button shows **Request sent** without code entry. Tapping it twice creates one pending request and takes no Crew spot.
@@ -277,7 +284,6 @@ Launch records the Venture, invitations and queued deliveries atomically. Supaba
 
 | Area | Next decision |
 |---|---|
-| Availability | Decide how to generate candidate windows from the Planner’s range and ideal length, and how to enter partial availability within a single evening. One option for **Weekend** is to suggest editable Friday–Sunday windows. |
 | Partial attendance details | Active members can RSVP to locked dates. Decide how someone who offered specific days records attendance for only part of the locked Venture and which additional plan details they can see. |
 | Direct delivery rollout | Choose providers, supported destinations and sender setup. Verify first-invite and update permissions before enabling each SMS route. |
 | Rescheduling | Define what happens to invitations and attendance when a locked date changes. |
@@ -343,3 +349,4 @@ The Planner signed off on this journey on November 18, 2026.
 | 0.24 | November 23, 2026 | Gave the departure screen a message for each way joining closes: the kind full-Venture message, **Nothing ventured, nothing gained…** once **Opt in by** passes without a response, and **This Venture has departed.** after an early lock. |
 | 0.25 | November 23, 2026 | A single day or evening can run past midnight: an end time earlier than the start time ends the next day, and every place the times appear says "(next day)". |
 | 0.26 | November 23, 2026 | Planning-together data rules: drafts stay Planner-only until launch; plans, relative days and plan support; Past Crew consent requires an account; **Don't invite me from this person again** on Past Crew invitations; the inviting Planner never sees Past Crew contact details; leaving the main Crew ends side-plan membership. |
+| 0.27 | November 26, 2026 | Decided how the Crew gives availability (D5): calendars of the Planner's proposed dates, showing only the weeks that hold them, with a red X on days that aren't proposed; tap days, a range, or **Available every day** and then the days they can't make. The length is **One day or evening** or **N nights**, and a stretch can start on any proposed day. Stretch summaries read **4 for all 3 days · 1 for Saturday only**. |

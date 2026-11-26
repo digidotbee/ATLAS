@@ -1,6 +1,6 @@
 # ORIVOIR implementation plan · MVP v1.0
 
-**Draft 0.2 · November 23, 2026 · for the [living PRD v0.26](prd.md) and its [46 MVP user stories](user-stories.md)**
+**Draft 0.2 · November 26, 2026 · for the [living PRD v0.27](prd.md) and its [46 MVP user stories](user-stories.md)**
 
 This plan turns the PRD into an ordered build. Every user story is assigned to exactly one milestone, every milestone lists what it depends on, and every decision the PRD leaves open is named with a recommendation and the milestone it blocks.
 
@@ -29,9 +29,9 @@ Measured on `main` at `cb3c757` (November 23, 2026):
 | --- | --- | --- | --- | --- |
 | **M0** · Done | Homepage entry and budget target | LAUNCH-01, BUDGET-01 | — | — |
 | **M1** · Foundation | Domain and routes, Supabase, Planner sign-in, Ventures in the cloud | none (enables everything) | D1, D2, D3, D9, D10 | L |
-| **M2** · Crew and joining | Choose people, personal and group links, account-free answers, capacity, **Who** | LAUNCH-03, LAUNCH-04, LAUNCH-06, CREW-01, CREW-02, CREW-04, CREW-05, CREW-07, CREW-09 | M1, D5, D12 | XL |
+| **M2** · Crew and joining | Choose people, personal and group links, account-free calendar answers, capacity, **Who** | LAUNCH-03, LAUNCH-04, LAUNCH-06, CREW-01, CREW-02, CREW-04, CREW-05, CREW-06, CREW-07, CREW-09 | M1, D5, D12 | XL |
 | **M3** · Direct delivery | One tap sends each person their own email or text; retries and receipts | LAUNCH-05, CREW-08 | M2, D3, D4, D14 | L |
-| **M4** · Date Decision and Lock-In | Partial availability, overlap heatmap, cutoff, **Lock this time**, RSVP | CREW-06, DATE-01, DATE-02, DATE-03, DATE-04 | M3, D6, D7 | L |
+| **M4** · Date Decision and Lock-In | Ranked stretches, overlap heatmap, cutoff, **Lock this time**, RSVP | DATE-01, DATE-02, DATE-03, DATE-04 | M3, D6, D7 | L |
 | **M5** · Plan Board | Decisions, Venture brief, ideas, 👍 support, alternative plans, lock to itinerary, map pin, booking click-out, Collaborators | LAUNCH-02, CREW-03, BOARD-01–08, FLOW-02 | M4, D8, D11 | XL |
 | **M6** · Shared Budget | Running cost, confirmed vs. estimated, quantities, scope, average | BUDGET-02, BUDGET-03, BUDGET-04, BUDGET-06, FLOW-01 | M5 | M |
 | **M7** · Follow | **Request to follow**, approval, **Following**, redacted reads | VIEW-01–03 | M5 | M |
@@ -85,11 +85,11 @@ Every one of the 46 MVP stories appears here exactly once. The three PAID storie
 | [CREW-03](user-stories.md#crew-03) | M5 | Attendee to Collaborator linking. It closes when Collaborator actions exist. |
 | [CREW-04](user-stories.md#crew-04) | M2 | Atomic last-spot join; **This Venture has departed** |
 | [CREW-05](user-stories.md#crew-05) | M2 | **Who** view, **5 of 6 spots filled**, **Remove from Crew**, raising the limit |
-| [CREW-06](user-stories.md#crew-06) | M4 | **I can join for part**; several windows in one submission |
+| [CREW-06](user-stories.md#crew-06) | M2 | Calendar answer: single days, a range, or **Available every day** then the days I can't make; red X on days not proposed |
 | [CREW-07](user-stories.md#crew-07) | M2 | Personal link answers with no name, code or app. Delivered by **Share personal invite** in M2 and by ORIVOIR in M3. |
 | [CREW-08](user-stories.md#crew-08) | M3 | One-tap delivery, readiness review, retry only failures |
 | [CREW-09](user-stories.md#crew-09) | M2 | **Mom · Saturday works**; private contact details; separate statuses |
-| [DATE-01](user-stories.md#date-01) | M4 | Response pills, countdown, two-layer heatmap, whole and partial counts |
+| [DATE-01](user-stories.md#date-01) | M4 | Response pills, countdown, two-layer heatmap: counts per day and ranked stretches of the length |
 | [DATE-02](user-stories.md#date-02) | M4 | Server cutoff, move the cutoff, revise options, timed-out departure message |
 | [DATE-03](user-stories.md#date-03) | M4 | **Lock this time**, **Send date to N**, early lock and its departure message |
 | [DATE-04](user-stories.md#date-04) | M4 | **Count me in** / **Can't make it**; **Text me when [Planner] picks a date** |
@@ -145,7 +145,8 @@ Every one of the 46 MVP stories appears here exactly once. The three PAID storie
 | Remove from Crew; raising the limit frees capacity | M2 |
 | Stale tab after cutoff or early lock; extending the cutoff reopens voting | M4 |
 | Zero, partial or tied replies leave the date pending until locked | M4 |
-| June 11–13: **4 for the whole weekend · 1 for Saturday only** | M4 |
+| June 4–14 with June 9 struck out: the weeks shown, the red X days, **Available every day** then June 12 | M2 |
+| June 11–13: **4 for all 3 days · 1 for Saturday only**, then **5 for all 3 days** | M4 |
 | RSVP on the same link; availability leaves attendance pending | M4 |
 | Fixed-date launch and Lock-In produce the same card; resend and group share rules | M4 |
 | Venture brief reaches the crew, never Viewers or messages; imported answers stay a Planner-only draft | M5 (Viewer part re-verified in M7) |
@@ -163,7 +164,7 @@ These are the decisions only Dot can make, with Claude's recommendation for each
 | D2 | **Supabase plan and environments** | Free projects for development and staging during M1–M2. Production on the Pro plan ($25 per month per organization) before the first real invitation, because free projects pause after a week of inactivity, which would break live invite links. Tests run against a local Supabase in CI. | M1 |
 | D3 | **Email provider** for sign-in codes and invitations | One transactional provider for both: SMTP for Supabase Auth, its API for invitations. Supabase's built-in email is for testing only and sends only to the project team's addresses. Choose one that supports a verified sending domain (SPF, DKIM, DMARC). **Decided November 23, 2026: Resend.** | M1 (sign-in for anyone but Dot), M3 |
 | D4 | **SMS route and sending identity** | Start carrier registration during M1 so texting can be ready by M3. New toll-free number registrations need a business registration number such as an EIN, an unverified toll-free number can't text US phones, and approval takes days to weeks. Decide whether ORIVOIR sends under a registered business. **Decided November 23, 2026:** ORIVOIR sends under a registered business; its EIN goes on the toll-free registration. Until texting is approved, R1 uses email plus **Share personal invite** (the Planner sends the link from their own phone), which the PRD allows. | M3 (texting only) |
-| D5 | **Candidate windows** (PRD *Remaining ideation*) | ORIVOIR proposes windows from the range and ideal length, and the Planner edits them in **Schedule** before launch. **Weekend** gives each Friday–Sunday in the range. "N nights" gives windows starting each Friday and Saturday. A single evening gives each date in the range. Cap the list at about 8 windows. No partial availability inside a single evening in MVP. The existing cost-ranking engine in When & how long can become an optional Planner helper. | M2 |
+| D5 | **How the Crew gives availability** (PRD *Date Lock-In*) | **Decided November 26, 2026** (PRD v0.27). The Planner proposes one or more date ranges in **Schedule** and can strike single days out. The proposal spans at most 92 days. The length is optional, **One day or evening** or **N nights**, and a stretch of that length can start on any proposed day. The Crew answers on calendars of the proposed dates, showing only the weeks that hold them, with a red X on days that aren't proposed: tap single days, a range, or **Available every day** and then the days they can't make. The answer saves as a set of days. M2 builds the calendar answer (CREW-06 moved from M4); M4 ranks the stretches. No partial availability within a single day in MVP. When & how long stays an optional Planner helper under D8. The earlier recommendation, pre-cut windows (each Friday–Sunday, starts each Friday and Saturday, about 8 options), is withdrawn. | M2 |
 | D6 | **Attendance after lock and guest visibility** (PRD *Remaining ideation*) | MVP has one RSVP for the whole Venture. Days a person offered stay visible to the Planner as context. Partial-day attendance is deferred. Opted-in Crew members see the full Plan Board and itinerary, minus the Planner's private contact data. Viewers get the redacted plan (M7). | M4 |
 | D7 | **Changing a locked date** (PRD *Remaining ideation*) | The Planner can change a locked date. Memberships and availability are kept, every RSVP resets to pending, and **Send date to N** offers the new date with "date changed" wording. Child Ventures follow the existing CHILD-03 review rule. | M4 |
 | D8 | **What happens to the original single-user tabs** | **Revised November 23, 2026.** The Plan Board is the only planning view. A Venture opens to the Plan Board in either schedule mode; Review dates opens Date Decision, and the numbered tabs retire. Explore and Itinerary become the Plan Board: options become ideas, **Choose** becomes **Lock this option**, and the itinerary is built from locked options. When & how long becomes an optional Planner helper inside Date Decision (D5). **Shape it retires:** its feel, avoid and notes answers become the [Venture brief](user-stories.md#board-08), which the Planner edits and the whole crew sees; must-dos become decision cards; lodging and food become starter decisions ([BOARD-01](user-stories.md#board-01)); pace, bases, transport and season are dropped. The kids question and children's ages were removed on November 22. Travel legs stay Planner-only until the Transit ideation. The copy-and-paste research helper is replaced by **Add Idea** with provider JSON and by the Gemini pilot. Keep the print one-sheet; it shows the brief's feel line where it showed *The idea*. | M5 |
@@ -198,6 +199,7 @@ These are the decisions only Dot can make, with Claude's recommendation for each
 | November 23, 2026 | Evenings past midnight | Dot chose to read an end time earlier than the start time on a single day or evening as ending the next day (PRD v0.25), instead of keeping #41's error and pointing to the multi-day workaround. Every place the times appear says "(next day)", so the saved times never carry the meaning silently. |
 | November 23, 2026 | Planning-together data model | Dot chose, for FLOW-01–03 and CREW-10 (PRD v0.26): drafts are Ventures with an empty `launched_at` (not a third status, so `voting` and `planning` keep meaning the date phase); consenting to Past Crew invitations requires an account, so ORIVOIR reaches people only through their own sign-in email; a Past Crew invitation offers **Don't invite me from this person again**, alongside consent withdrawal; leaving the main Crew ends side-plan membership, for privacy; the "draft access" #44 placed in M2 means saving a Venture as a draft before launch. Claude's model: one or more plans per Venture with one chosen, relative days, plan support with reconfirmation, and Past Crew destinations resolved on the server. |
 | November 23, 2026 | D3 | Dot chose Resend for sign-in codes (SMTP for Supabase Auth) and later invitations. Its free plan allows 100 emails a day and 3,000 a month. Its DNS records go in Cloudflare once `orivoir.com` moves there (D1). |
+| November 26, 2026 | D5 | Dot chose day-level availability on a calendar over pre-cut windows (PRD v0.27). She ruled out tying stretches to weekdays: a stretch can start on any day in the range. She specified tapping single days, a range, or **Available every day** and then the days someone can't make, with the proposed dates shown as calendars and a red X on days that aren't proposed. She then accepted Claude's recommendations: one calendar for every length; showing only the weeks that hold proposed days; the red X reserved for days not proposed; the length as **One day or evening** or **N nights**, with the summary **4 for all 3 days · 1 for Saturday only** (Claude-drafted wording); and the calendar answer moving to M2. The 92-day span limit is Claude's suggestion. |
 | November 23, 2026 | D4, D14 | ORIVOIR will sit under a registered business. Its EIN goes on the toll-free registration (D4), and its legal name goes in the privacy policy and terms (D14). |
 
 ## 5. Architecture
@@ -233,12 +235,12 @@ These responsibilities come from [PRD *Routing and data*](prd.md#routing-and-dat
 
 | Table | Key fields | Rules |
 | --- | --- | --- |
-| `ventures` | Planner, title, destination, region, `time_zone`, `schedule_mode` (fixed or decision), `status` (voting or planning), fixed or locked schedule, `opt_in_by`, target window, ideal length, `max_opt_ins`, planning headcount, budget amount, currency and basis, cushion, `parent_venture_id`, `legacy_local_id`, brief (`brief_feel`, `brief_avoid`, `brief_notes`, `brief_shared`), `planning_data` (transitional), `launched_at` (empty while a draft), `featured_decision_id` (**Ask the Crew**), `client_request_id` (side plans) | One nesting level. `legacy_local_id` makes the browser import idempotent. `planning_data` is a Planner-only JSON object holding the existing planning tabs' data until M5 moves it into plans, decisions and options. Columns arrive with the milestone that uses them: M1 creates the table, M5 adds `featured_decision_id`, M8 adds `parent_venture_id` and `client_request_id`. A draft (no `launched_at`) is visible only to its Planner; launch sets it. `status` keeps meaning the date phase. `client_request_id` is unique per creating membership, so a side plan started through sign-in is created once. |
-| `candidate_windows` | Venture, stable slot key, start and end dates and times, revision | Revising windows bumps the revision and prompts fresh answers (DATE-02) |
+| `ventures` | Planner, title, destination, region, `time_zone`, `schedule_mode` (fixed or decision), `status` (voting or planning), fixed or locked schedule, `opt_in_by`, target window (the outer span of the proposed dates), length (free-text `ideal_length` from M1; M2 adds `length_nights`), `max_opt_ins`, planning headcount, budget amount, currency and basis, cushion, `parent_venture_id`, `legacy_local_id`, brief (`brief_feel`, `brief_avoid`, `brief_notes`, `brief_shared`), `planning_data` (transitional), `launched_at` (empty while a draft), `featured_decision_id` (**Ask the Crew**), `client_request_id` (side plans) | One nesting level. `legacy_local_id` makes the browser import idempotent. `planning_data` is a Planner-only JSON object holding the existing planning tabs' data until M5 moves it into plans, decisions and options. Columns arrive with the milestone that uses them: M1 creates the table, M5 adds `featured_decision_id`, M8 adds `parent_venture_id` and `client_request_id`. A draft (no `launched_at`) is visible only to its Planner; launch sets it. `status` keeps meaning the date phase. `client_request_id` is unique per creating membership, so a side plan started through sign-in is created once. |
+| `candidate_windows` | Venture, stable slot key, start and end dates, revision | The Planner's proposed dates (D5): one row per unbroken run of proposed days, so striking a day splits a run. The proposal spans at most 92 days. Revising bumps the revision and asks for fresh answers (DATE-02). M2 drops the time columns M1 created, because times belong to the Venture's schedule. |
 | `invitations` | Venture, issuer, `source` (contacts or Past Crew), private recipient label, private avatar reference, channel, destination, normalized `destination_key`, recipient account (Past Crew), state (pending, claimed, revoked), membership | One intended invitation per recipient per Venture, unique on (Venture, `destination_key`) and on (Venture, recipient account). Planner-only. A Past Crew invitation's destination comes from the recipient's own account at send and is never shown to the inviting Planner. |
 | `memberships` | Venture, account (required for Collaborators), role, shared display name and photo choice, status (active, removed), `opted_in_at` | One active membership per claimed invitation. Removal revokes access. Leaving or removal from a main Crew also ends that person's memberships in its child Ventures. |
 | `private_access` | Token digest, purpose (invitation, member, viewer-follow), scope, expiry, revoked or used time | Tokens are high-entropy and only digests are stored. Viewer-follow tokens are single-use. |
-| `availability` | Membership (one current), submitted time, `none_work`, selections per window (whole, or specific dates) | A missing row means pending. An empty submission means **None of these work**. |
+| `availability` | Membership (one current), submitted time, `none_work`, and one `availability_days` row per proposed date the person can make | A missing row means pending. An empty submission means **None of these work**. Dates are plain dates in the Venture time zone (D10). Each day must be a proposed day. |
 | `attendance` | Membership (one current), schedule version, going or not going | Separate from availability |
 | `send_operations`, `deliveries` | Operation key, purpose, schedule version; per delivery: channel, status (queued, accepted, delivered, failed, uncertain), attempts, provider message ID | Unique operation key and provider message ID make launches and callbacks replay-safe |
 | `messaging_permissions` | Destination, channel, sender, purpose, source and time, withdrawal or suppression | Checked again at dispatch |
@@ -322,21 +324,24 @@ M1 keeps today's local mode working for already-saved Ventures until the Planner
 
 - **Build:**
   - **Crew step:** **Choose from contacts** where the browser supports it, **Add by phone or email**, one row per person with photo or initials and one destination, edit and remove, and deduplication with same-name safety ([LAUNCH-06](user-stories.md#launch-06)). Plus **Max crew opt-ins** and the planning headcount ([LAUNCH-04](user-stories.md#launch-04)).
-  - **Candidate windows:** generated and editable in Schedule (D5), and shown on the invite preview.
+  - **Proposed dates (D5):** in Schedule, the optional length (**One day or evening** or **N nights**), then one or more ranges with single days struck out, spanning at most 92 days; shown on the invite preview ([LAUNCH-03](user-stories.md#launch-03)). A migration adds `length_nights` (empty when not set, 0 for one day or evening) and drops the time columns from `candidate_windows`. A Venture saved before M2 keeps its free-text length as a Planner-only note.
   - **At launch:** invitations and the group link. **Share personal invite** and **Share a group link** use the device share sheet, or copy the link where there's no share sheet.
-  - **Personal and group landing pages:** **Responding as [name]**, the display-name prompt for group joiners, whole-window availability and **None of these work**, fixed-date RSVP, and **Manage my response**.
+  - **Personal and group landing pages:** **Responding as [name]**, the display-name prompt for group joiners, the availability calendar and **None of these work** ([CREW-06](user-stories.md#crew-06)), fixed-date RSVP, and **Manage my response**.
   - **Joining:** one atomic join function for both link types. **This Venture has departed. All [limit] spots are filled.** when full; M4 adds the cutoff and early-lock messages (the **Request to follow** button arrives in M7; until then the screen says to ask the Planner).
   - **Who view:** joined members, **N of M spots filled**, named invitations **Awaiting reply**, private contact details on row tap, **Remove from Crew**, raise the limit.
-  - **A minimal Date Decision workspace:** status, roster, whole-window counts per window ([LAUNCH-03](user-stories.md#launch-03)). Until M5 builds the Plan Board, a Venture in **voting** opens to its date summary with Review dates.
+  - **Availability calendar:** one `AvailabilityCalendar` component that shares `CalendarPicker`'s month grid. Single days, a range, and **Available every day** with taps that clear days. Only the weeks holding proposed days; a red X on days not proposed, named "Not proposed", with a legend. The red X uses `--danger` (5.69:1 on the Storm background, 5.34:1 on Daylight's), and its styles land in `src/theme.css` and `docs/design-system.md` together. How a tap starts a range rather than picking one day is a design detail to show Dot before building.
+  - **A minimal Date Decision workspace:** status, roster, and counts per day on the calendar ([LAUNCH-03](user-stories.md#launch-03)). Until M5 builds the Plan Board, a Venture in **voting** opens to its date summary with Review dates.
   - **Drafts:** the Planner can leave the wizard and come back to a saved draft (no `launched_at`) that only they can see; launch sets `launched_at` ([FLOW-01](user-stories.md#flow-01)). Adding ideas to a draft comes with the board in M5.
-  - **Duration first:** Schedule, the invite preview and the cards show the length above the date or window ([FLOW-02](user-stories.md#flow-02)).
-- **Closes:** LAUNCH-03, LAUNCH-04, LAUNCH-06, CREW-01, CREW-02, CREW-04, CREW-05, CREW-07, CREW-09.
+  - **Duration first:** Schedule, the invite preview and the cards show the length above the dates ([FLOW-02](user-stories.md#flow-02)).
+- **Closes:** LAUNCH-03, LAUNCH-04, LAUNCH-06, CREW-01, CREW-02, CREW-04, CREW-05, CREW-06, CREW-07, CREW-09.
 - **Verify:**
   - database race tests: two simultaneous first answers for the last spot admit exactly one
   - replay tests: the same submission twice gives one membership
   - privacy tests: the group card, the shared roster and previews carry no address-book fields or tokens
   - browser flows for two members named Maya, same-browser restore, the manage link in a fresh browser, and remove-then-rejoin
   - real devices: the contact picker on Android Chrome and the manual fallback on iPhone Safari
+  - the PRD June 4–14 calendar example, with keyboard access, screen-reader names, both themes and phone width
+  - database tests: an answer can't include a day that isn't proposed, and a revised proposal asks for a fresh answer
 - **Needs first:** M1, D5, D12.
 - **Risks:**
   - The contact picker only exists on some browsers. The manual path is always available, and both are tested.
@@ -367,17 +372,16 @@ M1 keeps today's local mode working for already-saved Ventures until the Planner
 
 ### M4 · Date Decision and Lock-In
 
-**Goal:** the Crew says which days work, the Planner locks a time, and everyone RSVPs on the same entry.
+**Goal:** the Planner sees which stretches work for the Crew, locks a time, and everyone RSVPs on the same entry.
 
 - **Build:**
-  - **Answering:** **I can join for part** with per-day selection in the Venture time zone, several windows in one submission, and edits while voting is open ([CREW-06](user-stories.md#crew-06)).
-  - **Planner's view:** live response pills, the countdown, and the two-layer heatmap with whole and partial counts, highlighting matches to the preferred length ([DATE-01](user-stories.md#date-01)).
-  - **Cutoff:** enforced on the server, the cutoff can be moved forward, and windows can be revised with fresh answers requested ([DATE-02](user-stories.md#date-02)).
+  - **Planner's view:** live response pills, the countdown, and the two-layer heatmap on the M2 calendar: counts per day, and stretches of the length ranked by who can make all of them, then part, then earliest first, with **N for part** when partial respondents picked different days ([DATE-01](user-stories.md#date-01)).
+  - **Cutoff:** enforced on the server, the cutoff can be moved forward, and the proposed dates can be revised with fresh answers requested ([DATE-02](user-stories.md#date-02)).
   - **Locking:** **Lock this time** saves the schedule and switches to planning in one transaction. Then the shared fixed-date card builder (the same output as a fixed-date launch), **Send date to N** to eligible members, and **Share a group link** with the original URL ([DATE-03](user-stories.md#date-03)).
   - **After the lock:** **Count me in** / **Can't make it**, and **Text me when [Planner] picks a date** for group joiners ([DATE-04](user-stories.md#date-04)). Locked dates can be changed under D7.
-- **Closes:** CREW-06, DATE-01, DATE-02, DATE-03, DATE-04.
+- **Closes:** DATE-01, DATE-02, DATE-03, DATE-04.
 - **Verify:**
-  - the PRD June 11–13 example (**4 for the whole weekend · 1 for Saturday only**, then five whole)
+  - the PRD June 11–13 example (**4 for all 3 days · 1 for Saturday only**, then **5 for all 3 days**)
   - stale tabs after cutoff and after an early lock
   - card parity between a fixed-date launch and a lock for the same schedule, on each channel
   - unjoined people see the departure screen after the lock: **Nothing ventured, nothing gained…** once the cutoff has passed, **This Venture has departed.** after an early lock
@@ -514,7 +518,7 @@ These are recorded so they aren't built by accident:
 ## 9. Document updates this plan calls for
 
 - **PRD *Routing and data*:** describe the real stack: WILDSTROM CSS, no Tailwind, with Supabase introduced in M1 and MapLibre GL JS with OpenFreeMap tiles in M5 (D11, D12). (Done in PRD v0.21.)
-- **PRD *Remaining ideation*:** record decisions D5, D6, D7 and D4 once made, with dated revision-history entries.
+- **PRD *Remaining ideation*:** record decisions D6, D7 and D4 once made, with dated revision-history entries.
 - **PRD:** fix "lime primary actions" to match the accent decision (D12). (Done in PRD v0.21.)
 - **[Venture launch](venture-launch.md) and [AGENTS.md](../AGENTS.md):** point to this plan for build order. (Done.)
 

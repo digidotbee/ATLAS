@@ -1,6 +1,6 @@
 # ORIVOIR handoff
 
-**Last updated:** November 24, 2026, after #51 (`main` at `09e0633`) and this file's own PR.
+**Last updated:** November 26, 2026, with the D5 decision (PRD v0.27). `main` was at `c2c66c1`, after #52, when this was written.
 
 This page lets any agent or developer pick up the build where the last session stopped. It's public, like the rest of the repo, so it holds no secrets, contact details, costs or business matters. For those, ask Dot, the founder. **Update this file in the same PR whenever status changes** (see the last section).
 
@@ -10,7 +10,7 @@ Read these in order before changing anything:
 
 1. [`AGENTS.md`](../AGENTS.md): the repo's rules for agents.
 2. This file: where things stand and what's next.
-3. [`docs/prd.md`](prd.md): the living PRD (v0.26), canonical for product behavior.
+3. [`docs/prd.md`](prd.md): the living PRD (v0.27), canonical for product behavior.
 4. [`docs/user-stories.md`](user-stories.md): acceptance criteria by stable ID (46 MVP stories, plus PAID-01–03 after MVP).
 5. [`docs/implementation-plan.md`](implementation-plan.md): milestones M0–M9, story traceability, decisions D1–D20 with the *Decisions made* log, the Supabase data and access model (section 5), and the definition of done (section 7).
 6. The guides: [`venture-launch.md`](venture-launch.md) (wizard and roles), [`crew-invitations.md`](crew-invitations.md) (invitations, joining, Date Lock-In, data contract), [`design-system.md`](design-system.md) (WILDSTROM).
@@ -34,6 +34,7 @@ A calm, collaborative web app where a group plans a shared **Venture** of any si
   - the four-step wizard
   - the Venture time zone (D10, #43, #47, #48)
   - single evenings that run past midnight (#49)
+- **D5 decided (PRD v0.27):** the Crew answers on calendars of the Planner's proposed dates, with a red X on days that aren't proposed. They can tap single days, a range, or **Available every day** and then the days they can't make. The calendar answer (CREW-06) moved from M4 to M2; M4 ranks stretches of the Planner's length. Plan D5, M2 and M4 have the details.
 - **M1, Foundation, in progress.** Goal: a signed-in Planner can launch and reopen Ventures from the cloud on any device, on the new domain. It's split into four pull requests:
   1. **Merged (#51):** `supabase/` with the `ventures` and `candidate_windows` migration, row-level security, 36 database checks, and a CI `database` job.
   2. **Next:** email-code sign-in and Ventures saved to and loaded from Supabase.
@@ -87,7 +88,6 @@ Plan section 4 has each recommendation. Record Dot's choice in the *Decisions ma
 
 | Decision | Blocks |
 | --- | --- |
-| D5 · candidate windows | M2 |
 | D6 · attendance after lock and guest visibility | M4 |
 | D7 · changing a locked date | M4 |
 | D13 · Gemini pilot scope and key storage | M9 |
@@ -176,3 +176,4 @@ TZ=America/Los_Angeles npm test && TZ=Asia/Tokyo npm test   # for anything time-
 - **Update it in the same PR whenever status changes:** what merged, what's next, what's waiting on Dot, which decisions are open, and the test baseline. Change the *Last updated* line.
 - **Keep it public-safe:** no secrets, tokens, contact details, costs, revenue figures, or business and naming discussions.
 - **Keep it short:** link to the plan and the PRD instead of copying them.
+- **Before your context runs out:** when it's about 80% full, or as soon as you've had to summarize earlier work, update this file, and the PRD for any decision made, with what the next agent needs: changes, decisions and where you stopped. Pushing still needs Dot's approval.

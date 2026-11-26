@@ -7,7 +7,7 @@
 
 ## Plan Board hierarchy
 
-Lead with Venture title and time commitment. Place the date or candidate range beneath the duration. Use a single primary action for the current person and decision. Present comparable proposals together and place plan-specific durations on their cards. Reserve travel details for plans that use them. [Planning together](user-stories.md#planning-together).
+Lead with Venture title and time commitment. Place the date or proposed dates beneath the duration. Use a single primary action for the current person and decision. Present comparable proposals together and place plan-specific durations on their cards. Reserve travel details for plans that use them. [Planning together](user-stories.md#planning-together).
 
 ## 1. Brand Identity
 
@@ -526,6 +526,7 @@ Icons are sourced from the `lucide-react` npm package. No local SVG files or gen
 
 | Date       | Change |
 |------------|--------|
+| 2026-11-26 | Docs only: "candidate range" now reads "proposed dates" (D5). The availability calendar's styles arrive with its M2 build. No UI change. |
 | 2026-11-23 | **Time zone** select in Set the Scene's optional details and in Venture settings, using the existing field and `.stack-sm` spacing. No new tokens or CSS. |
 | 2026-11-22 | Storm is the first-visit default. Choosing Auto saves the device-following preference. The sync indicator stays steady with reduced motion. |
 | 2026-11-21 | Budget pill (`.budget-pill`) under the Venture title shows the target as entered or **+Set budget**, and opens the new Budget view; the budget target controls moved there from Venture settings. Borders use `--accent`, not `--accent-vivid`, so the dashed outline stays visible on Daylight cream. First rule guarded by `prefers-reduced-motion`. |
