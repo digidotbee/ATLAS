@@ -77,13 +77,14 @@ From the plan's M1 section. Read it and plan sections 5.3–5.5 first.
 
 These happen outside the repo. Agents never ask for keys in chat: Dot enters secrets in GitHub, Supabase or Cloudflare herself.
 
-1. **Move `orivoir.com`'s nameservers to Cloudflare**, after checking that DNSSEC is off at the current registrar. Resend's DNS records and M1 part 4 depend on this.
-2. **Create two free Supabase projects**, `orivoir-dev` and `orivoir-staging`. When part 2 needs them, the agent names the GitHub Actions secrets and variables to add.
-3. **Set up Resend after the DNS move (D3):**
+**Done:** `orivoir.com`'s nameservers moved to Cloudflare (Dot, November 26, 2026). Resend's DNS records and M1 part 4 no longer wait on DNS.
+
+1. **Create two free Supabase projects**, `orivoir-dev` and `orivoir-staging`. When part 2 needs them, the agent names the GitHub Actions secrets and variables to add.
+2. **Set up Resend (D3).** The DNS move is done, so this can start:
    - a sending domain (suggested: `mail.orivoir.com`)
    - its DNS records in Cloudflare
    - its SMTP details entered in Supabase's auth settings
-4. **The registered business for D4 and D14**, which is in progress. Texting registration and the privacy policy and terms wait on it.
+3. **The registered business for D4 and D14**, which is in progress. Texting registration and the privacy policy and terms wait on it.
 
 ## Open decisions
 
