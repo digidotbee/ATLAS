@@ -1,6 +1,6 @@
 # ORIVOIR handoff
 
-**Last updated:** November 26, 2026, with the D5 decision (PRD v0.27). `main` was at `c2c66c1`, after #52, when this was written.
+**Last updated:** November 26, 2026, after #53 (`main` at `580bfce`) and this file's own PR.
 
 This page lets any agent or developer pick up the build where the last session stopped. It's public, like the rest of the repo, so it holds no secrets, contact details, costs or business matters. For those, ask Dot, the founder. **Update this file in the same PR whenever status changes** (see the last section).
 
@@ -34,13 +34,13 @@ A calm, collaborative web app where a group plans a shared **Venture** of any si
   - the four-step wizard
   - the Venture time zone (D10, #43, #47, #48)
   - single evenings that run past midnight (#49)
-- **D5 decided (PRD v0.27):** the Crew answers on calendars of the Planner's proposed dates, with a red X on days that aren't proposed. They can tap single days, a range, or **Available every day** and then the days they can't make. The calendar answer (CREW-06) moved from M4 to M2; M4 ranks stretches of the Planner's length. Plan D5, M2 and M4 have the details.
+- **D5 decided (#53, PRD v0.27):** the Crew answers on calendars of the Planner's proposed dates, with a red X on days that aren't proposed. They can tap single days, a range, or **Available every day** and then the days they can't make. The calendar answer (CREW-06) moved from M4 to M2; M4 ranks stretches of the Planner's length. Plan D5, M2 and M4 have the details.
 - **M1, Foundation, in progress.** Goal: a signed-in Planner can launch and reopen Ventures from the cloud on any device, on the new domain. It's split into four pull requests:
   1. **Merged (#51):** `supabase/` with the `ventures` and `candidate_windows` migration, row-level security, 36 database checks, and a CI `database` job.
   2. **Next:** email-code sign-in and Ventures saved to and loaded from Supabase.
   3. The browser import offer (D9), and Gist sync made export-only.
   4. The Cloudflare host (D1), with path routes and redirects from the old hash links.
-- **Open pull requests:** none when this was written. Check before branching: `git fetch origin && git ls-remote origin 'refs/pull/*/head'`.
+- **Open pull requests:** none when this was written. Check before branching: `git fetch origin && gh api 'repos/digidotbee/atlas/pulls?state=open' --jq '.[].number'`. (`git ls-remote origin 'refs/pull/*/head'` lists merged PRs too.)
 - **Test baseline on `main`:** 118 unit tests in 15 files, 8 Playwright flows, 36 database checks.
 
 ## Next task: M1 part 2, sign-in and Ventures in the cloud
@@ -60,6 +60,7 @@ From the plan's M1 section. Read it and plan sections 5.3–5.5 first.
   - The rest of the planning tabs' data goes into `planning_data`, a Planner-only JSON object that M5 replaces with plans, decisions and options.
   - Read the group target through the `group_budget` computed column. It matches BUDGET-01's `withBudgetTotal`.
   - A new Venture is a draft until launch, when `launched_at` is set once (#50).
+  - Keep the D5 fields simple, because M2 reworks them. The wizard's free-text "Ideal length" goes into `ideal_length` as it is, and its date-decision range goes into `window_earliest` and `window_latest`. Don't write `candidate_windows` rows yet: M2 turns them into the Planner's proposed ranges, drops their time columns and adds `length_nights`.
 - **What keeps working:**
   - The existing planning tabs run on cloud data.
   - Ventures that haven't been imported stay local until part 3.
@@ -68,6 +69,8 @@ From the plan's M1 section. Read it and plan sections 5.3–5.5 first.
   - New browser flows for sign-in with the draft restored, and for launching then reopening a Venture in another browser session.
   - Every existing test still passes.
   - In CI, sign-in flows need a local Supabase with auth. `supabase start` runs Mailpit at port 54324, which captures the code emails.
+  - The current `database` job runs only `supabase db start`. The sign-in flows need a job that runs `supabase start` and builds the app with that stack's local URL and anon key.
+  - Without Docker, the sign-in flows can't run locally: `npm run test:db:local` covers only the database. Run those flows in CI, and say so when you report.
 - **Hosted projects:** deploying migrations to hosted projects needs Dot's Supabase projects (below). Building and testing doesn't.
 
 ## Waiting on Dot
@@ -95,6 +98,8 @@ Plan section 4 has each recommendation. Record Dot's choice in the *Decisions ma
 | D15 · pilot measurement | the R1 pilot |
 | D16 · order after R1 | M5 onward |
 | D17–D20 · paid links | after MVP |
+
+**Before M2 builds the availability calendar,** show Dot how a tap starts a range instead of picking one day (plan M2).
 
 **Open product question:** should ORIVOIR collect children's ages for planning and headcount? No story asks for them, and the app deletes saved ages on load (#37). Collecting them would need a PRD decision, a story and a code change.
 
@@ -153,7 +158,11 @@ TZ=America/Los_Angeles npm test && TZ=Asia/Tokyo npm test   # for anything time-
 ## Environment notes
 
 - **Check `origin/main` before branching and before pushing.** Other sessions merge too. After merging PRs that touch the same lines, diff what each one added against `main` to catch dropped text.
-- **If `gh pr create` fails** because GraphQL is blocked, use the REST API: `gh api repos/digidotbee/atlas/pulls --method POST --input body.json`, and PATCH to edit.
+- **GitHub's GraphQL API is blocked in some sandboxes,** so `gh pr create` and `gh pr list` fail. Use the REST API:
+  - open a PR: `gh api repos/digidotbee/atlas/pulls --method POST --input body.json`, and PATCH to edit
+  - list open PRs: `gh api 'repos/digidotbee/atlas/pulls?state=open'`
+  - CI results: `gh api repos/digidotbee/atlas/commits/<sha>/check-runs`
+- **Dot sometimes merges on GitHub herself.** Check a PR's state and `origin/main` before acting on it.
 - **Some sandboxes can't delete remote branches.** Leave merged branches for Dot.
 - **The Supabase CLI is pinned at 2.122.1**, in CI and locally (`npx supabase@2.122.1`).
 - **No Docker?** `npm run test:db:local` starts a throwaway Postgres. It runs as the `postgres` user if you're root, and finds the binaries through `pg_config` or `/usr/lib/postgresql/*/bin`.
@@ -169,7 +178,7 @@ TZ=America/Los_Angeles npm test && TZ=Asia/Tokyo npm test   # for anything time-
 - **Wording:** "Family profile" and the side panel's "travelers" conflict with the scale-agnostic principle. They go away with Shape it in M5 (D8).
 - **Geoapify:** its formal terms weren't read. Confirm them before M5 builds the geocoding fallback.
 - **Paid links on activities:** these would need an activity decision kind; the data model has only `general` and `stay`.
-- **Claude-drafted copy:** the early-lock departure message (**This Venture has departed.**) and **Don't invite me from this person again** are Claude's wording, merged without changes. Dot may revise them.
+- **Claude-drafted copy:** the early-lock departure message (**This Venture has departed.**), **Don't invite me from this person again**, and the D5 stretch summaries (**4 for all 3 days · 1 for Saturday only**, **N for part**) are Claude's wording, merged without changes. So is D5's 92-day limit on a proposal. Dot may revise them.
 
 ## Keeping this file current
 
